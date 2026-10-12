@@ -2,6 +2,7 @@
 using Infrastructure.Context;
 using Infrastructure.Repositories;
 using Infrastructure.Repositories.Interfaces;
+using Infrastructure.Seeds.Operacional;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -26,6 +27,11 @@ namespace Infrastructure
             // Contexto SaaS: empresas, planos e assinaturas
             services.AddDbContext<BarbeariaSaasDbContext>(options =>
                 options.UseSqlServer(connectionString));
+
+
+            services.AddDbContext<BarbeariaOperacionalDbContext>(options =>
+                options.UseSqlServer(connectionString));
+
 
             // Repositórios e serviços de autenticação
             services.AddScoped<

@@ -11,4 +11,11 @@
     <PackageReference Include="Microsoft.Extensions.Identity.Stores" Version="9.0.20" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Entities\Agendamentos\" />
+    <Folder Include="Entities\Clientes\" />
+    <Folder Include="Entities\Financeiro\" />
+    <Folder Include="Entities\Servicos\" />
+  </ItemGroup>
+
 </Project>

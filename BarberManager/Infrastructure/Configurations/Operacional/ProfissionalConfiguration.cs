@@ -1,0 +1,23 @@
+﻿using Domain.Entities.Profissionais;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using Microsoft.EntityFrameworkCore.Metadata.Conventions;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace Infrastructure.Configurations.Operacional
+{
+    public class ProfissionalConfiguration : IEntityTypeConfiguration<Profissional>
+    {
+        public void Configure(EntityTypeBuilder<Profissional> builder)
+        {
+            builder.HasKey(x => x.Id);
+
+            builder.HasIndex(x => x.EmpresaId);
+            builder.HasIndex(x => x.Cpf);
+        }
+    }
+}
