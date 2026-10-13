@@ -1,8 +1,7 @@
 ﻿using Application.Common.Pagination;
 using Application.Dispatcher;
-using Application.Empresas.DTOs;
-using Application.Empresas.Queries;
-using Microsoft.AspNetCore.Http;
+using Application.Saas.Empresas.DTOs;
+using Application.Saas.Empresas.Queries;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Saas.Controllers
@@ -23,7 +22,15 @@ namespace Api.Saas.Controllers
         {
 
             var empresas = await _dispatcher.Query<GetEmpresaQuery, PagedResponse<List<GetListEmpresaDto>>>
-                (new GetEmpresaQuery());
+                (new GetEmpresaQuery
+                {
+                    pageNumber = filter.PageNumber,
+                    pageSize = filter.PageSize,
+                    SearchTerm = filter.SearchTerm,
+                    SortBy = filter.SortBy,
+                    Status = filter.Status,
+                    Route = Request.Path.Value
+                });
 
             return Ok(empresas);
         }

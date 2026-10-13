@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Empresas.DTOs
+namespace Application.Saas.Empresas.DTOs
 {
     public class GetListEmpresaDto
     {
@@ -12,6 +12,8 @@ namespace Application.Empresas.DTOs
         public string NameFantasia { get; set; }
         public string CNPJ { get; set; }
         public string Plano { get; set; }
+
+        public string StatusAssinatura { get; set; }
         public string Status { get; set; }
 
     }

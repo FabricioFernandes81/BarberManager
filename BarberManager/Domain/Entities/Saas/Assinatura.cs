@@ -25,8 +25,20 @@ namespace Domain.Entities.Saas
 
         public bool RenovacaoAutomatica { get; set; }
 
+        //Útimo pagamento confirmado
+        public DateTime? DataUltimoPagamento { get; set; }
+
+        //Cancelamento
+        public DateTime? DataCancelamento { get; set; }
+
+        public int DiaVencimento { get; set; }
+
+        public decimal Valor { get; set; }
+
         public bool Trial { get; set; }
 
-        public StatusGeral Ativa { get; set; }
+        public DateTime? DataFimTrial { get; set; }
+
+        public StatusAssinaturaCliente Ativa { get; set; }
     }
 }

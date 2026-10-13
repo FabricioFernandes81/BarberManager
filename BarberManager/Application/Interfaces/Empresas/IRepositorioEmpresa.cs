@@ -1,4 +1,4 @@
-﻿using Application.Empresas.DTOs;
+﻿using Application.Saas.Empresas.DTOs;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,7 +10,7 @@ namespace Application.Interfaces.Empresas
     public interface IRepositorioEmpresa
     {
         Task<(List<GetListEmpresaDto> Empresas, int TotalRegistros)> ListarAsync(
-                     int pageNumber,int pageSize, string? searchTerm, string? sortBy,
+                     int pageNumber,int pageSize, string? searchTerm, string? sortBy, string? Status,
                                             CancellationToken cancellationToken = default);
         }
 }

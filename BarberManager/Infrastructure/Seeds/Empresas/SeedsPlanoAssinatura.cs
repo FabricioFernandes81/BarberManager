@@ -75,7 +75,13 @@ namespace Infrastructure.Seeds.Empresas
                 DataVencimento = new DateTime(2026, 1, 15),
                 Trial = true,
                 RenovacaoAutomatica = false,
-                Ativa = StatusGeral.Ativo,
+                Ativa = StatusAssinaturaCliente.Ativa,
+                DataAtualizacao = new DateTime(2026,12,15),
+                DataFimTrial = new DateTime(2026,10,15),
+                DiaVencimento = 15,
+                Valor = 0,
+                
+                
             },
 
             new Assinatura
@@ -87,7 +93,11 @@ namespace Infrastructure.Seeds.Empresas
                 DataVencimento = new DateTime(2027, 1, 10),
                 Trial = false,
                 RenovacaoAutomatica = true,
-                Ativa = StatusGeral.Ativo,
+                Ativa = StatusAssinaturaCliente.Expirada,
+                DataAtualizacao = new DateTime(2026,12,15),
+                DataFimTrial = new DateTime(2026,10,15),
+                DiaVencimento = 15,
+                Valor = 0,
             },
 
             new Assinatura
@@ -99,7 +109,11 @@ namespace Infrastructure.Seeds.Empresas
                 DataVencimento = new DateTime(2027, 2, 1),
                 Trial = false,
                 RenovacaoAutomatica = true,
-                Ativa = StatusGeral.Ativo,
+                Ativa = StatusAssinaturaCliente.Ativa,
+                DataAtualizacao = new DateTime(2026,12,15),
+                DataFimTrial = new DateTime(2026,10,15),
+                DiaVencimento = 15,
+                Valor = 0,
             },
 
             new Assinatura
@@ -111,7 +125,11 @@ namespace Infrastructure.Seeds.Empresas
                 DataVencimento = new DateTime(2027, 3, 1),
                 Trial = false,
                 RenovacaoAutomatica = true,
-                Ativa = StatusGeral.Ativo,
+                Ativa = StatusAssinaturaCliente.Ativa,
+                DataAtualizacao = new DateTime(2026,12,15),
+                DataFimTrial = new DateTime(2026,10,15),
+                DiaVencimento = 15,
+                Valor = 0,
             },
 
             new Assinatura
@@ -123,7 +141,7 @@ namespace Infrastructure.Seeds.Empresas
                 DataVencimento = new DateTime(2027, 4, 1),
                 Trial = false,
                 RenovacaoAutomatica = true,
-                Ativa = StatusGeral.Ativo,
+                Ativa = StatusAssinaturaCliente.Ativa,
             },
 
             new Assinatura
@@ -135,7 +153,11 @@ namespace Infrastructure.Seeds.Empresas
                 DataVencimento = new DateTime(2027, 5, 1),
                 Trial = false,
                 RenovacaoAutomatica = true,
-                Ativa = StatusGeral.Ativo,
+                Ativa = StatusAssinaturaCliente.Ativa,
+                DataAtualizacao = new DateTime(2026,12,15),
+                DataFimTrial = new DateTime(2026,10,15),
+                DiaVencimento = 15,
+                Valor = 0,
             }
         };
         }

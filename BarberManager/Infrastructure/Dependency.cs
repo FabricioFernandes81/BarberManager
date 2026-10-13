@@ -46,7 +46,8 @@ namespace Infrastructure
             services.AddScoped<IRepositorioEmpresa, RepositorioEmpresa>();
 
             services.AddScoped<IRepositorioProfissionalAutenticacao, RepositorioProfissionalAutenticacao>();
-
+            services.AddScoped<IRepositórioPlano, RepositórioPlano>();
+            services.AddScoped<IRepositorioAssinatura, RepositorioAssinatura>();
             return services;
         }
     }

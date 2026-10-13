@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Application.Empresas.Queries
+namespace Application.Saas.Assinaturas.Queries
 {
-    public class GetEmpresaQuery
+    public class GetAssinaturaQuery
     {
         public int pageNumber { get; set; }
         public int pageSize { get; set; }
@@ -14,6 +14,5 @@ namespace Application.Empresas.Queries
         public string? SortBy { get; set; }
         public string? Status { get; set; }
         public string? Route { get; set; }
-
     }
 }

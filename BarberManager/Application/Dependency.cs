@@ -1,6 +1,8 @@
 ﻿using Application.Common.Middlewares;
 using Application.Common.Middlewares.Handler;
+using Application.Common.Pagination;
 using Application.Common.Security;
+using Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -37,6 +39,7 @@ public static class Dependency
             typeof(QueryLoggingMiddleware<,>));
 
         services.AddScoped<IJwtTokenService, JwtTokenService>();
+        services.AddScoped<IUrlService, UrlService>();
 
         return services;
     }
