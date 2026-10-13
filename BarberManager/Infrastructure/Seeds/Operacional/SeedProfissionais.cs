@@ -1,5 +1,6 @@
 ﻿using Domain.Entities.Common.Enuns;
 using Domain.Entities.Profissionais;
+using Infrastructure.Seeds.AuthUsers;
 using Infrastructure.Seeds.Empresas;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -74,8 +75,8 @@ namespace Infrastructure.Seeds.Operacional
                     OrdemAgenda = 1,
                     Sobrenome = "ffffffffffff",
                     TipoComissao = TipoPagamento.ValorFixo,
-                  //  UsuarioOperacionalId = SeedUserOperacional.UsuarioAdministrador
-
+                    UsuarioId = SeedUser.UsuarioBarbeiroTeste,
+                  
 
                 },new Profissional
                 {

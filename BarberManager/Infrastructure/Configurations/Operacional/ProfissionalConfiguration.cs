@@ -16,6 +16,14 @@ namespace Infrastructure.Configurations.Operacional
         {
             builder.HasKey(x => x.Id);
 
+            builder.Property(x => x.UsuarioId)
+                    .IsRequired(false);
+
+
+            builder.HasIndex(x => x.UsuarioId)
+                .IsUnique()
+                .HasFilter("[UsuarioId] IS NOT NULL");
+
             builder.HasIndex(x => x.EmpresaId);
             builder.HasIndex(x => x.Cpf);
         }

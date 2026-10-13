@@ -30,6 +30,14 @@ namespace Infrastructure.Seeds.AuthUsers
         public const string SenhaAdministradorBarbearia =
             "vintAge@123";
 
+        public static readonly Guid UsuarioBarbeiroTeste =
+              Guid.Parse("90000000-0000-0000-0000-000000000002");
+
+        public const string EmailBarbeiroTeste =
+            "barbeiro.teste@barberpro.local";
+
+        public const string SenhaBarbeiroTeste =
+            "Barbeiro@123";
         public static void IniciarSeed(ModelBuilder builder)
         {
             builder.Entity<Usuario>().HasData(SeedUsuarios());

@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 namespace Application.Common.Security
 {
 
-    public sealed record ContextoAutenticacao(
+  public sealed record ContextoAutenticacao(
     string TipoUsuario,
     Guid? EmpresaId,
-    IReadOnlyList<string> Permissoes);
+    IReadOnlyList<string> Permissoes, Guid? ProfissionalId = null);
 
     public interface IJwtTokenService
     {
@@ -19,5 +19,11 @@ namespace Application.Common.Security
          Usuario usuario,
          ContextoAutenticacao contexto,
          CancellationToken cancellationToken = default);
+
+      /*  public sealed record ContextoAutenticacao(
+        string TipoUsuario,
+        Guid? EmpresaId,
+        IReadOnlyList<string> Permissoes,
+        Guid? ProfissionalId = null);*/
     }
 }

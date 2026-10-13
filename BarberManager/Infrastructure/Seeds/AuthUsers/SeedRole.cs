@@ -16,6 +16,9 @@ namespace Infrastructure.Seeds.AuthUsers
         public static readonly Guid RoleBarberAdministrador =
           Guid.Parse("70000000-0000-0000-0000-000000000001");
 
+        public static readonly Guid RoleBarbeiro =
+                        Guid.Parse("70000000-0000-0000-0000-000000000002");
+
         public static void SeedInicializerRoles(ModelBuilder builder)
         {
             builder.Entity<Roles>().HasData(SetRoles());
@@ -41,6 +44,15 @@ namespace Infrastructure.Seeds.AuthUsers
                 Descricao = "Administrador da Barbearia",
                 Ativo = true
             
+                },new Roles
+                {
+                     Id = RoleBarbeiro,
+                        Name = "Barbeiro",
+                        NormalizedName = "BARBEIRO",
+                        ConcurrencyStamp =
+                            "70000000-0000-0000-0000-000000000002",
+                        Descricao = "Profissional com acesso à própria agenda.",
+                        Ativo = true
                 }
             };
         }

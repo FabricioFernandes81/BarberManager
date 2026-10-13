@@ -1,5 +1,6 @@
 ﻿using Domain.Entities.Common;
 using Domain.Entities.Common.Enuns;
+using Domain.Entities.Servicos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -83,6 +84,10 @@ namespace Domain.Entities.Profissionais
 
         public bool Destaque { get; set; }
 
+        public Guid? UsuarioId { get; set; }
 
+
+        public ICollection<ProfissionalServicos> Servicos { get; set; }
+                           = new List<ProfissionalServicos>();
     }
 }

@@ -1,4 +1,5 @@
-﻿using Application.Interfaces.Empresas;
+﻿using Application.Interfaces;
+using Application.Interfaces.Empresas;
 using Infrastructure.Context;
 using Infrastructure.Repositories;
 using Infrastructure.Repositories.Interfaces;
@@ -44,6 +45,7 @@ namespace Infrastructure
 
             services.AddScoped<IRepositorioEmpresa, RepositorioEmpresa>();
 
+            services.AddScoped<IRepositorioProfissionalAutenticacao, RepositorioProfissionalAutenticacao>();
 
             return services;
         }

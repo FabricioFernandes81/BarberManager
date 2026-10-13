@@ -4,19 +4,16 @@ using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Infrastructure.Migrations
+namespace Infrastructure.Migrations.BarbeariaSaasDb
 {
     [DbContext(typeof(BarbeariaSaasDbContext))]
-    [Migration("20261012064831_InitialSaas")]
-    partial class InitialSaas
+    partial class BarbeariaSaasDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -60,9 +57,11 @@ namespace Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("EmpresaId");
+                    b.HasIndex("EmpresaId")
+                        .IsUnique();
 
-                    b.HasIndex("PlanoId");
+                    b.HasIndex("PlanoId")
+                        .IsUnique();
 
                     b.ToTable("Assinaturas");
 
@@ -71,7 +70,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("60000000-0000-0000-0000-000000000001"),
                             Ativa = 1,
-                            DataCadastro = new DateTime(2026, 10, 12, 6, 48, 30, 783, DateTimeKind.Utc).AddTicks(6900),
+                            DataCadastro = new DateTime(2026, 10, 13, 3, 59, 55, 463, DateTimeKind.Utc).AddTicks(3460),
                             DataInicio = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DataVencimento = new DateTime(2026, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
@@ -83,7 +82,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("60000000-0000-0000-0000-000000000002"),
                             Ativa = 1,
-                            DataCadastro = new DateTime(2026, 10, 12, 6, 48, 30, 783, DateTimeKind.Utc).AddTicks(8130),
+                            DataCadastro = new DateTime(2026, 10, 13, 3, 59, 55, 463, DateTimeKind.Utc).AddTicks(5338),
                             DataInicio = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DataVencimento = new DateTime(2027, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000002"),
@@ -95,7 +94,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("60000000-0000-0000-0000-000000000003"),
                             Ativa = 1,
-                            DataCadastro = new DateTime(2026, 10, 12, 6, 48, 30, 783, DateTimeKind.Utc).AddTicks(8139),
+                            DataCadastro = new DateTime(2026, 10, 13, 3, 59, 55, 463, DateTimeKind.Utc).AddTicks(5358),
                             DataInicio = new DateTime(2026, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DataVencimento = new DateTime(2027, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000003"),
@@ -107,7 +106,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("60000000-0000-0000-0000-000000000004"),
                             Ativa = 1,
-                            DataCadastro = new DateTime(2026, 10, 12, 6, 48, 30, 783, DateTimeKind.Utc).AddTicks(8142),
+                            DataCadastro = new DateTime(2026, 10, 13, 3, 59, 55, 463, DateTimeKind.Utc).AddTicks(5360),
                             DataInicio = new DateTime(2026, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DataVencimento = new DateTime(2027, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000004"),
@@ -119,7 +118,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("60000000-0000-0000-0000-000000000005"),
                             Ativa = 1,
-                            DataCadastro = new DateTime(2026, 10, 12, 6, 48, 30, 783, DateTimeKind.Utc).AddTicks(8145),
+                            DataCadastro = new DateTime(2026, 10, 13, 3, 59, 55, 463, DateTimeKind.Utc).AddTicks(5362),
                             DataInicio = new DateTime(2026, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DataVencimento = new DateTime(2027, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000005"),
@@ -131,7 +130,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("60000000-0000-0000-0000-000000000006"),
                             Ativa = 1,
-                            DataCadastro = new DateTime(2026, 10, 12, 6, 48, 30, 783, DateTimeKind.Utc).AddTicks(8150),
+                            DataCadastro = new DateTime(2026, 10, 13, 3, 59, 55, 463, DateTimeKind.Utc).AddTicks(5374),
                             DataInicio = new DateTime(2026, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DataVencimento = new DateTime(2027, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000006"),
@@ -195,7 +194,7 @@ namespace Infrastructure.Migrations
                             Id = new Guid("50000000-0000-0000-0000-000000000001"),
                             Ativa = 1,
                             Cnpj = "11.111.111/0001-11",
-                            DataCadastro = new DateTime(2026, 10, 12, 6, 48, 30, 782, DateTimeKind.Utc).AddTicks(219),
+                            DataCadastro = new DateTime(2026, 10, 13, 3, 59, 55, 460, DateTimeKind.Utc).AddTicks(4512),
                             Email = "contato@barbeariavintage.com.br",
                             NomeFantasia = "Barbearia Vintage",
                             RazaoSocial = "Barbearia Vintage LTDA",
@@ -206,7 +205,7 @@ namespace Infrastructure.Migrations
                             Id = new Guid("50000000-0000-0000-0000-000000000002"),
                             Ativa = 1,
                             Cnpj = "22.222.222/0001-22",
-                            DataCadastro = new DateTime(2026, 10, 12, 6, 48, 30, 782, DateTimeKind.Utc).AddTicks(1934),
+                            DataCadastro = new DateTime(2026, 10, 13, 3, 59, 55, 460, DateTimeKind.Utc).AddTicks(7531),
                             Email = "contato@oldschoolbarber.com.br",
                             NomeFantasia = "Old School Barber",
                             RazaoSocial = "Old School Barber LTDA",
@@ -217,7 +216,7 @@ namespace Infrastructure.Migrations
                             Id = new Guid("50000000-0000-0000-0000-000000000003"),
                             Ativa = 1,
                             Cnpj = "33.333.333/0001-33",
-                            DataCadastro = new DateTime(2026, 10, 12, 6, 48, 30, 782, DateTimeKind.Utc).AddTicks(1936),
+                            DataCadastro = new DateTime(2026, 10, 13, 3, 59, 55, 460, DateTimeKind.Utc).AddTicks(7536),
                             Email = "contato@blackbeard.com.br",
                             NomeFantasia = "Black Beard Barber",
                             RazaoSocial = "Black Beard Barber LTDA",
@@ -228,7 +227,7 @@ namespace Infrastructure.Migrations
                             Id = new Guid("50000000-0000-0000-0000-000000000004"),
                             Ativa = 1,
                             Cnpj = "44.444.444/0001-44",
-                            DataCadastro = new DateTime(2026, 10, 12, 6, 48, 30, 782, DateTimeKind.Utc).AddTicks(1938),
+                            DataCadastro = new DateTime(2026, 10, 13, 3, 59, 55, 460, DateTimeKind.Utc).AddTicks(7537),
                             Email = "contato@imperiobarber.com.br",
                             NomeFantasia = "Império Barber",
                             RazaoSocial = "Império Barber LTDA",
@@ -239,7 +238,7 @@ namespace Infrastructure.Migrations
                             Id = new Guid("50000000-0000-0000-0000-000000000005"),
                             Ativa = 1,
                             Cnpj = "55.555.555/0001-55",
-                            DataCadastro = new DateTime(2026, 10, 12, 6, 48, 30, 782, DateTimeKind.Utc).AddTicks(1940),
+                            DataCadastro = new DateTime(2026, 10, 13, 3, 59, 55, 460, DateTimeKind.Utc).AddTicks(7539),
                             Email = "contato@domcorte.com.br",
                             NomeFantasia = "Dom Corte",
                             RazaoSocial = "Dom Corte LTDA",
@@ -250,7 +249,7 @@ namespace Infrastructure.Migrations
                             Id = new Guid("50000000-0000-0000-0000-000000000006"),
                             Ativa = 1,
                             Cnpj = "66.666.666/0001-66",
-                            DataCadastro = new DateTime(2026, 10, 12, 6, 48, 30, 782, DateTimeKind.Utc).AddTicks(1943),
+                            DataCadastro = new DateTime(2026, 10, 13, 3, 59, 55, 460, DateTimeKind.Utc).AddTicks(7541),
                             Email = "contato@primebarber.com.br",
                             NomeFantasia = "Prime Barber Club",
                             RazaoSocial = "Prime Barber Club LTDA",
@@ -298,7 +297,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000001"),
                             Ativo = 1,
-                            DataCadastro = new DateTime(2026, 10, 12, 6, 48, 30, 783, DateTimeKind.Utc).AddTicks(961),
+                            DataCadastro = new DateTime(2026, 10, 13, 3, 59, 55, 462, DateTimeKind.Utc).AddTicks(4264),
                             LimiteEmpresas = 1,
                             LimiteProfissionais = 2,
                             Nome = "Trial",
@@ -309,7 +308,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000002"),
                             Ativo = 1,
-                            DataCadastro = new DateTime(2026, 10, 12, 6, 48, 30, 783, DateTimeKind.Utc).AddTicks(2638),
+                            DataCadastro = new DateTime(2026, 10, 13, 3, 59, 55, 462, DateTimeKind.Utc).AddTicks(7458),
                             LimiteEmpresas = 1,
                             LimiteProfissionais = 3,
                             Nome = "Starter",
@@ -320,7 +319,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000003"),
                             Ativo = 1,
-                            DataCadastro = new DateTime(2026, 10, 12, 6, 48, 30, 783, DateTimeKind.Utc).AddTicks(2710),
+                            DataCadastro = new DateTime(2026, 10, 13, 3, 59, 55, 462, DateTimeKind.Utc).AddTicks(7632),
                             LimiteEmpresas = 1,
                             LimiteProfissionais = 5,
                             Nome = "Basic",
@@ -331,7 +330,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000004"),
                             Ativo = 1,
-                            DataCadastro = new DateTime(2026, 10, 12, 6, 48, 30, 783, DateTimeKind.Utc).AddTicks(2712),
+                            DataCadastro = new DateTime(2026, 10, 13, 3, 59, 55, 462, DateTimeKind.Utc).AddTicks(7634),
                             LimiteEmpresas = 1,
                             LimiteProfissionais = 10,
                             Nome = "Professional",
@@ -342,7 +341,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000005"),
                             Ativo = 1,
-                            DataCadastro = new DateTime(2026, 10, 12, 6, 48, 30, 783, DateTimeKind.Utc).AddTicks(2724),
+                            DataCadastro = new DateTime(2026, 10, 13, 3, 59, 55, 462, DateTimeKind.Utc).AddTicks(7641),
                             LimiteEmpresas = 1,
                             LimiteProfissionais = 25,
                             Nome = "Premium",
@@ -353,7 +352,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000006"),
                             Ativo = 1,
-                            DataCadastro = new DateTime(2026, 10, 12, 6, 48, 30, 783, DateTimeKind.Utc).AddTicks(2731),
+                            DataCadastro = new DateTime(2026, 10, 13, 3, 59, 55, 462, DateTimeKind.Utc).AddTicks(7653),
                             LimiteEmpresas = 999,
                             LimiteProfissionais = 999,
                             Nome = "Enterprise",
@@ -365,14 +364,14 @@ namespace Infrastructure.Migrations
             modelBuilder.Entity("Domain.Entities.Saas.Assinatura", b =>
                 {
                     b.HasOne("Domain.Entities.Saas.Empresa", "Empresa")
-                        .WithMany("Assinaturas")
-                        .HasForeignKey("EmpresaId")
+                        .WithOne("Assinaturas")
+                        .HasForeignKey("Domain.Entities.Saas.Assinatura", "EmpresaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.Saas.Plano", "Plano")
-                        .WithMany()
-                        .HasForeignKey("PlanoId")
+                        .WithOne("Assinatura")
+                        .HasForeignKey("Domain.Entities.Saas.Assinatura", "PlanoId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -383,7 +382,14 @@ namespace Infrastructure.Migrations
 
             modelBuilder.Entity("Domain.Entities.Saas.Empresa", b =>
                 {
-                    b.Navigation("Assinaturas");
+                    b.Navigation("Assinaturas")
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Domain.Entities.Saas.Plano", b =>
+                {
+                    b.Navigation("Assinatura")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

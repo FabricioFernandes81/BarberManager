@@ -63,6 +63,11 @@ namespace Application.Common.Security
                     "EmpresaId",
                     contexto.EmpresaId.Value.ToString()));
             }
+            if (contexto.ProfissionalId.HasValue)
+            {
+                claims.Add(new Claim(
+                    "ProfissionalId", contexto.ProfissionalId.Value.ToString()));
+            }
 
             //  claims.AddRange(
             //      roles.Select(role => new Claim(ClaimTypes.Role, role)));
@@ -94,5 +99,7 @@ namespace Application.Common.Security
                 expiraEm
             );
         }
+
+       
     }
 }

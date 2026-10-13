@@ -1,5 +1,6 @@
 ﻿using Application.Common.Middlewares.Handler;
 using Application.Common.Security;
+using Application.Interfaces;
 using Domain.Entities.AuthUsers;
 using Infrastructure.Repositories.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -15,6 +16,8 @@ namespace Application.Autenticacao.Commands.Handlers
     {
         private const string RoleSaas = "Administrador";
         private const string RoleOperacional = "AdministradorBarber";
+        private const string RoleBarbeiro = "Barbeiro";
+
 
         private readonly UserManager<Usuario> _userManager;
         private readonly SignInManager<Usuario> _signInManager;
@@ -24,12 +27,15 @@ namespace Application.Autenticacao.Commands.Handlers
         private readonly IValidadorEmpresaAutenticacao _validadorEmpresa;
         private readonly IJwtTokenService _jwtTokenService;
 
+        private readonly IRepositorioProfissionalAutenticacao _repositorioProfissionalAutenticacao;
+
         public LoginHandler(
             UserManager<Usuario> userManager,
             SignInManager<Usuario> signInManager,
             RoleManager<Roles> roleManager,
             IRepositorioUsuarioEmpresa repositorioUsuarioEmpresa,
-           // IRepositorioPermissoesUsuario repositorioPermissoes,
+            IRepositorioProfissionalAutenticacao repositorioProfissionalAutenticacao,
+            // IRepositorioPermissoesUsuario repositorioPermissoes,
             IValidadorEmpresaAutenticacao validadorEmpresa,
             IJwtTokenService jwtTokenService)
         {
@@ -43,8 +49,8 @@ namespace Application.Autenticacao.Commands.Handlers
         }
 
         public async Task<LoginResult> Handle(
-            LoginCommand command,
-            CancellationToken cancellationToken)
+           LoginCommand command,
+           CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(command.Email) ||
                 string.IsNullOrWhiteSpace(command.Senha) ||
@@ -59,24 +65,24 @@ namespace Application.Autenticacao.Commands.Handlers
             if (usuario is null)
                 return FalhaLogin();
 
-            var senhaValida =
+            var resultadoSenha =
                 await _signInManager.CheckPasswordSignInAsync(
                     usuario,
                     command.Senha,
                     lockoutOnFailure: true);
 
-            if (!senhaValida.Succeeded)
+            if (!resultadoSenha.Succeeded)
                 return FalhaLogin();
 
-            // Resolve somente os papéis que realmente existem,
-            // estão ativos e foram atribuídos ao usuário.
-            var nomesRoles = await _userManager.GetRolesAsync(usuario);
+            var nomesRoles =
+                await _userManager.GetRolesAsync(usuario);
 
             var rolesAtivas = new List<string>();
 
             foreach (var nomeRole in nomesRoles)
             {
-                var role = await _roleManager.FindByNameAsync(nomeRole);
+                var role =
+                    await _roleManager.FindByNameAsync(nomeRole);
 
                 if (role is { Ativo: true, Name: not null })
                     rolesAtivas.Add(role.Name);
@@ -84,6 +90,7 @@ namespace Application.Autenticacao.Commands.Handlers
 
             string tipoUsuario;
             Guid? empresaId = null;
+            Guid? profissionalId = null;
 
             switch (command.TipoAcesso)
             {
@@ -102,53 +109,100 @@ namespace Application.Autenticacao.Commands.Handlers
 
                 case TipoAcesso.Operacional:
                     {
-                        if (!rolesAtivas.Contains(
+                        var ehAdministrador =
+                            rolesAtivas.Contains(
                                 RoleOperacional,
-                                StringComparer.OrdinalIgnoreCase))
-                        {
+                                StringComparer.OrdinalIgnoreCase);
+
+                        var ehBarbeiro =
+                            rolesAtivas.Contains(
+                                RoleBarbeiro,
+                                StringComparer.OrdinalIgnoreCase);
+
+                        if (!ehAdministrador && !ehBarbeiro)
                             return FalhaLogin();
-                        }
 
-                        var empresas =
-                            await _repositorioUsuarioEmpresa
-                                .ObterEmpresasAtivasAsync(
-                                    usuario.Id,
-                                    cancellationToken);
-
-                        if (command.EmpresaId.HasValue)
+                        // O barbeiro entra pela empresa de seu próprio
+                        // cadastro. Não pode escolher outra empresa.
+                        if (ehBarbeiro && !ehAdministrador)
                         {
-                            // O ID selecionado só é aceito se pertencer
-                            // à lista de vínculos ativos do usuário.
-                            if (!empresas.Contains(command.EmpresaId.Value))
+                            var profissional =
+                                await _repositorioProfissionalAutenticacao
+                                    .ObterPorUsuarioIdAsync(
+                                        usuario.Id,
+                                        cancellationToken);
+
+                            if (profissional is null)
                                 return FalhaLogin();
 
-                            empresaId = command.EmpresaId.Value;
+                            if (command.EmpresaId.HasValue &&
+                                command.EmpresaId.Value !=
+                                    profissional.EmpresaId)
+                            {
+                                return FalhaLogin();
+                            }
+
+                            var possuiVinculo =
+                                await _repositorioUsuarioEmpresa
+                                    .PossuiVinculoAtivoAsync(
+                                        usuario.Id,
+                                        profissional.EmpresaId,
+                                        cancellationToken);
+
+                            if (!possuiVinculo)
+                                return FalhaLogin();
+
+                            empresaId = profissional.EmpresaId;
+                            profissionalId =
+                                profissional.ProfissionalId;
                         }
                         else
                         {
-                            if (empresas.Count == 0)
-                                return FalhaLogin();
+                            // Fluxo existente para administrador
+                            // operacional da barbearia.
+                            var empresas =
+                                await _repositorioUsuarioEmpresa
+                                    .ObterEmpresasAtivasAsync(
+                                        usuario.Id,
+                                        cancellationToken);
 
-                            if (empresas.Count > 1)
+                            if (command.EmpresaId.HasValue)
                             {
-                                return new LoginResult(
-                                    Sucesso: false,
-                                    AccessToken: null,
-                                    ExpiraEm: null,
-                                    Mensagem: "Selecione a barbearia para continuar.",
-                                    RequerSelecaoEmpresa: true,
-                                    EmpresasDisponiveis: empresas);
-                            }
+                                if (!empresas.Contains(
+                                        command.EmpresaId.Value))
+                                {
+                                    return FalhaLogin();
+                                }
 
-                            empresaId = empresas[0];
+                                empresaId = command.EmpresaId.Value;
+                            }
+                            else
+                            {
+                                if (empresas.Count == 0)
+                                    return FalhaLogin();
+
+                                if (empresas.Count > 1)
+                                {
+                                    return new LoginResult(
+                                        Sucesso: false,
+                                        AccessToken: null,
+                                        ExpiraEm: null,
+                                        Mensagem:
+                                            "Selecione a barbearia para continuar.",
+                                        RequerSelecaoEmpresa: true,
+                                        EmpresasDisponiveis: empresas);
+                                }
+
+                                empresaId = empresas[0];
+                            }
                         }
 
-                        // O vínculo pode estar ativo e a empresa suspensa.
-                        // As duas condições precisam ser verificadas.
+                        // Valida também se a empresa está ativa no SaaS.
                         var empresaAtiva =
-                            await _validadorEmpresa.EmpresaEstaAtivaAsync(
-                                empresaId.Value,
-                                cancellationToken);
+                            await _validadorEmpresa
+                                .EmpresaEstaAtivaAsync(
+                                    empresaId!.Value,
+                                    cancellationToken);
 
                         if (!empresaAtiva)
                             return FalhaLogin();
@@ -159,8 +213,8 @@ namespace Application.Autenticacao.Commands.Handlers
 
                 case TipoAcesso.Cliente:
                     {
-                        // Não emitir token Cliente até implementar e validar
-                        // o relacionamento real entre Usuario e Cliente.
+                        // Mantém o comportamento atual: não emitir
+                        // token Cliente sem vínculo implementado.
                         return new LoginResult(
                             Sucesso: false,
                             AccessToken: null,
@@ -174,14 +228,16 @@ namespace Application.Autenticacao.Commands.Handlers
             }
 
             var permissoes =
-                await _repositorioUsuarioEmpresa.ObterCodigosAsync(
-                    usuario.Id,
-                    cancellationToken);
+                await _repositorioUsuarioEmpresa
+                    .ObterCodigosAsync(
+                        usuario.Id,
+                        cancellationToken);
 
             var contexto = new ContextoAutenticacao(
                 TipoUsuario: tipoUsuario,
                 EmpresaId: empresaId,
-                Permissoes: permissoes);
+                Permissoes: permissoes,
+                ProfissionalId: profissionalId);
 
             var (accessToken, expiraEm) =
                 await _jwtTokenService.GerarAsync(
@@ -201,6 +257,7 @@ namespace Application.Autenticacao.Commands.Handlers
                 Sucesso: false,
                 AccessToken: null,
                 ExpiraEm: null,
-                Mensagem: "Email, senha, perfil ou vínculo inválido.");
+                Mensagem:
+                    "Email, senha, perfil ou vínculo inválido.");
     }
 }

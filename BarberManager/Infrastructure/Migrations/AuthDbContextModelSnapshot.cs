@@ -4,19 +4,16 @@ using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace Infrastructure.Migrations.AuthDb
+namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AuthDbContext))]
-    [Migration("20261012064839_InitialAuth")]
-    partial class InitialAuth
+    partial class AuthDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -106,7 +103,7 @@ namespace Infrastructure.Migrations.AuthDb
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000013"),
                             Codigo = "empresa.visualizar",
-                            DataCadastro = new DateTime(2026, 10, 12, 6, 48, 39, 272, DateTimeKind.Utc).AddTicks(3615),
+                            DataCadastro = new DateTime(2026, 10, 13, 3, 59, 51, 102, DateTimeKind.Utc).AddTicks(2409),
                             Descricao = "Permite listar empresas.",
                             Nome = "Visualizar Empresas"
                         },
@@ -114,7 +111,7 @@ namespace Infrastructure.Migrations.AuthDb
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000014"),
                             Codigo = "empresa.detalhes",
-                            DataCadastro = new DateTime(2026, 10, 12, 6, 48, 39, 272, DateTimeKind.Utc).AddTicks(5479),
+                            DataCadastro = new DateTime(2026, 10, 13, 3, 59, 51, 102, DateTimeKind.Utc).AddTicks(4069),
                             Descricao = "Permite visualizar detalhes.",
                             Nome = "Detalhes Empresa"
                         },
@@ -122,7 +119,7 @@ namespace Infrastructure.Migrations.AuthDb
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000015"),
                             Codigo = "empresa.criar",
-                            DataCadastro = new DateTime(2026, 10, 12, 6, 48, 39, 272, DateTimeKind.Utc).AddTicks(5481),
+                            DataCadastro = new DateTime(2026, 10, 13, 3, 59, 51, 102, DateTimeKind.Utc).AddTicks(4096),
                             Descricao = "Permite cadastrar empresas.",
                             Nome = "Cadastrar Empresa"
                         },
@@ -130,7 +127,7 @@ namespace Infrastructure.Migrations.AuthDb
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000016"),
                             Codigo = "empresa.editar",
-                            DataCadastro = new DateTime(2026, 10, 12, 6, 48, 39, 272, DateTimeKind.Utc).AddTicks(5483),
+                            DataCadastro = new DateTime(2026, 10, 13, 3, 59, 51, 102, DateTimeKind.Utc).AddTicks(4098),
                             Descricao = "Permite editar empresas.",
                             Nome = "Editar Empresa"
                         },
@@ -138,7 +135,7 @@ namespace Infrastructure.Migrations.AuthDb
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000017"),
                             Codigo = "empresa.excluir",
-                            DataCadastro = new DateTime(2026, 10, 12, 6, 48, 39, 272, DateTimeKind.Utc).AddTicks(5485),
+                            DataCadastro = new DateTime(2026, 10, 13, 3, 59, 51, 102, DateTimeKind.Utc).AddTicks(4099),
                             Descricao = "Permite excluir empresas.",
                             Nome = "Excluir Empresa"
                         },
@@ -146,7 +143,7 @@ namespace Infrastructure.Migrations.AuthDb
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000018"),
                             Codigo = "empresa.ativar",
-                            DataCadastro = new DateTime(2026, 10, 12, 6, 48, 39, 272, DateTimeKind.Utc).AddTicks(5498),
+                            DataCadastro = new DateTime(2026, 10, 13, 3, 59, 51, 102, DateTimeKind.Utc).AddTicks(4113),
                             Descricao = "Permite ativar empresas.",
                             Nome = "Ativar Empresa"
                         },
@@ -154,7 +151,7 @@ namespace Infrastructure.Migrations.AuthDb
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000019"),
                             Codigo = "empresa.bloquear",
-                            DataCadastro = new DateTime(2026, 10, 12, 6, 48, 39, 272, DateTimeKind.Utc).AddTicks(5499),
+                            DataCadastro = new DateTime(2026, 10, 13, 3, 59, 51, 102, DateTimeKind.Utc).AddTicks(4114),
                             Descricao = "Permite bloquear empresas.",
                             Nome = "Bloquear Empresa"
                         },
@@ -162,7 +159,7 @@ namespace Infrastructure.Migrations.AuthDb
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000020"),
                             Codigo = "empresa.desbloquear",
-                            DataCadastro = new DateTime(2026, 10, 12, 6, 48, 39, 272, DateTimeKind.Utc).AddTicks(5501),
+                            DataCadastro = new DateTime(2026, 10, 13, 3, 59, 51, 102, DateTimeKind.Utc).AddTicks(4115),
                             Descricao = "Permite desbloquear empresas.",
                             Nome = "Desbloquear Empresa"
                         },
@@ -170,7 +167,7 @@ namespace Infrastructure.Migrations.AuthDb
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000021"),
                             Codigo = "empresa.renovar",
-                            DataCadastro = new DateTime(2026, 10, 12, 6, 48, 39, 272, DateTimeKind.Utc).AddTicks(5509),
+                            DataCadastro = new DateTime(2026, 10, 13, 3, 59, 51, 102, DateTimeKind.Utc).AddTicks(4121),
                             Descricao = "Permite renovar assinatura.",
                             Nome = "Renovar Assinatura"
                         },
@@ -178,7 +175,7 @@ namespace Infrastructure.Migrations.AuthDb
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000022"),
                             Codigo = "empresa.estatisticas",
-                            DataCadastro = new DateTime(2026, 10, 12, 6, 48, 39, 272, DateTimeKind.Utc).AddTicks(5536),
+                            DataCadastro = new DateTime(2026, 10, 13, 3, 59, 51, 102, DateTimeKind.Utc).AddTicks(4123),
                             Descricao = "Permite visualizar estatísticas.",
                             Nome = "Estatísticas"
                         },
@@ -186,7 +183,7 @@ namespace Infrastructure.Migrations.AuthDb
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000023"),
                             Codigo = "empresa.usuarios",
-                            DataCadastro = new DateTime(2026, 10, 12, 6, 48, 39, 272, DateTimeKind.Utc).AddTicks(5538),
+                            DataCadastro = new DateTime(2026, 10, 13, 3, 59, 51, 102, DateTimeKind.Utc).AddTicks(4124),
                             Descricao = "Permite visualizar usuários da empresa.",
                             Nome = "Usuários"
                         },
@@ -194,7 +191,7 @@ namespace Infrastructure.Migrations.AuthDb
                         {
                             Id = new Guid("80000000-0000-0000-0000-000000000002"),
                             Codigo = "cliente.visualizar",
-                            DataCadastro = new DateTime(2026, 10, 12, 6, 48, 39, 272, DateTimeKind.Utc).AddTicks(5539),
+                            DataCadastro = new DateTime(2026, 10, 13, 3, 59, 51, 102, DateTimeKind.Utc).AddTicks(4126),
                             Descricao = "Permite visualizar os clientes cadastrados.",
                             Nome = "Visualizar Clientes"
                         },
@@ -202,7 +199,7 @@ namespace Infrastructure.Migrations.AuthDb
                         {
                             Id = new Guid("80000000-0000-0000-0000-000000000003"),
                             Codigo = "cliente.criar",
-                            DataCadastro = new DateTime(2026, 10, 12, 6, 48, 39, 272, DateTimeKind.Utc).AddTicks(5540),
+                            DataCadastro = new DateTime(2026, 10, 13, 3, 59, 51, 102, DateTimeKind.Utc).AddTicks(4127),
                             Descricao = "Permite cadastrar novos clientes.",
                             Nome = "Cadastrar Clientes"
                         },
@@ -210,7 +207,7 @@ namespace Infrastructure.Migrations.AuthDb
                         {
                             Id = new Guid("80000000-0000-0000-0000-000000000004"),
                             Codigo = "cliente.editar",
-                            DataCadastro = new DateTime(2026, 10, 12, 6, 48, 39, 272, DateTimeKind.Utc).AddTicks(5542),
+                            DataCadastro = new DateTime(2026, 10, 13, 3, 59, 51, 102, DateTimeKind.Utc).AddTicks(4129),
                             Descricao = "Permite editar clientes cadastrados.",
                             Nome = "Editar Clientes"
                         },
@@ -218,7 +215,7 @@ namespace Infrastructure.Migrations.AuthDb
                         {
                             Id = new Guid("80000000-0000-0000-0000-000000000005"),
                             Codigo = "cliente.excluir",
-                            DataCadastro = new DateTime(2026, 10, 12, 6, 48, 39, 272, DateTimeKind.Utc).AddTicks(5544),
+                            DataCadastro = new DateTime(2026, 10, 13, 3, 59, 51, 102, DateTimeKind.Utc).AddTicks(4130),
                             Descricao = "Permite excluir clientes cadastrados.",
                             Nome = "Excluir Clientes"
                         });
@@ -349,6 +346,15 @@ namespace Infrastructure.Migrations.AuthDb
                             Descricao = "Administrador da Barbearia",
                             Name = "AdministradorBarber",
                             NormalizedName = "ADMINISTRADORBARBER"
+                        },
+                        new
+                        {
+                            Id = new Guid("70000000-0000-0000-0000-000000000002"),
+                            Ativo = true,
+                            ConcurrencyStamp = "70000000-0000-0000-0000-000000000002",
+                            Descricao = "Profissional com acesso à própria agenda.",
+                            Name = "Barbeiro",
+                            NormalizedName = "BARBEIRO"
                         });
                 });
 

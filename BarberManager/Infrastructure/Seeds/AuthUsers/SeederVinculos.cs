@@ -18,6 +18,9 @@ namespace Infrastructure.Seeds.AuthUsers
         private static readonly Guid IdVinculoBarbearia =
        Guid.Parse("A0000000-0000-0000-0000-000000000001");
 
+        private static readonly Guid IdVinculoBarbeiroTeste =
+                     Guid.Parse("A0000000-0000-0000-0000-000000000002");
+
         public static async Task InicializarAsync(
             IServiceProvider services,
             CancellationToken cancellationToken = default)
@@ -35,6 +38,9 @@ namespace Infrastructure.Seeds.AuthUsers
 
             var saasContext =
                 scope.ServiceProvider.GetRequiredService<BarbeariaSaasDbContext>();
+
+            var roleBarbeiro = await roleManager.FindByNameAsync("Barbeiro");
+
 
             // A empresa precisa existir e estar ativa antes de criar o vínculo.
             var empresaExiste = await saasContext.Empresas
@@ -57,14 +63,14 @@ namespace Infrastructure.Seeds.AuthUsers
             var roleOperacional =
                 await roleManager.FindByNameAsync("AdministradorBarber");
 
-            if (roleSaas is null || roleOperacional is null)
+            if (roleSaas is null || roleOperacional is null || roleBarbeiro is null)
             {
                 throw new InvalidOperationException(
                     "As roles de teste não foram encontradas. " +
                     "Aplique as migrations do AuthDbContext.");
             }
 
-            if (!roleSaas.Ativo || !roleOperacional.Ativo)
+            if (!roleSaas.Ativo || !roleOperacional.Ativo || !roleBarbeiro.Ativo)
             {
                 throw new InvalidOperationException(
                     "As roles de teste precisam estar ativas.");
@@ -84,6 +90,14 @@ namespace Infrastructure.Seeds.AuthUsers
                 SeedUser.SenhaAdministradorBarbearia,
                 "+55(51)999635987");
 
+            var BarbeiroTeste = await ObterOuCriarUsuarioAsync(
+                 userManager,
+                 SeedUser.UsuarioBarbeiroTeste,
+                 SeedUser.EmailBarbeiroTeste,
+                 SeedUser.SenhaBarbeiroTeste,
+                 "(51)99999-0002"
+                );
+
             await GarantirRoleAsync(
                 userManager,
                 administrador,
@@ -94,9 +108,22 @@ namespace Infrastructure.Seeds.AuthUsers
                 administradorBarbearia,
                 "AdministradorBarber");
 
+            await GarantirRoleAsync(
+                userManager,
+                BarbeiroTeste,
+                "Barbeiro");
+
+
+            await GarantirVinculoEmpresaAsync(
+                 authContext,
+                 administradorBarbearia,
+                 IdVinculoBarbearia,
+                 cancellationToken);
+
             await GarantirVinculoEmpresaAsync(
                 authContext,
-                administradorBarbearia,
+                BarbeiroTeste,
+                IdVinculoBarbeiroTeste,
                 cancellationToken);
         }
 
@@ -186,7 +213,7 @@ namespace Infrastructure.Seeds.AuthUsers
 
         private static async Task GarantirVinculoEmpresaAsync(
             AuthDbContext context,
-            Usuario usuario,
+            Usuario usuario , Guid idVinculo,
             CancellationToken cancellationToken)
         {
             var vinculo = await context.UsuarioEmpresa
@@ -200,7 +227,7 @@ namespace Infrastructure.Seeds.AuthUsers
             {
                 context.UsuarioEmpresa.Add(new UsuarioEmpresa
                 {
-                    Id = IdVinculoBarbearia,
+                    Id = idVinculo,
                     UsuarioId = usuario.Id,
                     EmpresaId = SeedEmpresa.Empresa1,
                     Ativo = true,
