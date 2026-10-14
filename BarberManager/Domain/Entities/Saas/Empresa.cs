@@ -25,7 +25,8 @@ namespace Domain.Entities.Saas
 
 
         //Navegação 
-        public Assinatura Assinaturas { get; set; } 
+        public ICollection<Assinatura> Assinaturas { get; set; }
+                                                = new List<Assinatura>();
 
 
     }

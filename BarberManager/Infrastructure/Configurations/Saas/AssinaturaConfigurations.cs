@@ -27,13 +27,15 @@ namespace Infrastructure.Configurations.Saas
 
             builder.Property(x => x.Ativa);
 
-             builder.HasOne(x => x.Empresa)
-                  .WithOne(x => x.Assinaturas)
-                  .HasForeignKey<Assinatura>(x => x.EmpresaId);
+            builder.HasOne(x => x.Empresa)
+              .WithMany(x => x.Assinaturas)
+              .HasForeignKey(x => x.EmpresaId)
+              .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(x => x.Plano)
-                .WithOne(x=>x.Assinatura)
-                .HasForeignKey<Assinatura>(x => x.PlanoId);
+                  .WithMany(x => x.Assinaturas)
+                  .HasForeignKey(x => x.PlanoId)
+                  .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

@@ -22,8 +22,9 @@ namespace Domain.Entities.Saas
 
         public StatusGeral Ativo { get; set; }
 
-        public Assinatura Assinatura { get; set; }
+        public ICollection<Assinatura> Assinaturas { get; set; }
+        = new List<Assinatura>();
 
-      //  public ICollection<PlanoModulo> Modulos { get; set; } = [];
+        //  public ICollection<PlanoModulo> Modulos { get; set; } = [];
     }
 }

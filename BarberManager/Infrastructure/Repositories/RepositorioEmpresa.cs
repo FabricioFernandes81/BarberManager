@@ -60,8 +60,12 @@ namespace Infrastructure.Repositories
                     CNPJ = e.Cnpj,
                     NameFantasia = e.NomeFantasia,
                     Status = e.Ativa.ToString(),
-                    Plano = e.Assinaturas.Plano.Nome,
-                    StatusAssinatura = e.Assinaturas.Ativa.ToString()
+                    Plano = e.Assinaturas.OrderByDescending(a=>a.DataInicio)
+                    .Select(a=>a.Plano.Nome).FirstOrDefault()?? "Sem assinatura",
+                  //  e.Assinaturas.Plano.Nome,
+                    StatusAssinatura = e.Assinaturas.OrderByDescending(a=>a.DataInicio)
+                    .Select(a=> a.Ativa.ToString()).FirstOrDefault() ?? "Sem assinatura",
+                    //e.Assinaturas.Ativa.ToString()
                 })
                 .Skip((pageNumber - 1) * pageSize)
                 .Take(pageSize)
