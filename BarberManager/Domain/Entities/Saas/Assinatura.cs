@@ -40,5 +40,8 @@ namespace Domain.Entities.Saas
         public DateTime? DataFimTrial { get; set; }
 
         public StatusAssinaturaCliente Ativa { get; set; }
+
+        public ICollection<Fatura> Faturas { get; set; }
+    = new List<Fatura>();
     }
 }

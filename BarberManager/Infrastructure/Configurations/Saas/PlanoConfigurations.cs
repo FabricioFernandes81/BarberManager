@@ -26,8 +26,8 @@ namespace Infrastructure.Configurations.Saas
 
             builder.Property(x => x.LimiteEmpresas);
 
-            builder.Property(x => x.Ativo)
-                .HasDefaultValue(true);
+           /* builder.Property(x => x.Ativo)
+                .HasDefaultValue(true);*/
 
         }
     }

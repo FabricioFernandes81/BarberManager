@@ -22,16 +22,22 @@ namespace Infrastructure.Context
         public DbSet<Empresa> Empresas => Set<Empresa>();
         public DbSet<Plano> Planos { get; set; }
         public DbSet<Assinatura> Assinaturas { get; set; }
-
+        public DbSet<Fatura> Faturas { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
             modelBuilder.ApplyConfiguration(new EmpresaConfigurations());
 
+            modelBuilder.ApplyConfiguration(new PlanoConfigurations());
+
+            modelBuilder.ApplyConfiguration(new AssinaturaConfigurations());
+            modelBuilder.ApplyConfiguration(new FaturaConfigurations());
+
             SeedEmpresa.InicializerSeed(modelBuilder);
 
             SeedsPlanoAssinatura.InicializerSeed(modelBuilder);
+            SeedFatura.InicializerSeed(modelBuilder);
         }
 
 
