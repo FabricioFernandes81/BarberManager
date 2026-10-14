@@ -43,5 +43,8 @@ namespace Domain.Entities.Saas
 
         public ICollection<Fatura> Faturas { get; set; }
     = new List<Fatura>();
+
+        public PeriodicidadeCobranca PeriodicidadeCobranca { get; set; }
+    = PeriodicidadeCobranca.Mensal;
     }
 }

@@ -36,6 +36,14 @@ namespace Infrastructure.Configurations.Saas
                   .WithMany(x => x.Assinaturas)
                   .HasForeignKey(x => x.PlanoId)
                   .OnDelete(DeleteBehavior.Restrict);
+
+            builder.Property(x => x.PeriodicidadeCobranca)
+                .HasConversion<int>()
+                .IsRequired()
+                .HasDefaultValue(
+                    Domain.Entities.Common.Enuns.PeriodicidadeCobranca.Mensal
+                );
+
         }
     }
 }

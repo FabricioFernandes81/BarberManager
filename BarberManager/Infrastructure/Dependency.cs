@@ -1,9 +1,11 @@
-﻿using Application.Interfaces;
+﻿using Application.Common;
+using Application.Interfaces;
 using Application.Interfaces.Empresas;
 using Infrastructure.Context;
 using Infrastructure.Repositories;
 using Infrastructure.Repositories.Interfaces;
 using Infrastructure.Seeds.Operacional;
+using Infrastructure.Transactions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -34,6 +36,13 @@ namespace Infrastructure
                 options.UseSqlServer(connectionString));
 
 
+
+
+            services.AddScoped<IUnitOfWorkFactory, UnitOfWorkFactory>();
+
+
+
+
             // Repositórios e serviços de autenticação
             services.AddScoped<
                 IValidadorEmpresaAutenticacao,
@@ -48,6 +57,7 @@ namespace Infrastructure
             services.AddScoped<IRepositorioProfissionalAutenticacao, RepositorioProfissionalAutenticacao>();
             services.AddScoped<IRepositórioPlano, RepositórioPlano>();
             services.AddScoped<IRepositorioAssinatura, RepositorioAssinatura>();
+            services.AddScoped<IRepositorioPagamento, RepositorioPagamento>();
             return services;
         }
     }

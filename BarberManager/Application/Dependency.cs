@@ -38,6 +38,10 @@ public static class Dependency
             typeof(IDispatcherQueryMiddleware<,>),
             typeof(QueryLoggingMiddleware<,>));
 
+        services.AddScoped(
+            typeof(IDispatcherCommandMiddleware<,>),
+            typeof(TransactionMiddleware<,>));
+
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IUrlService, UrlService>();
 
