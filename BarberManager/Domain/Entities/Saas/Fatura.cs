@@ -30,5 +30,8 @@ namespace Domain.Entities.Saas
         // Identificador da cobrança no gateway, quando existir.
         public string? ReferenciaGateway { get; set; }
 
+
+        public ICollection<TransacaoPagamento> TransacoesPagamento { get; set; }
+    = new List<TransacaoPagamento>();
     }
 }

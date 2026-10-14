@@ -23,6 +23,8 @@ namespace Infrastructure.Context
         public DbSet<Plano> Planos { get; set; }
         public DbSet<Assinatura> Assinaturas { get; set; }
         public DbSet<Fatura> Faturas { get; set; }
+        public DbSet<TransacaoPagamento> TransacoesPagamento { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -33,11 +35,16 @@ namespace Infrastructure.Context
 
             modelBuilder.ApplyConfiguration(new AssinaturaConfigurations());
             modelBuilder.ApplyConfiguration(new FaturaConfigurations());
+            modelBuilder.ApplyConfiguration(new TransacaoPagamentoConfigurations());
+
+
+
 
             SeedEmpresa.InicializerSeed(modelBuilder);
 
             SeedsPlanoAssinatura.InicializerSeed(modelBuilder);
             SeedFatura.InicializerSeed(modelBuilder);
+            SeedTransacaoPagamento.InicializerSeed(modelBuilder);
         }
 
 
