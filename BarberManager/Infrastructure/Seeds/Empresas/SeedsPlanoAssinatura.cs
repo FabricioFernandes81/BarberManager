@@ -70,7 +70,7 @@ namespace Infrastructure.Seeds.Empresas
             {
                 Id = Assinatura1,
                 EmpresaId = SeedEmpresa.Empresa1,
-                PlanoId = Trial,
+                PlanoId = Starter,
                 DataInicio = new DateTime(2026, 1, 1),
                 DataVencimento = new DateTime(2026, 1, 15),
                 Trial = true,
@@ -88,7 +88,7 @@ namespace Infrastructure.Seeds.Empresas
             {
                 Id = Assinatura2,
                 EmpresaId = SeedEmpresa.Empresa2,
-                PlanoId = Starter,
+                PlanoId = Trial,
                 DataInicio = new DateTime(2026, 1, 10),
                 DataVencimento = new DateTime(2027, 1, 10),
                 Trial = false,
