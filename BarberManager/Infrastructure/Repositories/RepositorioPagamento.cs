@@ -21,14 +21,28 @@ namespace Infrastructure.Repositories
             _dbContext = dbContext;
         }
 
+       
+
         public async Task AdicionarTentativaAsync(TransacaoPagamento transacao, CancellationToken cancellationToken = default)
         {
-            await _dbContext.TransacoesPagamento.AddAsync(transacao, cancellationToken);
+            await _dbContext.TransacoesPagamento.AddAsync(transacao, 
+                cancellationToken);
         }
+
+        
 
         public async Task<Fatura?> ObterFaturaComTentativasAsync(Guid faturaId, CancellationToken cancellationToken = default)
         {
             return await _dbContext.Faturas
+                .Include(f => f.TransacoesPagamento)
+                .FirstOrDefaultAsync(f => f.Id == faturaId, cancellationToken);
+        }
+
+        public async Task<Fatura?> ObterFaturaParaCobrancaAsync(Guid faturaId, CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.Faturas
+                .Include(f => f.Assinatura)
+                .ThenInclude(a => a.Empresa)
                 .Include(f => f.TransacoesPagamento)
                 .FirstOrDefaultAsync(f => f.Id == faturaId, cancellationToken);
         }
@@ -42,6 +56,8 @@ namespace Infrastructure.Repositories
                                      && t.ChaveIdempotencia == chaveIdempotencia,
                                 cancellationToken);
         }
+
+       
 
         public async Task<List<PagamentoTentativaDto>> ObterTentativasPorFaturaAsync(Guid faturaId, CancellationToken cancellationToken = default)
         {
@@ -65,5 +81,7 @@ namespace Infrastructure.Repositories
 
                 }).ToListAsync(cancellationToken);
         }
+
+       
     }
 }

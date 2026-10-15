@@ -26,5 +26,11 @@ namespace Application.Interfaces.Empresas
         Task AdicionarTentativaAsync(
             TransacaoPagamento transacao,
             CancellationToken cancellationToken = default);
+
+
+        Task<Fatura?> ObterFaturaParaCobrancaAsync(
+             Guid faturaId,
+             CancellationToken cancellationToken = default);
+
     }
 }

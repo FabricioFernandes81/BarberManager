@@ -1,7 +1,10 @@
 ﻿using Application.Common;
 using Application.Interfaces;
 using Application.Interfaces.Empresas;
+using Application.Interfaces.Empresas.Pagamentos;
 using Infrastructure.Context;
+using Infrastructure.Payments;
+using Infrastructure.Payments.Asaas;
 using Infrastructure.Repositories;
 using Infrastructure.Repositories.Interfaces;
 using Infrastructure.Seeds.Operacional;
@@ -58,6 +61,19 @@ namespace Infrastructure
             services.AddScoped<IRepositórioPlano, RepositórioPlano>();
             services.AddScoped<IRepositorioAssinatura, RepositorioAssinatura>();
             services.AddScoped<IRepositorioPagamento, RepositorioPagamento>();
+
+            services.AddScoped<IRepositorioFatura, RepositorioFatura>();
+
+            services.Configure<AsaasOptions>(
+                    configuration.GetSection(AsaasOptions.SectionName)
+                );
+
+            services.AddHttpClient<IAsaasGateway, AsaasGateway>(
+                client =>
+                {
+                    client.Timeout = TimeSpan.FromSeconds(70);
+                });
+
             return services;
         }
     }

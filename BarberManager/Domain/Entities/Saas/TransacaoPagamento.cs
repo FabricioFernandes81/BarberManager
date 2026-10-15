@@ -20,6 +20,7 @@ namespace Domain.Entities.Saas
         // Identificador da cobrança/transação no gateway.
         public string? ReferenciaGateway { get; set; }
 
+        public string? ReferenciaClienteAsaas { get; set; }
         // Identificador único da operação para evitar cobranças duplicadas.
         public string ChaveIdempotencia { get; set; } = string.Empty;
 
@@ -35,5 +36,7 @@ namespace Domain.Entities.Saas
         public string? CodigoErro { get; set; }
 
         public string? MensagemErro { get; set; }
+
+        public MetodoPagamento MetodoPagamento { get; set; }
     }
 }

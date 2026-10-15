@@ -93,6 +93,7 @@ namespace Application.Saas.Pagamentos.Commands.Handlers
                 FaturaId = fatura.Id,
                 Provedor = provedor,
                 ChaveIdempotencia = chaveIdempotencia,
+                MetodoPagamento = command.MetodoPagamento,
                 Valor = fatura.Valor,
                 Status = StatusTransacaoPagamento.Criada
             };

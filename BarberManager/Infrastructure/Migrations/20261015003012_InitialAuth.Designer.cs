@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations
 {
     [DbContext(typeof(AuthDbContext))]
-    [Migration("20261014050743_InitialAuth")]
+    [Migration("20261015003012_InitialAuth")]
     partial class InitialAuth
     {
         /// <inheritdoc />
@@ -106,7 +106,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000013"),
                             Codigo = "empresa.visualizar",
-                            DataCadastro = new DateTime(2026, 10, 14, 5, 7, 42, 593, DateTimeKind.Utc).AddTicks(4743),
+                            DataCadastro = new DateTime(2026, 10, 15, 0, 30, 11, 842, DateTimeKind.Utc).AddTicks(4257),
                             Descricao = "Permite listar empresas.",
                             Nome = "Visualizar Empresas"
                         },
@@ -114,7 +114,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000014"),
                             Codigo = "empresa.detalhes",
-                            DataCadastro = new DateTime(2026, 10, 14, 5, 7, 42, 593, DateTimeKind.Utc).AddTicks(6587),
+                            DataCadastro = new DateTime(2026, 10, 15, 0, 30, 11, 842, DateTimeKind.Utc).AddTicks(5827),
                             Descricao = "Permite visualizar detalhes.",
                             Nome = "Detalhes Empresa"
                         },
@@ -122,7 +122,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000015"),
                             Codigo = "empresa.criar",
-                            DataCadastro = new DateTime(2026, 10, 14, 5, 7, 42, 593, DateTimeKind.Utc).AddTicks(6594),
+                            DataCadastro = new DateTime(2026, 10, 15, 0, 30, 11, 842, DateTimeKind.Utc).AddTicks(5830),
                             Descricao = "Permite cadastrar empresas.",
                             Nome = "Cadastrar Empresa"
                         },
@@ -130,7 +130,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000016"),
                             Codigo = "empresa.editar",
-                            DataCadastro = new DateTime(2026, 10, 14, 5, 7, 42, 593, DateTimeKind.Utc).AddTicks(6595),
+                            DataCadastro = new DateTime(2026, 10, 15, 0, 30, 11, 842, DateTimeKind.Utc).AddTicks(5831),
                             Descricao = "Permite editar empresas.",
                             Nome = "Editar Empresa"
                         },
@@ -138,7 +138,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000017"),
                             Codigo = "empresa.excluir",
-                            DataCadastro = new DateTime(2026, 10, 14, 5, 7, 42, 593, DateTimeKind.Utc).AddTicks(6614),
+                            DataCadastro = new DateTime(2026, 10, 15, 0, 30, 11, 842, DateTimeKind.Utc).AddTicks(5833),
                             Descricao = "Permite excluir empresas.",
                             Nome = "Excluir Empresa"
                         },
@@ -146,7 +146,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000018"),
                             Codigo = "empresa.ativar",
-                            DataCadastro = new DateTime(2026, 10, 14, 5, 7, 42, 593, DateTimeKind.Utc).AddTicks(6632),
+                            DataCadastro = new DateTime(2026, 10, 15, 0, 30, 11, 842, DateTimeKind.Utc).AddTicks(5850),
                             Descricao = "Permite ativar empresas.",
                             Nome = "Ativar Empresa"
                         },
@@ -154,7 +154,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000019"),
                             Codigo = "empresa.bloquear",
-                            DataCadastro = new DateTime(2026, 10, 14, 5, 7, 42, 593, DateTimeKind.Utc).AddTicks(6634),
+                            DataCadastro = new DateTime(2026, 10, 15, 0, 30, 11, 842, DateTimeKind.Utc).AddTicks(5852),
                             Descricao = "Permite bloquear empresas.",
                             Nome = "Bloquear Empresa"
                         },
@@ -162,7 +162,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000020"),
                             Codigo = "empresa.desbloquear",
-                            DataCadastro = new DateTime(2026, 10, 14, 5, 7, 42, 593, DateTimeKind.Utc).AddTicks(6635),
+                            DataCadastro = new DateTime(2026, 10, 15, 0, 30, 11, 842, DateTimeKind.Utc).AddTicks(5853),
                             Descricao = "Permite desbloquear empresas.",
                             Nome = "Desbloquear Empresa"
                         },
@@ -170,7 +170,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000021"),
                             Codigo = "empresa.renovar",
-                            DataCadastro = new DateTime(2026, 10, 14, 5, 7, 42, 593, DateTimeKind.Utc).AddTicks(6637),
+                            DataCadastro = new DateTime(2026, 10, 15, 0, 30, 11, 842, DateTimeKind.Utc).AddTicks(5855),
                             Descricao = "Permite renovar assinatura.",
                             Nome = "Renovar Assinatura"
                         },
@@ -178,7 +178,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000022"),
                             Codigo = "empresa.estatisticas",
-                            DataCadastro = new DateTime(2026, 10, 14, 5, 7, 42, 593, DateTimeKind.Utc).AddTicks(6639),
+                            DataCadastro = new DateTime(2026, 10, 15, 0, 30, 11, 842, DateTimeKind.Utc).AddTicks(5857),
                             Descricao = "Permite visualizar estatísticas.",
                             Nome = "Estatísticas"
                         },
@@ -186,7 +186,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("b0000000-0000-0000-0000-000000000023"),
                             Codigo = "empresa.usuarios",
-                            DataCadastro = new DateTime(2026, 10, 14, 5, 7, 42, 593, DateTimeKind.Utc).AddTicks(6640),
+                            DataCadastro = new DateTime(2026, 10, 15, 0, 30, 11, 842, DateTimeKind.Utc).AddTicks(5858),
                             Descricao = "Permite visualizar usuários da empresa.",
                             Nome = "Usuários"
                         },
@@ -194,7 +194,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("80000000-0000-0000-0000-000000000002"),
                             Codigo = "cliente.visualizar",
-                            DataCadastro = new DateTime(2026, 10, 14, 5, 7, 42, 593, DateTimeKind.Utc).AddTicks(6641),
+                            DataCadastro = new DateTime(2026, 10, 15, 0, 30, 11, 842, DateTimeKind.Utc).AddTicks(5860),
                             Descricao = "Permite visualizar os clientes cadastrados.",
                             Nome = "Visualizar Clientes"
                         },
@@ -202,7 +202,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("80000000-0000-0000-0000-000000000003"),
                             Codigo = "cliente.criar",
-                            DataCadastro = new DateTime(2026, 10, 14, 5, 7, 42, 593, DateTimeKind.Utc).AddTicks(6646),
+                            DataCadastro = new DateTime(2026, 10, 15, 0, 30, 11, 842, DateTimeKind.Utc).AddTicks(5861),
                             Descricao = "Permite cadastrar novos clientes.",
                             Nome = "Cadastrar Clientes"
                         },
@@ -210,7 +210,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("80000000-0000-0000-0000-000000000004"),
                             Codigo = "cliente.editar",
-                            DataCadastro = new DateTime(2026, 10, 14, 5, 7, 42, 593, DateTimeKind.Utc).AddTicks(6647),
+                            DataCadastro = new DateTime(2026, 10, 15, 0, 30, 11, 842, DateTimeKind.Utc).AddTicks(5866),
                             Descricao = "Permite editar clientes cadastrados.",
                             Nome = "Editar Clientes"
                         },
@@ -218,7 +218,7 @@ namespace Infrastructure.Migrations
                         {
                             Id = new Guid("80000000-0000-0000-0000-000000000005"),
                             Codigo = "cliente.excluir",
-                            DataCadastro = new DateTime(2026, 10, 14, 5, 7, 42, 593, DateTimeKind.Utc).AddTicks(6649),
+                            DataCadastro = new DateTime(2026, 10, 15, 0, 30, 11, 842, DateTimeKind.Utc).AddTicks(5867),
                             Descricao = "Permite excluir clientes cadastrados.",
                             Nome = "Excluir Clientes"
                         });

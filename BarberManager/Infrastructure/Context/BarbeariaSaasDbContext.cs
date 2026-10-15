@@ -29,6 +29,7 @@ namespace Infrastructure.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            //builder.HasDefaultSchema("Saas");
             modelBuilder.ApplyConfiguration(new EmpresaConfigurations());
 
             modelBuilder.ApplyConfiguration(new PlanoConfigurations());

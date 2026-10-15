@@ -73,14 +73,14 @@ namespace Infrastructure.Seeds.Empresas
                 PlanoId = Starter,
                 DataInicio = new DateTime(2026, 1, 1),
                 DataVencimento = new DateTime(2026, 1, 15),
-                Trial = true,
+                Trial = false,
                 RenovacaoAutomatica = false,
                 Ativa = StatusAssinaturaCliente.Ativa,
                 DataAtualizacao = new DateTime(2026,12,15),
                 DataFimTrial = new DateTime(2026,10,15),
                 DiaVencimento = 15,
                 Valor = 0,
-                
+                PeriodicidadeCobranca = PeriodicidadeCobranca.Mensal,
                 
             },
 
@@ -98,6 +98,7 @@ namespace Infrastructure.Seeds.Empresas
                 DataFimTrial = new DateTime(2026,10,15),
                 DiaVencimento = 15,
                 Valor = 0,
+                PeriodicidadeCobranca = PeriodicidadeCobranca.Mensal,
             },
 
             new Assinatura
@@ -114,6 +115,7 @@ namespace Infrastructure.Seeds.Empresas
                 DataFimTrial = new DateTime(2026,10,15),
                 DiaVencimento = 15,
                 Valor = 0,
+                PeriodicidadeCobranca = PeriodicidadeCobranca.Mensal,
             },
 
             new Assinatura
@@ -130,6 +132,7 @@ namespace Infrastructure.Seeds.Empresas
                 DataFimTrial = new DateTime(2026,10,15),
                 DiaVencimento = 15,
                 Valor = 0,
+                PeriodicidadeCobranca = PeriodicidadeCobranca.Mensal,
             },
 
             new Assinatura
@@ -142,6 +145,7 @@ namespace Infrastructure.Seeds.Empresas
                 Trial = false,
                 RenovacaoAutomatica = true,
                 Ativa = StatusAssinaturaCliente.Ativa,
+                PeriodicidadeCobranca = PeriodicidadeCobranca.Mensal,
             },
 
             new Assinatura
@@ -158,6 +162,7 @@ namespace Infrastructure.Seeds.Empresas
                 DataFimTrial = new DateTime(2026,10,15),
                 DiaVencimento = 15,
                 Valor = 0,
+                PeriodicidadeCobranca = PeriodicidadeCobranca.Mensal,
             }
         };
         }
