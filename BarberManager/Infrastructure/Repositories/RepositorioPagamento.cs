@@ -57,7 +57,15 @@ namespace Infrastructure.Repositories
                                 cancellationToken);
         }
 
-       
+        public async Task<TransacaoPagamento?> ObterPorReferenciaGatewayAsync(string provedor, string referenciaGateway, CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.TransacoesPagamento
+        .Include(t => t.Fatura)
+        .FirstOrDefaultAsync(
+            t => t.Provedor == provedor &&
+                 t.ReferenciaGateway == referenciaGateway,
+            cancellationToken);
+        }
 
         public async Task<List<PagamentoTentativaDto>> ObterTentativasPorFaturaAsync(Guid faturaId, CancellationToken cancellationToken = default)
         {
@@ -82,6 +90,9 @@ namespace Infrastructure.Repositories
                 }).ToListAsync(cancellationToken);
         }
 
-       
+        public async Task SalvarAlteracoesAsync(CancellationToken cancellationToken = default)
+        {
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
     }
 }

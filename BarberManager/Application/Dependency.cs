@@ -4,6 +4,7 @@ using Application.Common.Pagination;
 using Application.Common.Security;
 using Application.Interfaces;
 using Application.Interfaces.Empresas.Pagamentos;
+using Application.Saas.Pagamentos.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -45,7 +46,7 @@ public static class Dependency
 
         services.AddScoped<IJwtTokenService, JwtTokenService>();
         services.AddScoped<IUrlService, UrlService>();
-      //  services.AddScoped<IPagamentoService, PagamentoService>();
+        services.AddScoped<IPagamentoService, PagamentoService>();
         return services;
     }
 

@@ -114,8 +114,8 @@ namespace Api.Saas.Controllers
 
         [HttpPost("faturas/{faturaId:guid}/pagamentos")]
         [ProducesResponseType(
-    typeof(IniciarPagamentoResultadoDto),
-    StatusCodes.Status201Created)]
+             typeof(IniciarPagamentoResultadoDto),
+             StatusCodes.Status201Created)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType(StatusCodes.Status409Conflict)]

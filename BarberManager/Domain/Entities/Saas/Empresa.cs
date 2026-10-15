@@ -28,6 +28,6 @@ namespace Domain.Entities.Saas
         public ICollection<Assinatura> Assinaturas { get; set; }
                                                 = new List<Assinatura>();
 
-
+        public string? ReferenciaClienteAsaas { get; set; }
     }
 }

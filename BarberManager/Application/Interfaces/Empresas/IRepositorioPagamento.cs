@@ -32,5 +32,13 @@ namespace Application.Interfaces.Empresas
              Guid faturaId,
              CancellationToken cancellationToken = default);
 
+        Task<TransacaoPagamento?> ObterPorReferenciaGatewayAsync(
+    string provedor,
+    string referenciaGateway,
+    CancellationToken cancellationToken = default);
+
+
+        Task SalvarAlteracoesAsync(
+    CancellationToken cancellationToken = default);
     }
 }

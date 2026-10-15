@@ -17,4 +17,8 @@
     <ProjectReference Include="..\Domain\Domain.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Saas\NovaPasta\" />
+  </ItemGroup>
+
 </Project>
