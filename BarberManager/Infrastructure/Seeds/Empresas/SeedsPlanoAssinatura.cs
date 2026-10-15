@@ -79,7 +79,7 @@ namespace Infrastructure.Seeds.Empresas
                 DataAtualizacao = new DateTime(2026,12,15),
                 DataFimTrial = new DateTime(2026,10,15),
                 DiaVencimento = 15,
-                Valor = 0,
+                Valor = 49.90m,
                 PeriodicidadeCobranca = PeriodicidadeCobranca.Mensal,
                 
             },

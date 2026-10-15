@@ -2,7 +2,9 @@
 using Application.Saas.Pagamentos.DTOs;
 using Domain.Entities.Common.Enuns;
 using Microsoft.Extensions.Options;
+using System.Globalization;
 using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace Infrastructure.Payments.Asaas;
 
@@ -31,6 +33,13 @@ public sealed class AsaasGateway : IAsaasGateway
         _httpClient.DefaultRequestHeaders.Add(
             "access_token",
             config.ApiKey);
+
+        // Identifica a aplicação que está consumindo a API.
+        if (!_httpClient.DefaultRequestHeaders.UserAgent.Any())
+        {
+            _httpClient.DefaultRequestHeaders.UserAgent.ParseAdd(
+                "BarberManager/1.0");
+        }
     }
 
     public async Task<AsaasClienteResultadoDto> CriarClienteAsync(
@@ -159,29 +168,73 @@ public sealed class AsaasGateway : IAsaasGateway
     }
 
     public async Task<AsaasPixResultadoDto> ObterQrCodePixAsync(
-        string referenciaGateway,
-        CancellationToken cancellationToken = default)
+    string referenciaGateway,
+    CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrWhiteSpace(referenciaGateway))
-            throw new ArgumentException(
-                "A referência da cobrança é obrigatória.");
+        var referencia = Uri.EscapeDataString(referenciaGateway);
 
         using var response = await _httpClient.GetAsync(
-            $"payments/{Uri.EscapeDataString(referenciaGateway)}/pixQrCode",
+            $"payments/{referencia}/pixQrCode",
             cancellationToken);
 
         await GarantirSucessoAsync(response, cancellationToken);
 
-        var resultado =
-            await response.Content.ReadFromJsonAsync<PixResponse>(
-                cancellationToken: cancellationToken)
-            ?? throw new InvalidOperationException(
-                "O Asaas não retornou o QR Code Pix.");
+        var json = await response.Content.ReadAsStringAsync(
+            cancellationToken);
+
+        var resultado = JsonSerializer.Deserialize<AsaasPixQrCodeResponse>(
+            json,
+            new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            });
+
+        if (resultado is null)
+        {
+            throw new InvalidOperationException(
+                "O Asaas retornou uma resposta vazia para o QR Code Pix.");
+        }
+
+        DateTime? expiracao = null;
+
+        if (!string.IsNullOrWhiteSpace(resultado.ExpirationDate))
+        {
+            var formatos = new[]
+            {
+            "yyyy-MM-dd HH:mm:ss",
+            "yyyy-MM-dd'T'HH:mm:ss",
+            "yyyy-MM-dd'T'HH:mm:ss.FFFFFFFK"
+        };
+
+            var convertido = DateTime.TryParseExact(
+                resultado.ExpirationDate,
+                formatos,
+                CultureInfo.InvariantCulture,
+                DateTimeStyles.None,
+                out var data);
+
+            if (!convertido)
+            {
+                convertido = DateTime.TryParse(
+                    resultado.ExpirationDate,
+                    CultureInfo.InvariantCulture,
+                    DateTimeStyles.None,
+                    out data);
+            }
+
+            if (!convertido)
+            {
+                throw new InvalidOperationException(
+                    "O Asaas retornou uma data de expiração Pix inválida.");
+            }
+
+            expiracao = data;
+        }
 
         return new AsaasPixResultadoDto(
-            resultado.EncodedImage,
-            resultado.Payload,
-            resultado.ExpirationDate);
+          resultado.EncodedImage,
+          resultado.Payload,
+          expiracao);
     }
 
     private static async Task GarantirSucessoAsync(
@@ -226,10 +279,19 @@ public sealed class AsaasGateway : IAsaasGateway
         public string? CreditCardNumber { get; set; }
     }
 
-    private sealed class PixResponse
+
+    private sealed class AsaasPixQrCodeResponse
+    {
+        public string? EncodedImage { get; set; }
+
+        public string? Payload { get; set; }
+
+        public string? ExpirationDate { get; set; }
+    }
+    /*private sealed class PixResponse
     {
         public string EncodedImage { get; set; } = string.Empty;
         public string Payload { get; set; } = string.Empty;
         public DateTime? ExpirationDate { get; set; }
-    }
+    }*/
 }

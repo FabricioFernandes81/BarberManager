@@ -79,6 +79,20 @@ namespace Application.Saas.Pagamentos.Commands.Handlers
                     jaExistia: true);
             }
 
+
+            if (assinatura.Valor < 0)
+            {
+                throw ErroValidacao(
+                    "O valor da assinatura não pode ser negativo.");
+            }
+
+            if (assinatura.Valor == 0)
+            {
+                throw ErroValidacao(
+                    "Não é possível gerar uma fatura para uma assinatura com valor zero.");
+            }
+
+
             // 5. Criar a fatura com o valor contratado.
             var fatura = new Fatura
             {

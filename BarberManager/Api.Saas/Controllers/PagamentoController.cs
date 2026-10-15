@@ -113,19 +113,13 @@ namespace Api.Saas.Controllers
         }
 
         [HttpPost("faturas/{faturaId:guid}/pagamentos")]
-        [ProducesResponseType(
-             typeof(IniciarPagamentoResultadoDto),
-             StatusCodes.Status201Created)]
-        [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        [ProducesResponseType(StatusCodes.Status404NotFound)]
-        [ProducesResponseType(StatusCodes.Status409Conflict)]
         public async Task<ActionResult<IniciarPagamentoResultadoDto>>
-    IniciarPagamento(
-        Guid faturaId,
-        [FromBody] IniciarPagamentoRequest request,
-        [FromHeader(Name = "Idempotency-Key")]
+     IniciarPagamento(
+         Guid faturaId,
+         [FromBody] IniciarPagamentoRequest request,
+         [FromHeader(Name = "Idempotency-Key")]
         string chaveIdempotencia,
-        CancellationToken cancellationToken)
+         CancellationToken cancellationToken)
         {
             if (request.FaturaId != faturaId)
                 return BadRequest(
