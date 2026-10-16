@@ -157,6 +157,43 @@ namespace Api.Saas.Controllers
             return StatusCode(StatusCodes.Status201Created, resultado);
         }
 
+        [HttpGet("faturas/{faturaId:guid}/status")]
+        [ProducesResponseType(
+    typeof(ObterStatusFaturaDto),
+    StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<ObterStatusFaturaDto>>
+    ObterStatusFatura(
+        Guid faturaId,
+        CancellationToken cancellationToken)
+        {
+            if (faturaId == Guid.Empty)
+            {
+                return BadRequest(
+                    "O identificador da fatura é obrigatório.");
+            }
+
+            var resultado = await dispatcher.Query<
+                ObterStatusFaturaQuery,
+                ObterStatusFaturaDto?>(
+                    new ObterStatusFaturaQuery
+                    {
+                        FaturaId = faturaId
+                    },
+                    cancellationToken);
+
+            if (resultado is null)
+            {
+                return NotFound(new
+                {
+                    mensagem = "Fatura não encontrada."
+                });
+            }
+
+            return Ok(resultado);
+        }
+
     }
 }
 

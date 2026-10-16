@@ -2,6 +2,7 @@
 using Application.Interfaces;
 using Application.Interfaces.Empresas;
 using Application.Interfaces.Empresas.Pagamentos;
+using Application.Saas.Pagamentos.Services;
 using Infrastructure.Context;
 using Infrastructure.Payments;
 using Infrastructure.Payments.Asaas;
@@ -73,6 +74,9 @@ namespace Infrastructure
                 {
                     client.Timeout = TimeSpan.FromSeconds(70);
                 });
+
+            services.AddScoped<
+                            IAsaasWebhookService, AsaasWebhookService>();
 
             return services;
         }
