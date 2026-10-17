@@ -45,5 +45,16 @@ namespace Application.Interfaces.Empresas
 
         Task SalvarAlteracoesAsync(
     CancellationToken cancellationToken = default);
+
+
+        Task<(bool Inserida, TransacaoPagamento? Existente)>
+    TentarAdicionarTentativaComIdempotenciaAsync(
+        TransacaoPagamento transacao,
+        CancellationToken cancellationToken = default);
+
+        Task<RegistroTentativaPagamentoResultado>
+    RegistrarTentativaExclusivaAsync(
+        TransacaoPagamento transacao,
+        CancellationToken cancellationToken = default);
     }
 }

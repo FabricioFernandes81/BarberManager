@@ -1,5 +1,6 @@
 ﻿using Application.Interfaces.Empresas;
 using Application.Saas.Empresas.DTOs;
+using Application.Saas.Empresas.Enums;
 using Domain.Entities.Common.Enuns;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
@@ -22,6 +23,52 @@ namespace Infrastructure.Repositories
             _dbContext = dbContext;
         }
 
+        public async Task<ResultadoAlteracaoAcessoEmpresa> AlterarAcessoAsync(Guid empresaId, bool habilitarAcesso, string? motivo, CancellationToken cancellationToken = default)
+        {
+            var empresa = await _dbContext.Empresas
+                 .FirstOrDefaultAsync(x => x.Id == empresaId, cancellationToken);
+
+            if (empresa.Ativa == StatusGeral.Inativo)
+            {
+                return ResultadoAlteracaoAcessoEmpresa.EmpresaInativa;
+            }
+            if (empresa is null)
+            {
+                return ResultadoAlteracaoAcessoEmpresa.EmpresaNaoEncontrada;
+            }
+            if (habilitarAcesso)
+            {
+                if (empresa.Ativa == StatusGeral.Ativo && empresa.DataBloqueio is null)
+                {
+                    return ResultadoAlteracaoAcessoEmpresa.JaHabilitado;
+                }
+                empresa.Ativa = StatusGeral.Ativo;
+                empresa.DataBloqueio = null;
+                empresa.MotivoBloqueio = null;
+            }
+            else
+            {
+                if (empresa.Ativa == StatusGeral.Suspenso && empresa.DataBloqueio is not null)
+            {
+                return ResultadoAlteracaoAcessoEmpresa.JaSuspenso;
+            }
+            empresa.Ativa = StatusGeral.Suspenso;
+            empresa.DataBloqueio = DateTime.UtcNow;
+                empresa.MotivoBloqueio = motivo!.Trim();
+        }
+            empresa.DataAtualizacao = DateTime.UtcNow;
+            await _dbContext.SaveChangesAsync(cancellationToken);
+
+            return habilitarAcesso ? ResultadoAlteracaoAcessoEmpresa.Habilitado :
+                ResultadoAlteracaoAcessoEmpresa.Suspenso;
+        }
+
+        public async Task<bool> ExisteAsync(Guid empresaId, CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.Empresas
+                .AsNoTracking()
+                .AnyAsync(empresa => empresa.Id == empresaId, cancellationToken);
+        }
 
         public async Task<(List<GetListEmpresaDto> Empresas, int TotalRegistros)> ListarAsync(int pageNumber, int pageSize, string? searchTerm, string? sortBy, string? Status, CancellationToken cancellationToken = default)
         {

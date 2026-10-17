@@ -4,117 +4,157 @@ using Application.Interfaces.Empresas.Pagamentos;
 using Application.Saas.Pagamentos.DTOs;
 using Domain.Entities.Common.Enuns;
 using Domain.Entities.Saas;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-namespace Application.Saas.Pagamentos.Services
+public sealed class PagamentoService : IPagamentoService
 {
-    public sealed class PagamentoService : IPagamentoService
+    private const string ProvedorAsaas = "Asaas";
+
+    private readonly IRepositorioPagamento _repositorio;
+    private readonly IAsaasGateway _asaasGateway;
+
+    public PagamentoService(
+        IRepositorioPagamento repositorio,
+        IAsaasGateway asaasGateway)
     {
-        private const string ProvedorAsaas = "Asaas";
+        _repositorio = repositorio;
+        _asaasGateway = asaasGateway;
+    }
 
-        private readonly IRepositorioPagamento _repositorio;
-        private readonly IAsaasGateway _asaasGateway;
+    public async Task<IniciarPagamentoResultadoDto> IniciarAsync(
+        IniciarPagamentoRequest request,
+        string chaveIdempotencia,
+        string remoteIp,
+        CancellationToken cancellationToken = default)
+    {
+        ValidarRequisicao(
+            request,
+            chaveIdempotencia,
+            remoteIp);
 
-        public PagamentoService(
-            IRepositorioPagamento repositorio,
-            IAsaasGateway asaasGateway)
+        var chave = chaveIdempotencia.Trim();
+
+        // 1. Verificar se a chave já foi utilizada.
+        var existente =
+            await _repositorio.ObterPorChaveIdempotenciaAsync(
+                ProvedorAsaas,
+                chave,
+                cancellationToken);
+
+        if (existente is not null)
         {
-            _repositorio = repositorio;
-            _asaasGateway = asaasGateway;
+            ValidarCompatibilidadeDaChave(
+                existente,
+                request);
+
+            return await MontarResultadoExistenteAsync(
+                existente,
+                cancellationToken);
         }
 
-        public async Task<IniciarPagamentoResultadoDto> IniciarAsync(
-            IniciarPagamentoRequest request,
-            string chaveIdempotencia,
-            string remoteIp,
-            CancellationToken cancellationToken = default)
+        // 2. Carregar a fatura, assinatura, empresa e tentativas.
+        var fatura =
+            await _repositorio.ObterFaturaParaCobrancaAsync(
+                request.FaturaId,
+                cancellationToken);
+
+        if (fatura is null)
         {
-            ValidarRequisicao(request, chaveIdempotencia, remoteIp);
+            throw ErroValidacao("Fatura não encontrada.");
+        }
 
-            // 1. Idempotência: não iniciar uma segunda cobrança
-            // para a mesma operação lógica.
-            var existente =
-                await _repositorio.ObterPorChaveIdempotenciaAsync(
-                    ProvedorAsaas,
-                    chaveIdempotencia.Trim(),
-                    cancellationToken);
+        // Esta validação antecipada melhora a resposta ao cliente.
+        // A validação definitiva também ocorre no repositório,
+        // dentro da transação que bloqueia a fatura.
+        if (fatura.Status is StatusFatura.Paga
+            or StatusFatura.Cancelada)
+        {
+            throw ErroValidacao(
+                "Não é permitido cobrar uma fatura paga ou cancelada.");
+        }
 
-            if (existente is not null)
-            {
-                if (existente.FaturaId != request.FaturaId ||
-                    existente.MetodoPagamento != request.MetodoPagamento)
-                {
-                    throw ErroValidacao(
-                        "A chave de idempotência já foi utilizada em outra operação.");
-                }
+        var empresa = fatura.Assinatura?.Empresa;
 
-                return await MontarResultadoExistenteAsync(
-                    existente,
-                    cancellationToken);
-            }
+        if (empresa is null)
+        {
+            throw ErroValidacao(
+                "Não foi possível localizar a empresa da assinatura.");
+        }
 
-            // 2. Carregar a fatura, assinatura, empresa e tentativas.
-            var fatura =
-                await _repositorio.ObterFaturaParaCobrancaAsync(
-                    request.FaturaId,
-                    cancellationToken);
+        // 3. Preparar a tentativa de pagamento.
+        var transacao = new TransacaoPagamento
+        {
+            FaturaId = fatura.Id,
+            Provedor = ProvedorAsaas,
+            ChaveIdempotencia = chave,
+            MetodoPagamento = request.MetodoPagamento,
+            Valor = fatura.Valor,
+            Status = StatusTransacaoPagamento.Criada
+        };
 
-            if (fatura is null)
-                throw ErroValidacao("Fatura não encontrada.");
-
-            if (fatura.Status is StatusFatura.Paga or StatusFatura.Cancelada)
-            {
-                throw ErroValidacao(
-                    "Não é permitido cobrar uma fatura paga ou cancelada.");
-            }
-
-            if (fatura.TransacoesPagamento.Any(t =>
-                t.Status is StatusTransacaoPagamento.Criada
-                    or StatusTransacaoPagamento.Pendente
-                    or StatusTransacaoPagamento.EmProcessamento))
-            {
-                throw ErroValidacao(
-                    "Já existe uma tentativa de pagamento em andamento para esta fatura.");
-            }
-
-            var empresa = fatura.Assinatura.Empresa;
-
-            if (empresa is null)
-            {
-                throw ErroValidacao(
-                    "Não foi possível localizar a empresa da assinatura.");
-            }
-
-            // 3. Registrar a tentativa local antes de chamar o gateway.
-            var transacao = new TransacaoPagamento
-            {
-                FaturaId = fatura.Id,
-                Provedor = ProvedorAsaas,
-                ChaveIdempotencia = chaveIdempotencia.Trim(),
-                MetodoPagamento = request.MetodoPagamento,
-                Valor = fatura.Valor,
-                Status = StatusTransacaoPagamento.Criada
-            };
-
-            await _repositorio.AdicionarTentativaAsync(
+        // 4. Registrar a tentativa com exclusividade por fatura.
+        //
+        // O repositório deve:
+        // - bloquear a linha da fatura no SQL Server;
+        // - revalidar o status da fatura;
+        // - verificar a chave de idempotência;
+        // - verificar outras tentativas ativas;
+        // - persistir a tentativa e liberar a transação.
+        //
+        // A transação do banco deve terminar antes das chamadas
+        // HTTP ao Asaas.
+        var resultadoRegistro =
+            await _repositorio.RegistrarTentativaExclusivaAsync(
                 transacao,
                 cancellationToken);
 
-            await _repositorio.SalvarAlteracoesAsync(
-                cancellationToken);
+        if (resultadoRegistro.StatusFatura is
+            StatusFatura.Paga or StatusFatura.Cancelada)
+        {
+            throw ErroValidacao(
+                "Não é permitido cobrar uma fatura paga ou cancelada.");
+        }
 
-            try
+        if (!resultadoRegistro.Inserida)
+        {
+            var transacaoExistente =
+                resultadoRegistro.TransacaoExistente;
+
+            if (transacaoExistente is null)
             {
-                // 4. Criar o cliente no Asaas apenas quando ainda
-                // não houver referência persistida para a empresa.
-                if (string.IsNullOrWhiteSpace(
-                    empresa.ReferenciaClienteAsaas))
-                {
-                    var cliente = await _asaasGateway.CriarClienteAsync(
+                throw ErroValidacao(
+                    "Já existe uma tentativa de pagamento em andamento " +
+                    "ou não foi possível registrar uma nova tentativa.");
+            }
+
+            // A mesma chave deve representar a mesma operação.
+            ValidarCompatibilidadeDaChave(
+                transacaoExistente,
+                request);
+
+            if (transacaoExistente.ChaveIdempotencia != chave)
+            {
+                throw ErroValidacao(
+                    "Já existe uma tentativa de pagamento em andamento " +
+                    "para esta fatura.");
+            }
+
+            // Outra requisição já registrou a mesma operação.
+            // Não chamar novamente a criação de cobrança no gateway.
+            return await MontarResultadoExistenteAsync(
+                transacaoExistente,
+                cancellationToken);
+        }
+
+        // A partir daqui, somente a requisição que inseriu a
+        // tentativa deve iniciar a chamada de criação da cobrança.
+        try
+        {
+            // 5. Criar o cliente no Asaas quando necessário.
+            if (string.IsNullOrWhiteSpace(
+                empresa.ReferenciaClienteAsaas))
+            {
+                var cliente =
+                    await _asaasGateway.CriarClienteAsync(
                         new AsaasCriarClienteDto(
                             empresa.NomeFantasia,
                             empresa.Cnpj,
@@ -123,28 +163,27 @@ namespace Application.Saas.Pagamentos.Services
                             empresa.Id.ToString()),
                         cancellationToken);
 
-                    empresa.ReferenciaClienteAsaas = cliente.Id;
+                empresa.ReferenciaClienteAsaas = cliente.Id;
+                transacao.ReferenciaClienteAsaas = cliente.Id;
 
-                    transacao.ReferenciaClienteAsaas = cliente.Id;
+                // Persistir a referência do cliente antes de
+                // continuar com a criação da cobrança.
+                await _repositorio.SalvarAlteracoesAsync(
+                    cancellationToken);
+            }
+            else
+            {
+                transacao.ReferenciaClienteAsaas =
+                    empresa.ReferenciaClienteAsaas;
+            }
 
-                    // Salvar antes da próxima chamada HTTP.
-                    await _repositorio.SalvarAlteracoesAsync(
-                        cancellationToken);
-                }
-                else
-                {
-                    transacao.ReferenciaClienteAsaas =
-                        empresa.ReferenciaClienteAsaas;
-                }
+            // 6. Criar a cobrança no Asaas.
+            var vencimento = fatura.Vencimento.Date < DateTime.Today
+                ? DateTime.Today
+                : fatura.Vencimento.Date;
 
-                // 5. Criar a cobrança no Asaas.
-                // Para cartão, o gateway recebe os dados do cartão
-                // e o IP remoto. Para Pix, esses campos são nulos.
-                var vencimento = fatura.Vencimento.Date < DateTime.Today
-                    ? DateTime.Today
-                    : fatura.Vencimento.Date;
-
-                var cobranca = await _asaasGateway.CriarCobrancaAsync(
+            var cobranca =
+                await _asaasGateway.CriarCobrancaAsync(
                     new AsaasCriarCobrancaDto(
                         empresa.ReferenciaClienteAsaas!,
                         fatura.Id,
@@ -153,181 +192,230 @@ namespace Application.Saas.Pagamentos.Services
                         vencimento,
                         request.MetodoPagamento,
                         $"Fatura BarberManager {fatura.Id}",
-                        request.MetodoPagamento == MetodoPagamento.CartaoCredito
-                            ? remoteIp
-                            : null,
-                        request.MetodoPagamento == MetodoPagamento.CartaoCredito
-                            ? request.CartaoCredito
-                            : null),
+                        request.MetodoPagamento ==
+                            MetodoPagamento.CartaoCredito
+                                ? remoteIp
+                                : null,
+                        request.MetodoPagamento ==
+                            MetodoPagamento.CartaoCredito
+                                ? request.CartaoCredito
+                                : null),
                     cancellationToken);
 
-                // 6. Persistir o resultado inicial do gateway.
-                transacao.ReferenciaGateway = cobranca.Id;
-                transacao.Status = MapearStatus(cobranca.Status);
+            // 7. Persistir o resultado retornado pelo gateway.
+            transacao.ReferenciaGateway = cobranca.Id;
+            transacao.Status = MapearStatus(cobranca.Status);
 
-                fatura.ReferenciaGateway = cobranca.Id;
+            fatura.ReferenciaGateway = cobranca.Id;
 
-                await _repositorio.SalvarAlteracoesAsync(
-                    cancellationToken);
+            await _repositorio.SalvarAlteracoesAsync(
+                cancellationToken);
 
-                // 7. O QR Code é obtido depois de a cobrança existir.
-                AsaasPixResultadoDto? pix = null;
-
-                if (request.MetodoPagamento == MetodoPagamento.Pix)
-                {
-                    pix = await _asaasGateway.ObterQrCodePixAsync(
-                        cobranca.Id,
-                        cancellationToken);
-                }
-
-                return new IniciarPagamentoResultadoDto
-                {
-                    TransacaoId = transacao.Id,
-                    FaturaId = fatura.Id,
-                    Provedor = ProvedorAsaas,
-                    MetodoPagamento = request.MetodoPagamento.ToString(),
-                    Status = transacao.Status.ToString(),
-                    Valor = transacao.Valor,
-                    ReferenciaGateway = cobranca.Id,
-                    UrlFatura = cobranca.InvoiceUrl,
-                    PixImagemBase64 = pix?.EncodedImage,
-                    PixCopiaECola = pix?.Payload,
-                    PixExpiracao = pix?.ExpirationDate,
-                    CartaoBandeira = cobranca.CreditCardBrand,
-                    CartaoFinal = cobranca.CreditCardNumber
-                };
-            }
-            catch (Exception ex) when (
-                ex is HttpRequestException or TaskCanceledException)
-            {
-                // Um timeout pode acontecer depois de o Asaas ter
-                // criado a cobrança. Não marcar como recusada e não
-                // gerar outra cobrança automaticamente.
-                transacao.Status = StatusTransacaoPagamento.EmProcessamento;
-                transacao.CodigoErro = "RESULTADO_GATEWAY_INDETERMINADO";
-                transacao.MensagemErro =
-                    "O resultado da solicitação ao gateway precisa ser reconciliado.";
-
-                // Persistir mesmo se o token original tiver sido cancelado.
-                await _repositorio.SalvarAlteracoesAsync(
-                    CancellationToken.None);
-
-                throw new InvalidOperationException(
-                    "Não foi possível confirmar o resultado da solicitação ao Asaas. " +
-                    "Consulte o status da transação antes de tentar novamente.",
-                    ex);
-            }
-        }
-
-        private async Task<IniciarPagamentoResultadoDto>
-            MontarResultadoExistenteAsync(
-                TransacaoPagamento transacao,
-                CancellationToken cancellationToken)
-        {
+            // 8. Obter o QR Code após a criação da cobrança Pix.
             AsaasPixResultadoDto? pix = null;
 
-            if (transacao.MetodoPagamento == MetodoPagamento.Pix &&
-                !string.IsNullOrWhiteSpace(transacao.ReferenciaGateway))
+            if (request.MetodoPagamento == MetodoPagamento.Pix)
             {
                 pix = await _asaasGateway.ObterQrCodePixAsync(
-                    transacao.ReferenciaGateway,
+                    cobranca.Id,
                     cancellationToken);
             }
 
             return new IniciarPagamentoResultadoDto
             {
                 TransacaoId = transacao.Id,
-                FaturaId = transacao.FaturaId,
-                Provedor = transacao.Provedor,
-                MetodoPagamento = transacao.MetodoPagamento.ToString(),
+                FaturaId = fatura.Id,
+                Provedor = ProvedorAsaas,
+                MetodoPagamento =
+                    request.MetodoPagamento.ToString(),
                 Status = transacao.Status.ToString(),
                 Valor = transacao.Valor,
-                ReferenciaGateway = transacao.ReferenciaGateway,
+                ReferenciaGateway = cobranca.Id,
+                UrlFatura = cobranca.InvoiceUrl,
                 PixImagemBase64 = pix?.EncodedImage,
                 PixCopiaECola = pix?.Payload,
-                PixExpiracao = pix?.ExpirationDate
+                PixExpiracao = pix?.ExpirationDate,
+                CartaoBandeira = cobranca.CreditCardBrand,
+                CartaoFinal = cobranca.CreditCardNumber
             };
         }
-
-        private static StatusTransacaoPagamento MapearStatus(string status)
+        catch (Exception ex) when (
+            ex is HttpRequestException
+                or TaskCanceledException)
         {
-            return status.Trim().ToUpperInvariant() switch
-            {
-                "PENDING" => StatusTransacaoPagamento.Pendente,
-                "PROCESSING" => StatusTransacaoPagamento.EmProcessamento,
-                "AWAITING_RISK_ANALYSIS" =>
-                    StatusTransacaoPagamento.EmProcessamento,
-                "CONFIRMED" => StatusTransacaoPagamento.Aprovada,
-                "RECEIVED" => StatusTransacaoPagamento.Aprovada,
-                "REPROVED" => StatusTransacaoPagamento.Recusada,
-                "CANCELED" => StatusTransacaoPagamento.Cancelada,
-                "REFUNDED" => StatusTransacaoPagamento.Estornada,
-                "OVERDUE" => StatusTransacaoPagamento.Expirada,
-                _ => StatusTransacaoPagamento.Criada
-            };
+            // O gateway pode ter criado a cobrança antes do timeout.
+            // Não marcar como recusada e não criar outra cobrança
+            // automaticamente.
+            transacao.Status =
+                StatusTransacaoPagamento.EmProcessamento;
+
+            transacao.CodigoErro =
+                "RESULTADO_GATEWAY_INDETERMINADO";
+
+            transacao.MensagemErro =
+                "O resultado da solicitação ao gateway precisa ser reconciliado.";
+
+            // Tentar persistir o estado indeterminado mesmo quando
+            // o token original da requisição foi cancelado.
+            await _repositorio.SalvarAlteracoesAsync(
+                CancellationToken.None);
+
+            throw new InvalidOperationException(
+                "Não foi possível confirmar o resultado da solicitação " +
+                "ao Asaas. Consulte o status da transação antes de " +
+                "tentar novamente.",
+                ex);
+        }
+    }
+
+    private static void ValidarCompatibilidadeDaChave(
+        TransacaoPagamento existente,
+        IniciarPagamentoRequest request)
+    {
+        if (existente.FaturaId != request.FaturaId ||
+            existente.MetodoPagamento != request.MetodoPagamento)
+        {
+            throw ErroValidacao(
+                "A chave de idempotência já foi utilizada em outra operação.");
+        }
+    }
+
+    private async Task<IniciarPagamentoResultadoDto>
+        MontarResultadoExistenteAsync(
+            TransacaoPagamento transacao,
+            CancellationToken cancellationToken)
+    {
+        AsaasPixResultadoDto? pix = null;
+
+        if (transacao.MetodoPagamento == MetodoPagamento.Pix &&
+            !string.IsNullOrWhiteSpace(transacao.ReferenciaGateway))
+        {
+            pix = await _asaasGateway.ObterQrCodePixAsync(
+                transacao.ReferenciaGateway,
+                cancellationToken);
         }
 
-        private static void ValidarRequisicao(
-            IniciarPagamentoRequest request,
-            string chaveIdempotencia,
-            string remoteIp)
+        return new IniciarPagamentoResultadoDto
         {
-            if (request.FaturaId == Guid.Empty)
-                throw ErroValidacao("A identificação da fatura é obrigatória.");
+            TransacaoId = transacao.Id,
+            FaturaId = transacao.FaturaId,
+            Provedor = transacao.Provedor,
+            MetodoPagamento =
+                transacao.MetodoPagamento.ToString(),
+            Status = transacao.Status.ToString(),
+            Valor = transacao.Valor,
+            ReferenciaGateway = transacao.ReferenciaGateway,
+            PixImagemBase64 = pix?.EncodedImage,
+            PixCopiaECola = pix?.Payload,
+            PixExpiracao = pix?.ExpirationDate
+        };
+    }
 
-            if (!Enum.IsDefined(request.MetodoPagamento) ||
-                request.MetodoPagamento is not (
-                    MetodoPagamento.Pix or MetodoPagamento.CartaoCredito))
-            {
-                throw ErroValidacao("Método de pagamento não suportado.");
-            }
+    private static StatusTransacaoPagamento MapearStatus(
+        string status)
+    {
+        return status.Trim().ToUpperInvariant() switch
+        {
+            "PENDING" =>
+                StatusTransacaoPagamento.Pendente,
 
-            if (string.IsNullOrWhiteSpace(chaveIdempotencia) ||
-                chaveIdempotencia.Trim().Length > 100)
+            "PROCESSING" =>
+                StatusTransacaoPagamento.EmProcessamento,
+
+            "AWAITING_RISK_ANALYSIS" =>
+                StatusTransacaoPagamento.EmProcessamento,
+
+            "CONFIRMED" =>
+                StatusTransacaoPagamento.Aprovada,
+
+            "RECEIVED" =>
+                StatusTransacaoPagamento.Aprovada,
+
+            "REPROVED" =>
+                StatusTransacaoPagamento.Recusada,
+
+            "CANCELED" =>
+                StatusTransacaoPagamento.Cancelada,
+
+            "REFUNDED" =>
+                StatusTransacaoPagamento.Estornada,
+
+            "OVERDUE" =>
+                StatusTransacaoPagamento.Expirada,
+
+            _ =>
+                StatusTransacaoPagamento.Criada
+        };
+    }
+
+    private static void ValidarRequisicao(
+        IniciarPagamentoRequest request,
+        string chaveIdempotencia,
+        string remoteIp)
+    {
+        if (request.FaturaId == Guid.Empty)
+        {
+            throw ErroValidacao(
+                "A identificação da fatura é obrigatória.");
+        }
+
+        if (!Enum.IsDefined(request.MetodoPagamento) ||
+            request.MetodoPagamento is not (
+                MetodoPagamento.Pix
+                or MetodoPagamento.CartaoCredito))
+        {
+            throw ErroValidacao(
+                "Método de pagamento não suportado.");
+        }
+
+        if (string.IsNullOrWhiteSpace(chaveIdempotencia) ||
+            chaveIdempotencia.Trim().Length > 100)
+        {
+            throw ErroValidacao(
+                "Informe uma chave de idempotência válida, " +
+                "com até 100 caracteres.");
+        }
+
+        if (request.MetodoPagamento == MetodoPagamento.Pix &&
+            request.CartaoCredito is not null)
+        {
+            throw ErroValidacao(
+                "Não envie dados de cartão para pagamento Pix.");
+        }
+
+        if (request.MetodoPagamento ==
+            MetodoPagamento.CartaoCredito)
+        {
+            var cartao = request.CartaoCredito;
+
+            if (cartao is null ||
+                string.IsNullOrWhiteSpace(cartao.Numero) ||
+                string.IsNullOrWhiteSpace(cartao.NomeTitular) ||
+                string.IsNullOrWhiteSpace(cartao.MesValidade) ||
+                string.IsNullOrWhiteSpace(cartao.AnoValidade) ||
+                string.IsNullOrWhiteSpace(cartao.Cvv) ||
+                string.IsNullOrWhiteSpace(cartao.EmailTitular) ||
+                string.IsNullOrWhiteSpace(cartao.CpfCnpjTitular) ||
+                string.IsNullOrWhiteSpace(cartao.CepTitular) ||
+                string.IsNullOrWhiteSpace(cartao.NumeroEnderecoTitular) ||
+                string.IsNullOrWhiteSpace(cartao.TelefoneTitular))
             {
                 throw ErroValidacao(
-                    "Informe uma chave de idempotência válida, com até 100 caracteres.");
+                    "Preencha todos os dados necessários do cartão de crédito.");
             }
 
-            if (request.MetodoPagamento == MetodoPagamento.Pix &&
-                request.CartaoCredito is not null)
+            if (string.IsNullOrWhiteSpace(remoteIp))
             {
                 throw ErroValidacao(
-                    "Não envie dados de cartão para pagamento Pix.");
-            }
-
-            if (request.MetodoPagamento == MetodoPagamento.CartaoCredito)
-            {
-                var cartao = request.CartaoCredito;
-
-                if (cartao is null ||
-                    string.IsNullOrWhiteSpace(cartao.Numero) ||
-                    string.IsNullOrWhiteSpace(cartao.NomeTitular) ||
-                    string.IsNullOrWhiteSpace(cartao.MesValidade) ||
-                    string.IsNullOrWhiteSpace(cartao.AnoValidade) ||
-                    string.IsNullOrWhiteSpace(cartao.Cvv) ||
-                    string.IsNullOrWhiteSpace(cartao.EmailTitular) ||
-                    string.IsNullOrWhiteSpace(cartao.CpfCnpjTitular) ||
-                    string.IsNullOrWhiteSpace(cartao.CepTitular) ||
-                    string.IsNullOrWhiteSpace(cartao.NumeroEnderecoTitular) ||
-                    string.IsNullOrWhiteSpace(cartao.TelefoneTitular))
-                {
-                    throw ErroValidacao(
-                        "Preencha todos os dados necessários do cartão de crédito.");
-                }
-
-                if (string.IsNullOrWhiteSpace(remoteIp))
-                {
-                    throw ErroValidacao(
-                        "O IP remoto é obrigatório para pagamento com cartão.");
-                }
+                    "O IP remoto é obrigatório para pagamento com cartão.");
             }
         }
+    }
 
-        private static CustomValidationException ErroValidacao(
-            string mensagem)
-        {
-            return new CustomValidationException(new[] { mensagem });
-        }
+    private static CustomValidationException ErroValidacao(
+        string mensagem)
+    {
+        return new CustomValidationException(
+            new[] { mensagem });
     }
 }

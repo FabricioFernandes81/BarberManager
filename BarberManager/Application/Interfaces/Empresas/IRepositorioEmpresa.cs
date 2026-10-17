@@ -1,4 +1,5 @@
 ﻿using Application.Saas.Empresas.DTOs;
+using Application.Saas.Empresas.Enums;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,5 +13,16 @@ namespace Application.Interfaces.Empresas
         Task<(List<GetListEmpresaDto> Empresas, int TotalRegistros)> ListarAsync(
                      int pageNumber,int pageSize, string? searchTerm, string? sortBy, string? Status,
                                             CancellationToken cancellationToken = default);
-        }
+
+                    Task<bool> ExisteAsync(
+            Guid empresaId,
+            CancellationToken cancellationToken = default);
+
+
+        Task<ResultadoAlteracaoAcessoEmpresa> AlterarAcessoAsync(
+    Guid empresaId,
+    bool habilitarAcesso,
+    string? motivo,
+    CancellationToken cancellationToken = default);
+    }
 }
