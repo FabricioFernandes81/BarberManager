@@ -10,6 +10,7 @@ using Infrastructure.Seeds.AuthUsers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using System.Threading.RateLimiting;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -98,7 +99,28 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 // ==========================================
-// 7. Pipeline HTTP
+// 7. Limitação de requisições no cadastro público
+// ==========================================
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
+
+    options.AddPolicy("cadastro-empresa", context =>
+        RateLimitPartition.GetFixedWindowLimiter(partitionKey:
+         context.Connection.RemoteIpAddress?.ToString()
+         ?? "ip-desconhecido",
+         factory: _ => new FixedWindowRateLimiterOptions
+         {
+             PermitLimit = 5,
+             Window = TimeSpan.FromMinutes(1),
+             QueueLimit = 0,
+             AutoReplenishment = true
+         }));
+
+});
+
+// ==========================================
+// 8. Pipeline HTTP
 // ==========================================
 
 var app = builder.Build();

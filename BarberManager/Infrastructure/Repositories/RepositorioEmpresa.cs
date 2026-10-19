@@ -2,6 +2,7 @@
 using Application.Saas.Empresas.DTOs;
 using Application.Saas.Empresas.Enums;
 using Domain.Entities.Common.Enuns;
+using Domain.Entities.Saas;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
@@ -63,6 +64,20 @@ namespace Infrastructure.Repositories
                 ResultadoAlteracaoAcessoEmpresa.Suspenso;
         }
 
+        public Task CriarCadastroAsync(Responsavel responsavel, Empresa empresa, Assinatura assinatura, CancellationToken cancellationToken = default)
+        {
+            empresa.Responsavel = responsavel;
+            empresa.ResponsavelId = responsavel.Id;
+
+            _dbContext.Responsaveis.Add(responsavel);
+            _dbContext.Empresas.Add(empresa);
+            _dbContext.Assinaturas.Add(assinatura);
+
+            return Task.CompletedTask;
+        }
+
+     
+
         public async Task<bool> ExisteAsync(Guid empresaId, CancellationToken cancellationToken = default)
         {
             return await _dbContext.Empresas
@@ -119,6 +134,19 @@ namespace Infrastructure.Repositories
                 .ToListAsync();
                 
             return (itemsQuery, recordTotal);
+        }
+
+        public async Task<PlanoCadastroDto?> ObterPlanoAtivoAsync(Guid planoId, CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.Planos
+                .AsNoTracking()
+                .Where(p => p.Id == planoId && p.Ativo == StatusGeral.Ativo)
+                .Select(p => new PlanoCadastroDto(
+                    p.Id,
+                    p.Nome,
+                    p.ValorMensal,
+                    p.ValorAnual
+                    )).SingleOrDefaultAsync(cancellationToken);
         }
     }
 }

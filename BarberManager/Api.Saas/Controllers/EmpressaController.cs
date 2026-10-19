@@ -4,7 +4,10 @@ using Application.Saas.Empresas.Commands;
 using Application.Saas.Empresas.DTOs;
 using Application.Saas.Empresas.Enums;
 using Application.Saas.Empresas.Queries;
+using Domain.Entities.Common.Enuns;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Api.Saas.Controllers
 {
@@ -84,5 +87,53 @@ namespace Api.Saas.Controllers
                 })
             };
         }
+
+        [AllowAnonymous]
+        [EnableRateLimiting("cadastro-empresa")]
+        [HttpPost]
+
+        public async Task<ActionResult> CriarEmpresa(
+            [FromBody] CriarEmpresaDto dto, CancellationToken cancellationToken)
+        {
+            var command = new CriarEmpresaCommand
+            {
+                NomeResponsavel = dto.NomeResponsavel,
+                Telefone = dto.Telefone,
+                NomeBarbearia = dto.NomeBarbearia,
+                Email = dto.Email,
+                Senha = dto.Senha,
+                PlanoId = dto.PlanoId,
+                PeriodicidadeCobranca = dto.PeriodicidadeCobranca
+            };
+
+            var result = await _dispatcher.Command<CriarEmpresaCommand, CriarEmpresaResultadoDto>(
+                command, cancellationToken);
+
+            if(!result.Sucesso)
+            {
+                return result.Codigo switch
+                {
+                    "DadosInvalidos" or "PeriodicidadeInvalida" =>
+                   BadRequest(new { mensagem = result.Mensagem }),
+
+                    "PlanoIndisponivel" =>
+                        UnprocessableEntity(new { mensagem = result.Mensagem }),
+
+                    _ =>
+                        BadRequest(new { mensagem = result.Mensagem })
+
+                };
+
+            }
+            return StatusCode(StatusCodes.Status201Created, new
+            {
+                result.EmpresaId,
+                result.ResponsavelId,
+                result.AssinaturaId,
+                StatusAssinatura = StatusAssinaturaCliente.Pendente.ToString(),
+                mesagem = result.Mensagem
+            });
+        }
+
     }
 }

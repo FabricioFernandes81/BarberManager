@@ -48,7 +48,7 @@ namespace Infrastructure.Seeds.Empresas
                 Email = "contato@barbeariavintage.com.br",
                 Telefone = "(51) 3333-1111",
                 Ativa = StatusGeral.Ativo,
-              //  ResponsavelId = SeedResponsavel.Responsavel1
+                ResponsavelId = SeedResponsaveis.Responsavel1
             },
 
             new Empresa
@@ -60,7 +60,7 @@ namespace Infrastructure.Seeds.Empresas
                 Email = "contato@oldschoolbarber.com.br",
                 Telefone = "(51) 3333-2222",
                 Ativa = StatusGeral.Ativo,
-              //  ResponsavelId = SeedResponsavel.Responsavel2
+                ResponsavelId = SeedResponsaveis.Responsavel2
             },
 
             new Empresa
@@ -72,7 +72,7 @@ namespace Infrastructure.Seeds.Empresas
                 Email = "contato@blackbeard.com.br",
                 Telefone = "(51) 3333-3333",
                 Ativa = StatusGeral.Ativo,
-              //  ResponsavelId = SeedResponsavel.Responsavel3
+                ResponsavelId = SeedResponsaveis.Responsavel3
             },
 
             new Empresa
@@ -84,7 +84,7 @@ namespace Infrastructure.Seeds.Empresas
                 Email = "contato@imperiobarber.com.br",
                 Telefone = "(51) 3333-4444",
                 Ativa = StatusGeral.Ativo,
-              //  ResponsavelId = SeedResponsavel.Responsavel4
+                ResponsavelId = SeedResponsaveis.Responsavel4
             },
 
             new Empresa
@@ -96,7 +96,7 @@ namespace Infrastructure.Seeds.Empresas
                 Email = "contato@domcorte.com.br",
                 Telefone = "(51) 3333-5555",
                 Ativa = StatusGeral.Ativo,
-              //  ResponsavelId = SeedResponsavel.Responsavel5
+                ResponsavelId = SeedResponsaveis.Responsavel5
             },
 
             new Empresa
@@ -108,7 +108,7 @@ namespace Infrastructure.Seeds.Empresas
                 Email = "contato@primebarber.com.br",
                 Telefone = "(51) 3333-6666",
                 Ativa = StatusGeral.Ativo,
-               // ResponsavelId = SeedResponsavel.Responsavel6
+               ResponsavelId = SeedResponsaveis.Responsavel6
             }
             ];
         }

@@ -16,10 +16,26 @@ namespace Infrastructure.Seeds.AuthUsers
     public static class SeederVinculos
     {
         private static readonly Guid IdVinculoBarbearia =
-       Guid.Parse("A0000000-0000-0000-0000-000000000001");
+                 Guid.Parse("A0000000-0000-0000-0000-000000000001");
+
+        private static readonly Guid IdVinculoBarbearia1 =
+               Guid.Parse("A0000000-0000-0000-0000-000000000002");
+
+        private static readonly Guid IdVinculoBarbearia2 =
+               Guid.Parse("A0000000-0000-0000-0000-000000000003");
+
+        private static readonly Guid IdVinculoBarbearia3 =
+               Guid.Parse("A0000000-0000-0000-0000-000000000004");
+
+        private static readonly Guid IdVinculoBarbearia4 =
+               Guid.Parse("A0000000-0000-0000-0000-000000000005");
+
+        private static readonly Guid IdVinculoBarbearia5 =
+               Guid.Parse("A0000000-0000-0000-0000-000000000006");
+
 
         private static readonly Guid IdVinculoBarbeiroTeste =
-                     Guid.Parse("A0000000-0000-0000-0000-000000000002");
+                     Guid.Parse("A0000000-0000-0000-0000-000000000007");
 
         public static async Task InicializarAsync(
             IServiceProvider services,
@@ -98,6 +114,42 @@ namespace Infrastructure.Seeds.AuthUsers
                  "(51)99999-0002"
                 );
 
+            /*novos usuarios */
+            var administradorBarbearia1 = await ObterOuCriarUsuarioAsync(
+               userManager,
+               SeedUser.UsuarioBarbeariaAdministrador1,
+               "contato@oldschoolbarber.com.br",
+               SeedUser.SenhaAdministradorBarbeariaTeste,
+               "+55(51)999635987");
+
+            var administradorBarbearia2 = await ObterOuCriarUsuarioAsync(
+              userManager,
+              SeedUser.UsuarioBarbeariaAdministrador2,
+              "contato@imperiobarber.com.br",
+              SeedUser.SenhaAdministradorBarbeariaTeste,
+              "+55(51)999635987");
+
+            var administradorBarbearia3 = await ObterOuCriarUsuarioAsync(
+              userManager,
+              SeedUser.UsuarioBarbeariaAdministrador3,
+              "contato@domcorte.com.br",
+              SeedUser.SenhaAdministradorBarbeariaTeste,
+              "+55(51)999635987");
+
+            var administradorBarbearia4 = await ObterOuCriarUsuarioAsync(
+              userManager,
+              SeedUser.UsuarioBarbeariaAdministrador4,
+              "contato@primebarber.com.br",
+              SeedUser.SenhaAdministradorBarbeariaTeste,
+              "+55(51)999635987");
+            var administradorBarbearia5 = await ObterOuCriarUsuarioAsync(
+              userManager,
+              SeedUser.UsuarioBarbeariaAdministrador5,
+              "contato@blackbeard.com.br",
+              SeedUser.SenhaAdministradorBarbeariaTeste,
+              "+55(51)999635987");
+            /////////////////////////
+
             await GarantirRoleAsync(
                 userManager,
                 administrador,
@@ -112,6 +164,59 @@ namespace Infrastructure.Seeds.AuthUsers
                 userManager,
                 BarbeiroTeste,
                 "Barbeiro");
+
+
+            /*New */
+            await GarantirRoleAsync(
+               userManager,
+               administradorBarbearia1,
+               "AdministradorBarber");
+            await GarantirRoleAsync(
+               userManager,
+               administradorBarbearia2,
+               "AdministradorBarber");
+            await GarantirRoleAsync(
+               userManager,
+               administradorBarbearia3,
+               "AdministradorBarber");
+            await GarantirRoleAsync(
+               userManager,
+               administradorBarbearia4,
+               "AdministradorBarber");
+            await GarantirRoleAsync(
+               userManager,
+               administradorBarbearia5,
+               "AdministradorBarber");
+
+            ///////////////////////////
+            //Novos vinculos */
+            await GarantirVinculoEmpresaAsync(
+                authContext,
+                administradorBarbearia1,
+                IdVinculoBarbearia1,
+                cancellationToken);
+            await GarantirVinculoEmpresaAsync(
+                authContext,
+                administradorBarbearia2,
+                IdVinculoBarbearia2,
+                cancellationToken);
+            await GarantirVinculoEmpresaAsync(
+                authContext,
+                administradorBarbearia3,
+                IdVinculoBarbearia3,
+                cancellationToken);
+            await GarantirVinculoEmpresaAsync(
+                authContext,
+                administradorBarbearia4,
+                IdVinculoBarbearia4,
+                cancellationToken);
+            await GarantirVinculoEmpresaAsync(
+                authContext,
+                administradorBarbearia5,
+                IdVinculoBarbearia5,
+                cancellationToken);
+
+            /*=============================*/
 
 
             await GarantirVinculoEmpresaAsync(

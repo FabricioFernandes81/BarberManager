@@ -25,6 +25,6 @@ namespace Domain.Entities.Saas
         public ICollection<Assinatura> Assinaturas { get; set; }
         = new List<Assinatura>();
 
-        //  public ICollection<PlanoModulo> Modulos { get; set; } = [];
+       public ICollection<PlanoModulo> Modulos { get; set; } = [];
     }
 }

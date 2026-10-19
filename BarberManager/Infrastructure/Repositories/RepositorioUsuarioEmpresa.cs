@@ -112,6 +112,19 @@ namespace Infrastructure.Repositories
             cancellationToken);
         }
 
+        public async Task RemoverVinculoCriadoAsync(Guid usuarioId, Guid empresaId, CancellationToken cancellationToken = default)
+        {
+            var vinculo = await _dbContext.UsuarioEmpresa
+                .SingleOrDefaultAsync(x => x.UsuarioId == usuarioId && 
+                x.EmpresaId == empresaId, cancellationToken);
+
+            if (vinculo is null)
+                return;
+
+            _dbContext.UsuarioEmpresa.Remove(vinculo);
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+
         public async Task<ResultadoVinculoUsuarioEmpresa> VincularOuReativarAsync(Guid usuarioId, Guid empresaId, CancellationToken cancellationToken = default)
         {
 

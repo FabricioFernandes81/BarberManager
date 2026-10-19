@@ -1,5 +1,7 @@
-﻿using Application.Saas.Usuarios.DTOs;
+﻿using Application.Saas.Empresas.DTOs;
+using Application.Saas.Usuarios.DTOs;
 using Application.Saas.Usuarios.Enums;
+using Domain.Entities.Saas;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,6 +31,12 @@ namespace Application.Interfaces
     Guid usuarioId,
     Guid empresaId,
     CancellationToken cancellationToken = default);
+
+        Task RemoverVinculoCriadoAsync(
+    Guid usuarioId,
+    Guid empresaId,
+    CancellationToken cancellationToken = default);
+
 
     }
 }

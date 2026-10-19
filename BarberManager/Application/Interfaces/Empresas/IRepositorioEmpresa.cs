@@ -1,5 +1,6 @@
 ﻿using Application.Saas.Empresas.DTOs;
 using Application.Saas.Empresas.Enums;
+using Domain.Entities.Saas;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,5 +25,18 @@ namespace Application.Interfaces.Empresas
     bool habilitarAcesso,
     string? motivo,
     CancellationToken cancellationToken = default);
+
+
+        Task<PlanoCadastroDto?> ObterPlanoAtivoAsync(
+Guid planoId,
+CancellationToken cancellationToken = default);
+
+        Task CriarCadastroAsync(
+            Responsavel responsavel,
+            Empresa empresa,
+            Assinatura assinatura,
+            CancellationToken cancellationToken = default);
+
+      
     }
 }
