@@ -7,9 +7,11 @@ using Application.Dispatcher;
 using Domain.Entities.AuthUsers;
 using Infrastructure;
 using Infrastructure.Context;
+using Infrastructure.Notifications;
 using Infrastructure.Seeds.AuthUsers;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using System.Threading.RateLimiting;
 
@@ -123,6 +125,24 @@ builder.Services.AddRateLimiter(options =>
 
 });
 
+
+builder.Services.Configure<N8nWebhookOptions>(
+    builder.Configuration.GetSection(
+        N8nWebhookOptions.SectionName));
+
+builder.Services.AddHttpClient(
+    "N8nWebhook",
+    (serviceProvider, client) =>
+    {
+        var options = serviceProvider
+            .GetRequiredService<IOptions<N8nWebhookOptions>>()
+            .Value;
+
+        client.Timeout = TimeSpan.FromSeconds(
+            Math.Clamp(options.HttpTimeoutSeconds, 1, 120));
+    });
+
+builder.Services.AddHostedService<OutboxPublisherWorker>();
 // ==========================================
 // 8. Pipeline HTTP
 // ==========================================

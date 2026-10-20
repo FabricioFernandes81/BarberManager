@@ -240,12 +240,73 @@ public sealed class PagamentoService : IPagamentoService
             };
         }
         catch (Exception ex) when (
-            ex is HttpRequestException
-                or TaskCanceledException)
+    ex is TaskCanceledException ||
+    ex is HttpRequestException httpEx &&
+        (httpEx.StatusCode is null ||
+         (int)httpEx.StatusCode == 408 ||
+         (int)httpEx.StatusCode == 429 ||
+         (int)httpEx.StatusCode >= 500))
         {
-            // O gateway pode ter criado a cobrança antes do timeout.
-            // Não marcar como recusada e não criar outra cobrança
-            // automaticamente.
+            // O Asaas pode ter criado a cobrança mesmo que a resposta
+            // tenha sido perdida ou que a requisição tenha sofrido timeout.
+            try
+            {
+                var referenciaExterna = transacao.Id.ToString();
+
+                var cobrancaRecuperada =
+                    await _asaasGateway.ObterCobrancaPorReferenciaExternaAsync(
+                        referenciaExterna,
+                        CancellationToken.None);
+
+                if (cobrancaRecuperada is not null)
+                {
+                    // Não aceitar uma cobrança associada a outra transação.
+                    if (!string.Equals(
+                            cobrancaRecuperada.ExternalReference,
+                            referenciaExterna,
+                            StringComparison.Ordinal))
+                    {
+                        throw new InvalidOperationException(
+                            "A cobrança recuperada não corresponde à transação.");
+                    }
+
+                    // Recuperar os dados confirmados pelo Asaas.
+                    transacao.ReferenciaGateway = cobrancaRecuperada.Id;
+                    transacao.Status = MapearStatus(cobrancaRecuperada.Status);
+                    transacao.CodigoErro = null;
+                    transacao.MensagemErro = null;
+
+                    fatura.ReferenciaGateway = cobrancaRecuperada.Id;
+
+                    await _repositorio.SalvarAlteracoesAsync(
+                        CancellationToken.None);
+
+                    // A cobrança está recuperada. Não criar outra cobrança.
+                    // O QR Code poderá ser obtido em uma nova chamada,
+                    // usando a mesma chave de idempotência.
+                    return new IniciarPagamentoResultadoDto
+                    {
+                        TransacaoId = transacao.Id,
+                        FaturaId = fatura.Id,
+                        Provedor = ProvedorAsaas,
+                        MetodoPagamento =
+                            transacao.MetodoPagamento.ToString(),
+                        Status = transacao.Status.ToString(),
+                        Valor = transacao.Valor,
+                        ReferenciaGateway = cobrancaRecuperada.Id,
+                        UrlFatura = cobrancaRecuperada.InvoiceUrl,
+                        CartaoBandeira = cobrancaRecuperada.CreditCardBrand,
+                        CartaoFinal = cobrancaRecuperada.CreditCardNumber
+                    };
+                }
+            }
+            catch (Exception)
+            {
+                // A consulta ou a persistência da recuperação também falhou.
+                // Não presumir que a cobrança inexiste.
+                // Preservar o estado indeterminado para reconciliação posterior.
+            }
+
             transacao.Status =
                 StatusTransacaoPagamento.EmProcessamento;
 
@@ -255,15 +316,13 @@ public sealed class PagamentoService : IPagamentoService
             transacao.MensagemErro =
                 "O resultado da solicitação ao gateway precisa ser reconciliado.";
 
-            // Tentar persistir o estado indeterminado mesmo quando
-            // o token original da requisição foi cancelado.
             await _repositorio.SalvarAlteracoesAsync(
                 CancellationToken.None);
 
             throw new InvalidOperationException(
-                "Não foi possível confirmar o resultado da solicitação " +
-                "ao Asaas. Consulte o status da transação antes de " +
-                "tentar novamente.",
+                "Não foi possível confirmar o resultado da solicitação ao Asaas. " +
+                "A transação foi mantida para reconciliação. " +
+                "Consulte seu status antes de tentar novamente.",
                 ex);
         }
     }

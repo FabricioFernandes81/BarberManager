@@ -1,10 +1,12 @@
 ﻿using Application.Common;
+using Application.Common.Outbox;
 using Application.Interfaces;
 using Application.Interfaces.Empresas;
 using Application.Interfaces.Empresas.Pagamentos;
 using Application.Saas.Empresas;
 using Application.Saas.Pagamentos.Services;
 using Infrastructure.Context;
+using Infrastructure.Notifications;
 using Infrastructure.Payments;
 using Infrastructure.Payments.Asaas;
 using Infrastructure.Repositories;
@@ -82,6 +84,7 @@ namespace Infrastructure
 
             services.AddScoped<ITrialExpirationService, TrialExpirationService>();
 
+            services.AddScoped<IOutboxWriter, OutboxWriter>();
 
             return services;
         }

@@ -1,6 +1,8 @@
 ﻿using Application.Common.Exceptions;
 using Application.Common.Middlewares.Handler;
+using Application.Common.Outbox;
 using Application.Interfaces.Empresas;
+using Application.Saas.Notificacoes;
 using Application.Saas.Pagamentos.DTOs;
 using Domain.Entities.Common.Enuns;
 using Domain.Entities.Saas;
@@ -15,10 +17,12 @@ namespace Application.Saas.Pagamentos.Commands.Handlers
     public class GerarFaturaHandler : ICommandHandler<GerarFaturaCommand, GerarFaturaDto>
     {
         private readonly IRepositorioFatura _repositorioFatura;
+        private readonly IOutboxWriter _outboxWriter;
 
-        public GerarFaturaHandler(IRepositorioFatura repositorioFatura)
+        public GerarFaturaHandler(IRepositorioFatura repositorioFatura, IOutboxWriter outboxWriter)
         {
             _repositorioFatura = repositorioFatura;
+            _outboxWriter = outboxWriter;
         }
 
         public async Task<GerarFaturaDto> Handle(
@@ -126,6 +130,20 @@ namespace Application.Saas.Pagamentos.Commands.Handlers
             await _repositorioFatura.AdicionarAsync(
                 fatura,
                 cancellationToken);
+
+            //Evento Notificaões 
+            await _outboxWriter.AdicionarAsync(
+                eventType: "Financeiro.CobrancaCriada.v1",
+    targetWorkflow: "proprietario",
+    payload: new CobrancaCriadaEvent(
+        EmpresaId: assinatura.EmpresaId,
+        AssinaturaId: assinatura.Id,
+        FaturaId: fatura.Id,
+        Valor: fatura.Valor,
+        Vencimento: fatura.Vencimento,
+        Status: fatura.Status.ToString()),
+    cancellationToken: cancellationToken
+                );
 
             return MapearDto(
                 fatura,

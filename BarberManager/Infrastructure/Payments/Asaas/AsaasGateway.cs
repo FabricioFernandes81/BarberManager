@@ -255,6 +255,82 @@ public sealed class AsaasGateway : IAsaasGateway
             response.StatusCode);
     }
 
+    public async Task<AsaasCobrancaDto?> ObterCobrancaPorReferenciaExternaAsync(string referenciaExterna, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(referenciaExterna))
+        {
+            throw new ArgumentException(
+                "A referência externa é obrigatória.",
+                nameof(referenciaExterna));
+        }
+
+        var referencia = referenciaExterna.Trim();
+        const int limite = 100;
+        var offset = 0;
+
+        AsaasCobrancaDto? cobrancaEncontrada = null;
+
+        while (true)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var referenciaEscapada = Uri.EscapeDataString(referencia);
+
+            var endpoint =
+                $"payments?offset={offset}" +
+                $"&limit={limite}" +
+                $"&externalReference={referenciaEscapada}";
+
+            using var response = await _httpClient.GetAsync(
+                endpoint,
+                cancellationToken);
+
+            await GarantirSucessoAsync(response, cancellationToken);
+
+            var resultado =
+                await response.Content.ReadFromJsonAsync<PagamentosListaResponse>(
+                    cancellationToken: cancellationToken)
+                ?? throw new InvalidOperationException(
+                    "O Asaas retornou uma resposta vazia ao consultar cobranças.");
+
+            foreach (var pagamento in resultado.Data)
+            {
+                // Confirma a referência exata antes de aceitar o resultado.
+                if (!string.Equals(
+                        pagamento.ExternalReference,
+                        referencia,
+                        StringComparison.Ordinal))
+                {
+                    continue;
+                }
+
+                if (cobrancaEncontrada is not null)
+                {
+                    throw new InvalidOperationException(
+                        "Foram encontradas múltiplas cobranças para a mesma " +
+                        "referência externa. É necessária uma reconciliação manual.");
+                }
+
+                cobrancaEncontrada = new AsaasCobrancaDto(
+                    pagamento.Id,
+                    pagamento.Status,
+                    pagamento.BillingType,
+                    pagamento.Value,
+                    pagamento.InvoiceUrl,
+                    pagamento.ExternalReference,
+                    pagamento.CreditCard?.CreditCardBrand,
+                    pagamento.CreditCard?.CreditCardNumber);
+            }
+
+            if (!resultado.HasMore)
+                break;
+
+            offset += limite;
+        }
+
+        return cobrancaEncontrada;
+    }
+
     private sealed class ClienteResponse
     {
         public string Id { get; set; } = string.Empty;
@@ -294,4 +370,11 @@ public sealed class AsaasGateway : IAsaasGateway
         public string Payload { get; set; } = string.Empty;
         public DateTime? ExpirationDate { get; set; }
     }*/
+
+    private sealed class PagamentosListaResponse
+    {
+        public List<PagamentoResponse> Data { get; set; } = new();
+
+        public bool HasMore { get; set; }
+    }
 }

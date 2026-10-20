@@ -21,5 +21,9 @@ namespace Application.Interfaces.Empresas.Pagamentos
         Task<AsaasClienteResultadoDto> CriarClienteAsync(
             AsaasCriarClienteDto cliente,
             CancellationToken cancellationToken = default);
+
+        Task<AsaasCobrancaDto?> ObterCobrancaPorReferenciaExternaAsync(
+    string referenciaExterna,
+    CancellationToken cancellationToken);
     }
 }

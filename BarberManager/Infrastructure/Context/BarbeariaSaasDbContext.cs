@@ -1,4 +1,5 @@
-﻿using Domain.Entities.Saas;
+﻿using Domain.Entities.Common;
+using Domain.Entities.Saas;
 using Infrastructure.Configurations.Saas;
 using Infrastructure.Seeds.Empresas;
 using Microsoft.EntityFrameworkCore;
@@ -28,7 +29,7 @@ namespace Infrastructure.Context
 
         public DbSet<PlanoModulo> PlanoModulos { set; get; }
         public DbSet<EmpresaModulo> EmpresaModulos { get; set; }
-        
+        public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -45,9 +46,9 @@ namespace Infrastructure.Context
             modelBuilder.ApplyConfiguration(new EmpresaModuloConfigurations());
             modelBuilder.ApplyConfiguration(new ModuloConfigurations());
             modelBuilder.ApplyConfiguration(new PlanoModuloConfigurations());
+            modelBuilder.ApplyConfiguration(new OutboxMessageConfiguration());
 
 
-            
             SeedEmpresa.InicializerSeed(modelBuilder);
             SeedResponsaveis.Seed(modelBuilder);
 

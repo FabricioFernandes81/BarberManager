@@ -35,6 +35,30 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                 });
 
             migrationBuilder.CreateTable(
+                name: "OutboxMessages",
+                schema: "Saas",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    EventType = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    TargetWorkflow = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
+                    Payload = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<int>(type: "int", nullable: false),
+                    Attempts = table.Column<int>(type: "int", nullable: false),
+                    OccurredAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    NextAttemptAtUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    LockedUntilUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    ProcessedAtUtc = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    LastError = table.Column<string>(type: "nvarchar(2000)", maxLength: 2000, nullable: true),
+                    DataCadastro = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DataAtualizacao = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OutboxMessages", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Planos",
                 schema: "Saas",
                 columns: table => new
@@ -290,12 +314,12 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                 columns: new[] { "Id", "Ativo", "DataAtualizacao", "DataCadastro", "DuracaoTrialDias", "EhTrial", "LimiteEmpresas", "LimiteProfissionais", "Nome", "ValorAnual", "ValorMensal" },
                 values: new object[,]
                 {
-                    { new Guid("20000000-0000-0000-0000-000000000001"), 1, null, new DateTime(2026, 10, 20, 3, 13, 55, 522, DateTimeKind.Utc).AddTicks(7143), 30, true, 1, 2, "Trial", 0m, 0m },
-                    { new Guid("20000000-0000-0000-0000-000000000002"), 1, null, new DateTime(2026, 10, 20, 3, 13, 55, 522, DateTimeKind.Utc).AddTicks(9114), 0, false, 1, 3, "Starter", 0m, 49.90m },
-                    { new Guid("20000000-0000-0000-0000-000000000003"), 1, null, new DateTime(2026, 10, 20, 3, 13, 55, 522, DateTimeKind.Utc).AddTicks(9190), 0, false, 1, 5, "Basic", 49.90m, 89.90m },
-                    { new Guid("20000000-0000-0000-0000-000000000004"), 1, null, new DateTime(2026, 10, 20, 3, 13, 55, 522, DateTimeKind.Utc).AddTicks(9193), 0, false, 1, 10, "Professional", 130.00m, 149.90m },
-                    { new Guid("20000000-0000-0000-0000-000000000005"), 1, null, new DateTime(2026, 10, 20, 3, 13, 55, 522, DateTimeKind.Utc).AddTicks(9195), 0, false, 1, 25, "Premium", 211.50m, 249.90m },
-                    { new Guid("20000000-0000-0000-0000-000000000006"), 1, null, new DateTime(2026, 10, 20, 3, 13, 55, 522, DateTimeKind.Utc).AddTicks(9201), 0, false, 999, 999, "Enterprise", 480.65m, 499.90m }
+                    { new Guid("20000000-0000-0000-0000-000000000001"), 1, null, new DateTime(2026, 10, 20, 18, 49, 31, 197, DateTimeKind.Utc).AddTicks(5724), 30, true, 1, 2, "Trial", 0m, 0m },
+                    { new Guid("20000000-0000-0000-0000-000000000002"), 1, null, new DateTime(2026, 10, 20, 18, 49, 31, 197, DateTimeKind.Utc).AddTicks(7854), 0, false, 1, 3, "Starter", 0m, 49.90m },
+                    { new Guid("20000000-0000-0000-0000-000000000003"), 1, null, new DateTime(2026, 10, 20, 18, 49, 31, 197, DateTimeKind.Utc).AddTicks(7922), 0, false, 1, 5, "Basic", 49.90m, 89.90m },
+                    { new Guid("20000000-0000-0000-0000-000000000004"), 1, null, new DateTime(2026, 10, 20, 18, 49, 31, 197, DateTimeKind.Utc).AddTicks(7931), 0, false, 1, 10, "Professional", 130.00m, 149.90m },
+                    { new Guid("20000000-0000-0000-0000-000000000005"), 1, null, new DateTime(2026, 10, 20, 18, 49, 31, 197, DateTimeKind.Utc).AddTicks(7934), 0, false, 1, 25, "Premium", 211.50m, 249.90m },
+                    { new Guid("20000000-0000-0000-0000-000000000006"), 1, null, new DateTime(2026, 10, 20, 18, 49, 31, 197, DateTimeKind.Utc).AddTicks(7940), 0, false, 999, 999, "Enterprise", 480.65m, 499.90m }
                 });
 
             migrationBuilder.InsertData(
@@ -304,12 +328,12 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                 columns: new[] { "Id", "Cpf", "DataAtualizacao", "DataCadastro", "Email", "Nome", "Telefone", "UsuarioId" },
                 values: new object[,]
                 {
-                    { new Guid("30000000-0000-0000-0000-000000000001"), "111.111.111-11", null, new DateTime(2026, 10, 20, 3, 13, 55, 522, DateTimeKind.Utc).AddTicks(136), "joao.silva@barberpro.com.br", "João Carlos Silva", "(51) 99991-0001", new Guid("90000000-0000-0000-0000-000000000001") },
-                    { new Guid("30000000-0000-0000-0000-000000000002"), "222.222.222-22", null, new DateTime(2026, 10, 20, 3, 13, 55, 522, DateTimeKind.Utc).AddTicks(1516), "marcos.oliveira@barberpro.com.br", "Marcos Oliveira", "(51) 99991-0002", new Guid("90000000-0000-0000-0000-000000000002") },
-                    { new Guid("30000000-0000-0000-0000-000000000003"), "333.333.333-33", null, new DateTime(2026, 10, 20, 3, 13, 55, 522, DateTimeKind.Utc).AddTicks(1519), "pedro.souza@barberpro.com.br", "Pedro Henrique Souza", "(51) 99991-0003", new Guid("90000000-0000-0000-0000-000000000003") },
-                    { new Guid("30000000-0000-0000-0000-000000000004"), "444.444.444-44", null, new DateTime(2026, 10, 20, 3, 13, 55, 522, DateTimeKind.Utc).AddTicks(1521), "lucas.ferreira@barberpro.com.br", "Lucas Ferreira", "(51) 99991-0004", new Guid("90000000-0000-0000-0000-000000000004") },
-                    { new Guid("30000000-0000-0000-0000-000000000005"), "555.555.555-55", null, new DateTime(2026, 10, 20, 3, 13, 55, 522, DateTimeKind.Utc).AddTicks(1522), "rafael.almeida@barberpro.com.br", "Rafael Almeida", "(51) 99991-0005", new Guid("90000000-0000-0000-0000-000000000005") },
-                    { new Guid("30000000-0000-0000-0000-000000000006"), "666.666.666-66", null, new DateTime(2026, 10, 20, 3, 13, 55, 522, DateTimeKind.Utc).AddTicks(1524), "gabriel.martins@barberpro.com.br", "Gabriel Martins", "(51) 99991-0006", new Guid("90000000-0000-0000-0000-000000000006") }
+                    { new Guid("30000000-0000-0000-0000-000000000001"), "111.111.111-11", null, new DateTime(2026, 10, 20, 18, 49, 31, 196, DateTimeKind.Utc).AddTicks(8885), "joao.silva@barberpro.com.br", "João Carlos Silva", "(51) 99991-0001", new Guid("90000000-0000-0000-0000-000000000001") },
+                    { new Guid("30000000-0000-0000-0000-000000000002"), "222.222.222-22", null, new DateTime(2026, 10, 20, 18, 49, 31, 197, DateTimeKind.Utc).AddTicks(401), "marcos.oliveira@barberpro.com.br", "Marcos Oliveira", "(51) 99991-0002", new Guid("90000000-0000-0000-0000-000000000002") },
+                    { new Guid("30000000-0000-0000-0000-000000000003"), "333.333.333-33", null, new DateTime(2026, 10, 20, 18, 49, 31, 197, DateTimeKind.Utc).AddTicks(404), "pedro.souza@barberpro.com.br", "Pedro Henrique Souza", "(51) 99991-0003", new Guid("90000000-0000-0000-0000-000000000003") },
+                    { new Guid("30000000-0000-0000-0000-000000000004"), "444.444.444-44", null, new DateTime(2026, 10, 20, 18, 49, 31, 197, DateTimeKind.Utc).AddTicks(406), "lucas.ferreira@barberpro.com.br", "Lucas Ferreira", "(51) 99991-0004", new Guid("90000000-0000-0000-0000-000000000004") },
+                    { new Guid("30000000-0000-0000-0000-000000000005"), "555.555.555-55", null, new DateTime(2026, 10, 20, 18, 49, 31, 197, DateTimeKind.Utc).AddTicks(426), "rafael.almeida@barberpro.com.br", "Rafael Almeida", "(51) 99991-0005", new Guid("90000000-0000-0000-0000-000000000005") },
+                    { new Guid("30000000-0000-0000-0000-000000000006"), "666.666.666-66", null, new DateTime(2026, 10, 20, 18, 49, 31, 197, DateTimeKind.Utc).AddTicks(427), "gabriel.martins@barberpro.com.br", "Gabriel Martins", "(51) 99991-0006", new Guid("90000000-0000-0000-0000-000000000006") }
                 });
 
             migrationBuilder.InsertData(
@@ -318,12 +342,12 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                 columns: new[] { "Id", "Ativa", "Cnpj", "DataAtualizacao", "DataBloqueio", "DataCadastro", "Email", "LogoUrl", "MotivoBloqueio", "NomeFantasia", "RazaoSocial", "ReferenciaClienteAsaas", "ResponsavelId", "Telefone" },
                 values: new object[,]
                 {
-                    { new Guid("50000000-0000-0000-0000-000000000001"), 1, "85.804.648/0001-73", null, null, new DateTime(2026, 10, 20, 3, 13, 55, 520, DateTimeKind.Utc).AddTicks(7147), "contato@barbeariavintage.com.br", null, null, "Barbearia Vintage", "Barbearia Vintage LTDA", null, new Guid("30000000-0000-0000-0000-000000000001"), "(51) 3333-1111" },
-                    { new Guid("50000000-0000-0000-0000-000000000002"), 1, "80.856.888/0001-06", null, null, new DateTime(2026, 10, 20, 3, 13, 55, 521, DateTimeKind.Utc).AddTicks(1243), "contato@oldschoolbarber.com.br", null, null, "Old School Barber", "Old School Barber LTDA", null, new Guid("30000000-0000-0000-0000-000000000002"), "(51) 3333-2222" },
-                    { new Guid("50000000-0000-0000-0000-000000000003"), 1, "21.416.493/0001-15", null, null, new DateTime(2026, 10, 20, 3, 13, 55, 521, DateTimeKind.Utc).AddTicks(1247), "contato@blackbeard.com.br", null, null, "Black Beard Barber", "Black Beard Barber LTDA", null, new Guid("30000000-0000-0000-0000-000000000003"), "(51) 3333-3333" },
-                    { new Guid("50000000-0000-0000-0000-000000000004"), 1, "01.985.559/0001-80", null, null, new DateTime(2026, 10, 20, 3, 13, 55, 521, DateTimeKind.Utc).AddTicks(1249), "contato@imperiobarber.com.br", null, null, "Império Barber", "Império Barber LTDA", null, new Guid("30000000-0000-0000-0000-000000000004"), "(51) 3333-4444" },
-                    { new Guid("50000000-0000-0000-0000-000000000005"), 1, "38.170.265/0001-00", null, null, new DateTime(2026, 10, 20, 3, 13, 55, 521, DateTimeKind.Utc).AddTicks(1264), "contato@domcorte.com.br", null, null, "Dom Corte", "Dom Corte LTDA", null, new Guid("30000000-0000-0000-0000-000000000005"), "(51) 3333-5555" },
-                    { new Guid("50000000-0000-0000-0000-000000000006"), 1, "76.676.405/0001-06", null, null, new DateTime(2026, 10, 20, 3, 13, 55, 521, DateTimeKind.Utc).AddTicks(1267), "contato@primebarber.com.br", null, null, "Prime Barber Club", "Prime Barber Club LTDA", null, new Guid("30000000-0000-0000-0000-000000000006"), "(51) 3333-6666" }
+                    { new Guid("50000000-0000-0000-0000-000000000001"), 1, "85.804.648/0001-73", null, null, new DateTime(2026, 10, 20, 18, 49, 31, 195, DateTimeKind.Utc).AddTicks(6258), "contato@barbeariavintage.com.br", null, null, "Barbearia Vintage", "Barbearia Vintage LTDA", null, new Guid("30000000-0000-0000-0000-000000000001"), "(51) 3333-1111" },
+                    { new Guid("50000000-0000-0000-0000-000000000002"), 1, "80.856.888/0001-06", null, null, new DateTime(2026, 10, 20, 18, 49, 31, 196, DateTimeKind.Utc).AddTicks(471), "contato@oldschoolbarber.com.br", null, null, "Old School Barber", "Old School Barber LTDA", null, new Guid("30000000-0000-0000-0000-000000000002"), "(51) 3333-2222" },
+                    { new Guid("50000000-0000-0000-0000-000000000003"), 1, "21.416.493/0001-15", null, null, new DateTime(2026, 10, 20, 18, 49, 31, 196, DateTimeKind.Utc).AddTicks(475), "contato@blackbeard.com.br", null, null, "Black Beard Barber", "Black Beard Barber LTDA", null, new Guid("30000000-0000-0000-0000-000000000003"), "(51) 3333-3333" },
+                    { new Guid("50000000-0000-0000-0000-000000000004"), 1, "01.985.559/0001-80", null, null, new DateTime(2026, 10, 20, 18, 49, 31, 196, DateTimeKind.Utc).AddTicks(477), "contato@imperiobarber.com.br", null, null, "Império Barber", "Império Barber LTDA", null, new Guid("30000000-0000-0000-0000-000000000004"), "(51) 3333-4444" },
+                    { new Guid("50000000-0000-0000-0000-000000000005"), 1, "38.170.265/0001-00", null, null, new DateTime(2026, 10, 20, 18, 49, 31, 196, DateTimeKind.Utc).AddTicks(480), "contato@domcorte.com.br", null, null, "Dom Corte", "Dom Corte LTDA", null, new Guid("30000000-0000-0000-0000-000000000005"), "(51) 3333-5555" },
+                    { new Guid("50000000-0000-0000-0000-000000000006"), 1, "76.676.405/0001-06", null, null, new DateTime(2026, 10, 20, 18, 49, 31, 196, DateTimeKind.Utc).AddTicks(482), "contato@primebarber.com.br", null, null, "Prime Barber Club", "Prime Barber Club LTDA", null, new Guid("30000000-0000-0000-0000-000000000006"), "(51) 3333-6666" }
                 });
 
             migrationBuilder.InsertData(
@@ -394,12 +418,12 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                 columns: new[] { "Id", "Ativa", "DataAtualizacao", "DataCadastro", "DataCancelamento", "DataFimTrial", "DataInicio", "DataUltimoPagamento", "DataVencimento", "DiaVencimento", "EmpresaId", "PeriodicidadeCobranca", "PlanoId", "RenovacaoAutomatica", "Trial", "Valor" },
                 values: new object[,]
                 {
-                    { new Guid("60000000-0000-0000-0000-000000000001"), 2, new DateTime(2026, 12, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 10, 20, 3, 13, 55, 523, DateTimeKind.Utc).AddTicks(4701), null, null, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2026, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), 15, new Guid("50000000-0000-0000-0000-000000000001"), 1, new Guid("20000000-0000-0000-0000-000000000002"), false, false, 49.90m },
-                    { new Guid("60000000-0000-0000-0000-000000000002"), 5, new DateTime(2026, 12, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 10, 20, 3, 13, 55, 523, DateTimeKind.Utc).AddTicks(6954), null, new DateTime(2026, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2027, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), 15, new Guid("50000000-0000-0000-0000-000000000002"), 1, new Guid("20000000-0000-0000-0000-000000000001"), false, true, 0m },
-                    { new Guid("60000000-0000-0000-0000-000000000003"), 2, new DateTime(2026, 12, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 10, 20, 3, 13, 55, 523, DateTimeKind.Utc).AddTicks(6969), null, null, new DateTime(2026, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2027, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 15, new Guid("50000000-0000-0000-0000-000000000003"), 1, new Guid("20000000-0000-0000-0000-000000000003"), true, false, 0m },
-                    { new Guid("60000000-0000-0000-0000-000000000004"), 2, new DateTime(2026, 12, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 10, 20, 3, 13, 55, 523, DateTimeKind.Utc).AddTicks(6975), null, null, new DateTime(2026, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2027, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 15, new Guid("50000000-0000-0000-0000-000000000004"), 1, new Guid("20000000-0000-0000-0000-000000000004"), true, false, 0m },
-                    { new Guid("60000000-0000-0000-0000-000000000005"), 2, null, new DateTime(2026, 10, 20, 3, 13, 55, 523, DateTimeKind.Utc).AddTicks(6996), null, null, new DateTime(2026, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2027, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 0, new Guid("50000000-0000-0000-0000-000000000005"), 1, new Guid("20000000-0000-0000-0000-000000000005"), true, false, 249.90m },
-                    { new Guid("60000000-0000-0000-0000-000000000006"), 2, new DateTime(2026, 12, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 10, 20, 3, 13, 55, 523, DateTimeKind.Utc).AddTicks(7003), null, new DateTime(2026, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2027, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 15, new Guid("50000000-0000-0000-0000-000000000006"), 1, new Guid("20000000-0000-0000-0000-000000000006"), true, false, 499.90m }
+                    { new Guid("60000000-0000-0000-0000-000000000001"), 2, new DateTime(2026, 12, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 10, 20, 18, 49, 31, 198, DateTimeKind.Utc).AddTicks(3134), null, null, new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2026, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), 15, new Guid("50000000-0000-0000-0000-000000000001"), 1, new Guid("20000000-0000-0000-0000-000000000002"), false, false, 49.90m },
+                    { new Guid("60000000-0000-0000-0000-000000000002"), 5, new DateTime(2026, 12, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 10, 20, 18, 49, 31, 198, DateTimeKind.Utc).AddTicks(5166), null, new DateTime(2026, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2027, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified), 15, new Guid("50000000-0000-0000-0000-000000000002"), 1, new Guid("20000000-0000-0000-0000-000000000001"), false, true, 0m },
+                    { new Guid("60000000-0000-0000-0000-000000000003"), 2, new DateTime(2026, 12, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 10, 20, 18, 49, 31, 198, DateTimeKind.Utc).AddTicks(5171), null, null, new DateTime(2026, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2027, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 15, new Guid("50000000-0000-0000-0000-000000000003"), 1, new Guid("20000000-0000-0000-0000-000000000003"), true, false, 0m },
+                    { new Guid("60000000-0000-0000-0000-000000000004"), 2, new DateTime(2026, 12, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 10, 20, 18, 49, 31, 198, DateTimeKind.Utc).AddTicks(5175), null, null, new DateTime(2026, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2027, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 15, new Guid("50000000-0000-0000-0000-000000000004"), 1, new Guid("20000000-0000-0000-0000-000000000004"), true, false, 0m },
+                    { new Guid("60000000-0000-0000-0000-000000000005"), 2, null, new DateTime(2026, 10, 20, 18, 49, 31, 198, DateTimeKind.Utc).AddTicks(5177), null, null, new DateTime(2026, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2027, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 0, new Guid("50000000-0000-0000-0000-000000000005"), 1, new Guid("20000000-0000-0000-0000-000000000005"), true, false, 249.90m },
+                    { new Guid("60000000-0000-0000-0000-000000000006"), 2, new DateTime(2026, 12, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 10, 20, 18, 49, 31, 198, DateTimeKind.Utc).AddTicks(5187), null, new DateTime(2026, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2027, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), 15, new Guid("50000000-0000-0000-0000-000000000006"), 1, new Guid("20000000-0000-0000-0000-000000000006"), true, false, 499.90m }
                 });
 
             migrationBuilder.InsertData(
@@ -470,12 +494,12 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                 columns: new[] { "Id", "AssinaturaId", "DataAtualizacao", "DataCadastro", "DataPagamento", "PeriodoFim", "PeriodoInicio", "ReferenciaGateway", "Status", "Valor", "Vencimento" },
                 values: new object[,]
                 {
-                    { new Guid("50000000-0000-0000-0000-000000000001"), new Guid("60000000-0000-0000-0000-000000000001"), null, new DateTime(2026, 10, 20, 3, 13, 55, 524, DateTimeKind.Utc).AddTicks(2156), new DateTime(2026, 1, 8, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 1, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "TESTE-FATURA-001", 2, 99.90m, new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { new Guid("50000000-0000-0000-0000-000000000002"), new Guid("60000000-0000-0000-0000-000000000001"), null, new DateTime(2026, 10, 20, 3, 13, 55, 524, DateTimeKind.Utc).AddTicks(3427), new DateTime(2026, 2, 9, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 2, 28, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "TESTE-FATURA-002", 2, 99.90m, new DateTime(2026, 2, 10, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { new Guid("50000000-0000-0000-0000-000000000003"), new Guid("60000000-0000-0000-0000-000000000001"), null, new DateTime(2026, 10, 20, 3, 13, 55, 524, DateTimeKind.Utc).AddTicks(3432), null, new DateTime(2026, 3, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, 3, 99.90m, new DateTime(2026, 3, 10, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { new Guid("50000000-0000-0000-0000-000000000004"), new Guid("60000000-0000-0000-0000-000000000001"), null, new DateTime(2026, 10, 20, 3, 13, 55, 524, DateTimeKind.Utc).AddTicks(3435), null, new DateTime(2026, 4, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, 4, 99.90m, new DateTime(2026, 4, 10, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { new Guid("50000000-0000-0000-0000-000000000005"), new Guid("60000000-0000-0000-0000-000000000001"), null, new DateTime(2026, 10, 20, 3, 13, 55, 524, DateTimeKind.Utc).AddTicks(3445), null, new DateTime(2026, 5, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "TESTE-FATURA-005", 5, 99.90m, new DateTime(2026, 5, 10, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { new Guid("50000000-0000-0000-0000-000000000006"), new Guid("60000000-0000-0000-0000-000000000001"), null, new DateTime(2026, 10, 20, 3, 13, 55, 524, DateTimeKind.Utc).AddTicks(3448), null, new DateTime(2026, 6, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 6, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "TESTE-FATURA-006", 6, 99.90m, new DateTime(2026, 6, 10, 0, 0, 0, 0, DateTimeKind.Unspecified) }
+                    { new Guid("50000000-0000-0000-0000-000000000001"), new Guid("60000000-0000-0000-0000-000000000001"), null, new DateTime(2026, 10, 20, 18, 49, 31, 199, DateTimeKind.Utc).AddTicks(121), new DateTime(2026, 1, 8, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 1, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "TESTE-FATURA-001", 2, 99.90m, new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { new Guid("50000000-0000-0000-0000-000000000002"), new Guid("60000000-0000-0000-0000-000000000001"), null, new DateTime(2026, 10, 20, 18, 49, 31, 199, DateTimeKind.Utc).AddTicks(1288), new DateTime(2026, 2, 9, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 2, 28, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "TESTE-FATURA-002", 2, 99.90m, new DateTime(2026, 2, 10, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { new Guid("50000000-0000-0000-0000-000000000003"), new Guid("60000000-0000-0000-0000-000000000001"), null, new DateTime(2026, 10, 20, 18, 49, 31, 199, DateTimeKind.Utc).AddTicks(1293), null, new DateTime(2026, 3, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, 3, 99.90m, new DateTime(2026, 3, 10, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { new Guid("50000000-0000-0000-0000-000000000004"), new Guid("60000000-0000-0000-0000-000000000001"), null, new DateTime(2026, 10, 20, 18, 49, 31, 199, DateTimeKind.Utc).AddTicks(1296), null, new DateTime(2026, 4, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, 4, 99.90m, new DateTime(2026, 4, 10, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { new Guid("50000000-0000-0000-0000-000000000005"), new Guid("60000000-0000-0000-0000-000000000001"), null, new DateTime(2026, 10, 20, 18, 49, 31, 199, DateTimeKind.Utc).AddTicks(1299), null, new DateTime(2026, 5, 31, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "TESTE-FATURA-005", 5, 99.90m, new DateTime(2026, 5, 10, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { new Guid("50000000-0000-0000-0000-000000000006"), new Guid("60000000-0000-0000-0000-000000000001"), null, new DateTime(2026, 10, 20, 18, 49, 31, 199, DateTimeKind.Utc).AddTicks(1302), null, new DateTime(2026, 6, 30, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 6, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "TESTE-FATURA-006", 6, 99.90m, new DateTime(2026, 6, 10, 0, 0, 0, 0, DateTimeKind.Unspecified) }
                 });
 
             migrationBuilder.InsertData(
@@ -538,6 +562,18 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                 column: "Vencimento");
 
             migrationBuilder.CreateIndex(
+                name: "IX_OutboxMessages_Pending",
+                schema: "Saas",
+                table: "OutboxMessages",
+                columns: new[] { "Status", "NextAttemptAtUtc", "OccurredAtUtc" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_OutboxMessages_Target_Status",
+                schema: "Saas",
+                table: "OutboxMessages",
+                columns: new[] { "TargetWorkflow", "Status" });
+
+            migrationBuilder.CreateIndex(
                 name: "IX_PlanoModulos_ModuloId",
                 schema: "Saas",
                 table: "PlanoModulos",
@@ -577,6 +613,10 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
         {
             migrationBuilder.DropTable(
                 name: "EmpresaModulos",
+                schema: "Saas");
+
+            migrationBuilder.DropTable(
+                name: "OutboxMessages",
                 schema: "Saas");
 
             migrationBuilder.DropTable(
