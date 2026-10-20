@@ -13,7 +13,6 @@
 
   <ItemGroup>
     <Folder Include="Entities\Agendamentos\" />
-    <Folder Include="Entities\Clientes\" />
     <Folder Include="Entities\Financeiro\" />
   </ItemGroup>
 

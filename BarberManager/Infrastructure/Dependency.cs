@@ -1,6 +1,7 @@
 ﻿using Application.Common;
 using Application.Common.Outbox;
 using Application.Interfaces;
+using Application.Interfaces.Clientes;
 using Application.Interfaces.Empresas;
 using Application.Interfaces.Empresas.Pagamentos;
 using Application.Saas.Empresas;
@@ -10,6 +11,7 @@ using Infrastructure.Notifications;
 using Infrastructure.Payments;
 using Infrastructure.Payments.Asaas;
 using Infrastructure.Repositories;
+using Infrastructure.Repositories.Clientes;
 using Infrastructure.Repositories.Interfaces;
 using Infrastructure.Seeds.Operacional;
 using Infrastructure.Services;
@@ -85,6 +87,12 @@ namespace Infrastructure
             services.AddScoped<ITrialExpirationService, TrialExpirationService>();
 
             services.AddScoped<IOutboxWriter, OutboxWriter>();
+
+
+
+            services.AddScoped<IRepositorioCliente, RepositorioCliente>();
+
+
 
             return services;
         }

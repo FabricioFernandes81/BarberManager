@@ -1,5 +1,11 @@
 using Application;
+using Application.Clientes.Commands;
+using Application.Clientes.Commands.Handlers;
+using Application.Clientes.DTOs;
+using Application.Clientes.Queries;
+using Application.Clientes.Queries.Handlers;
 using Application.Common.Exceptions;
+using Application.Common.Middlewares.Handler;
 using Application.Common.Security;
 using Application.Common.Tenancy;
 using Application.Dispatcher;
@@ -7,6 +13,7 @@ using Domain.Entities.AuthUsers;
 using Infrastructure;
 using Infrastructure.Context;
 using Infrastructure.Seeds.AuthUsers;
+using Infrastructure.Seeds.Clientes;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -61,6 +68,21 @@ builder.Services.AddScoped<ITenantContext, TenantContext>();
 // 6. Controllers e Swagger
 // ==========================================
 
+
+builder.Services.AddScoped<
+    ICommandHandler<
+        CriarPerfilClienteCommand,
+        CriarPerfilClienteResultadoDto>,
+    CriarPerfilClienteHandler>();
+
+builder.Services.AddScoped<
+    IQueryHandler<
+        ObterMeuPerfilClienteQuery,
+        PerfilClienteDto?>,
+    ObterMeuPerfilClienteHandler>();
+
+
+
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
@@ -108,6 +130,7 @@ app.UseMiddleware<ExceptionMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
+    await SeederClientes.InicializarAsync(app.Services);
   //  await SeederVinculos.InicializarAsync(app.Services);
     app.UseSwagger();
     app.UseSwaggerUI(options =>

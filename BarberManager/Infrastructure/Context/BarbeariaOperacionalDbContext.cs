@@ -1,4 +1,5 @@
 ﻿using Domain.Entities.Assinaturas;
+using Domain.Entities.Clientes;
 using Domain.Entities.Profissionais;
 using Domain.Entities.Servicos;
 using Infrastructure.Configurations.Operacional;
@@ -42,6 +43,13 @@ namespace Infrastructure.Context
 
         public DbSet<UtilizacaoAssinatura> UtilizacoesAssinatura
             => Set<UtilizacaoAssinatura>();
+
+        public DbSet<Cliente> Clientes => Set<Cliente>();
+
+        public DbSet<ClienteEmpresa> ClientesEmpresas
+            => Set<ClienteEmpresa>();
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -56,7 +64,10 @@ namespace Infrastructure.Context
             modelBuilder.ApplyConfiguration(new AssinaturaClienteConfiguration());
             modelBuilder.ApplyConfiguration(new BeneficiarioAssinaturaConfiguration());
             modelBuilder.ApplyConfiguration(new UtilizacaoAssinaturaConfiguration());
+            modelBuilder.ApplyConfiguration(new ClienteConfiguration());
 
+            modelBuilder.ApplyConfiguration(
+                new ClienteEmpresaConfiguration());
 
             SeedProfissionais.SeedProfissial(modelBuilder);
             SeedModuloServicos.SeedIniciarServico(modelBuilder);
