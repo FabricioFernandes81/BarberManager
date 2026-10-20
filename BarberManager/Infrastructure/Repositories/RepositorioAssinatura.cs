@@ -30,7 +30,7 @@ namespace Infrastructure.Repositories
 
             if (!string.IsNullOrWhiteSpace(searchTerm))
             {
-                var term = $"%{searchTerm}%";
+                var term = searchTerm.Trim();
                 queryAssinatura = queryAssinatura.Where(c => c.Empresa.NomeFantasia.Contains(term));
             }
 
@@ -57,12 +57,12 @@ namespace Infrastructure.Repositories
                 Id = a.Id,
                 Empresa = a.Empresa.NomeFantasia,
                 Plano = a.Plano.Nome,
-                Valor = 20m,
+                Valor = a.Valor,
                 DataInicio = a.DataInicio,
                 DataVencimento = a.DataVencimento,
                 DataUltimoPagamento = a.DataUltimoPagamento,
                 DiaVencimento = a.DiaVencimento,
-                DiasParaVencer = 0,
+                DiasParaVencer = EF.Functions.DateDiffDay(DateTime.UtcNow.Date, a.DataVencimento.Date),
                 Status = a.Ativa.ToString(),
                 RenovacaoAutomatica = a.RenovacaoAutomatica,
                 Trial = a.Trial,

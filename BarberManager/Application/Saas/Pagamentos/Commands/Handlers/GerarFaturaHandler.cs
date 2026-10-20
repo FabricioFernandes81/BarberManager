@@ -98,7 +98,7 @@ namespace Application.Saas.Pagamentos.Commands.Handlers
                     assinatura.Valor,
 
                 PeriodicidadeCobranca.Anual =>
-                    assinatura.Valor * 12m,
+                    assinatura.Valor ,
 
                 _ => throw ErroValidacao(
                     "Periodicidade de cobrança não suportada.")

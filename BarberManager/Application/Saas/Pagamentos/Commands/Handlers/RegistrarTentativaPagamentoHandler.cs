@@ -41,15 +41,17 @@ namespace Application.Saas.Pagamentos.Commands.Handlers
                     chaveIdempotencia,
                     cancellationToken);
 
+
+
             if (tentativaExistente is not null)
             {
-                if (tentativaExistente.FaturaId != command.FaturaId)
+                if (tentativaExistente.FaturaId != command.FaturaId ||
+                    tentativaExistente.MetodoPagamento != command.MetodoPagamento)
                 {
                     throw ErroValidacao(
-                        "A chave de idempotência já foi utilizada em outra fatura.");
+                        "A chave de idempotência já foi utilizada em outra operação.");
                 }
 
-                // A mesma requisição lógica não deve gerar outra tentativa.
                 return MapearDto(
                     tentativaExistente,
                     jaExistia: true);

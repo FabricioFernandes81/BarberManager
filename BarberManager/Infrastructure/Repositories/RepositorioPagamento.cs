@@ -131,8 +131,8 @@ namespace Infrastructure.Repositories
         }
         private static bool EhViolacaoDeIndiceUnico(DbUpdateException exception)
         {
-            return exception.InnerException is SqlException sqlException
-                && sqlException.Number is 2601 or 2627;
+            return exception.GetBaseException() is SqlException sqlException
+                             && sqlException.Number is 2601 or 2627;
         }
 
         public async Task<RegistroTentativaPagamentoResultado> RegistrarTentativaExclusivaAsync(TransacaoPagamento transacao, CancellationToken cancellationToken = default)
