@@ -63,18 +63,42 @@ namespace Application.Saas.Empresas.Commands.Handlers
                     "O plano selecionado não está disponível.");
             }
 
-            var valor = command.PeriodicidadeCobranca switch
+            // Um plano Trial deve ter preço zero e duração positiva.
+            // Um plano comercial deve ter duração Trial igual a zero.
+            if (plano.EhTrial)
             {
-                PeriodicidadeCobranca.Mensal => plano.ValorMensal,
-                PeriodicidadeCobranca.Anual => plano.ValorAnual,
-                _ => 0m
-            };
+                if (plano.ValorMensal != 0m ||
+                    plano.ValorAnual != 0m ||
+                    plano.DuracaoTrialDias <= 0)
+                {
+                    return Falha(
+                        "ConfiguracaoPlanoInvalida",
+                        "O plano Trial está com uma configuração inválida.");
+                }
+            }
+            else
+            {
+                if (plano.DuracaoTrialDias != 0)
+                {
+                    return Falha(
+                        "ConfiguracaoPlanoInvalida",
+                        "Planos comerciais não devem possuir duração de Trial.");
+                }
 
-            if (valor <= 0)
-            {
-                return Falha(
-                    "PlanoIndisponivel",
-                    "O plano não possui um valor válido para a periodicidade selecionada.");
+                var valorMensalEquivalente =
+                    command.PeriodicidadeCobranca switch
+                    {
+                        PeriodicidadeCobranca.Mensal => plano.ValorMensal,
+                        PeriodicidadeCobranca.Anual => plano.ValorAnual,
+                        _ => 0m
+                    };
+
+                if (valorMensalEquivalente <= 0m)
+                {
+                    return Falha(
+                        "PlanoIndisponivel",
+                        "O plano não possui um valor válido para a periodicidade selecionada.");
+                }
             }
 
             var email = command.Email.Trim();
@@ -102,8 +126,6 @@ namespace Application.Saas.Empresas.Commands.Handlers
 
                 if (!criacaoUsuario.Succeeded)
                 {
-                    // Não expõe detalhes que possam facilitar enumeração
-                    // ou revelar regras internas do Identity.
                     _logger.LogWarning(
                         "O Identity recusou a criação do usuário para cadastro de empresa.");
 
@@ -121,7 +143,6 @@ namespace Application.Saas.Empresas.Commands.Handlers
                 if (!atribuicaoRole.Succeeded)
                 {
                     await ExcluirUsuarioComSegurancaAsync(usuario);
-
                     usuarioCriado = false;
 
                     _logger.LogError(
@@ -150,19 +171,40 @@ namespace Application.Saas.Empresas.Commands.Handlers
                     Email = email,
                     Telefone = command.Telefone.Trim(),
                     Ativa = StatusGeral.Ativo,
-                    ResponsavelId = responsavel.Id,
-
+                    ResponsavelId = responsavel.Id
                 };
 
                 empresaIdCriada = empresa.Id;
 
-                var vencimento = command.PeriodicidadeCobranca switch
-                {
-                    PeriodicidadeCobranca.Mensal => agora.AddMonths(1),
-                    PeriodicidadeCobranca.Anual => agora.AddYears(1),
-                    _ => throw new InvalidOperationException(
-                        "Periodicidade de cobrança não suportada.")
-                };
+                var ehTrial = plano.EhTrial;
+
+                // Valor da assinatura representa o valor do ciclo faturável.
+                // No Trial, o valor é zero e não haverá fatura.
+                var valorCiclo = ehTrial
+                    ? 0m
+                    : command.PeriodicidadeCobranca switch
+                    {
+                        PeriodicidadeCobranca.Mensal => plano.ValorMensal,
+                        PeriodicidadeCobranca.Anual => decimal.Round(
+                            plano.ValorAnual * 12m,
+                            2,
+                            MidpointRounding.AwayFromZero),
+                        _ => 0m
+                    };
+
+                var fimTrial = ehTrial
+                    ? agora.AddDays(plano.DuracaoTrialDias)
+                    : (DateTime?)null;
+
+                var vencimento = ehTrial
+                    ? fimTrial!.Value
+                    : command.PeriodicidadeCobranca switch
+                    {
+                        PeriodicidadeCobranca.Mensal => agora.AddMonths(1),
+                        PeriodicidadeCobranca.Anual => agora.AddYears(1),
+                        _ => throw new InvalidOperationException(
+                            "Periodicidade de cobrança não suportada.")
+                    };
 
                 var assinatura = new Assinatura
                 {
@@ -170,25 +212,23 @@ namespace Application.Saas.Empresas.Commands.Handlers
                     PlanoId = plano.Id,
                     DataInicio = agora,
                     DataVencimento = vencimento,
-                    DiaVencimento = agora.Day,
-                    Valor = valor,
+                    DiaVencimento = vencimento.Day,
+                    Valor = valorCiclo,
                     RenovacaoAutomatica = false,
-                    Trial = false,
-                    DataFimTrial = null,
-                    Ativa = StatusAssinaturaCliente.Pendente,
+                    Trial = ehTrial,
+                    DataFimTrial = fimTrial,
+                    Ativa = ehTrial
+                        ? StatusAssinaturaCliente.Ativa
+                        : StatusAssinaturaCliente.Pendente,
                     PeriodicidadeCobranca = command.PeriodicidadeCobranca
                 };
 
-                // Adiciona ao DbContext SaaS. O middleware fará SaveChanges
-                // e commit ao final do comando.
                 await _repositorioEmpresa.CriarCadastroAsync(
                     responsavel,
                     empresa,
                     assinatura,
                     cancellationToken);
 
-                // Marcamos antes da chamada para compensar também
-                // se ocorrer uma exceção depois de o vínculo ser persistido.
                 vinculoTentado = true;
 
                 var resultadoVinculo =
@@ -203,10 +243,14 @@ namespace Application.Saas.Empresas.Commands.Handlers
                         $"Não foi possível criar o vínculo do usuário. Resultado: {resultadoVinculo}.");
                 }
 
+                var mensagem = ehTrial
+                    ? $"Cadastro concluído. Seu período de avaliação é de {plano.DuracaoTrialDias} dias."
+                    : "Cadastro recebido. A assinatura está pendente de confirmação do pagamento.";
+
                 return new CriarEmpresaResultadoDto(
                     true,
                     "Criado",
-                    "Cadastro recebido. A assinatura está pendente de ativação.",
+                    mensagem,
                     empresa.Id,
                     responsavel.Id,
                     assinatura.Id);
@@ -218,9 +262,9 @@ namespace Application.Saas.Empresas.Commands.Handlers
                     "Falha durante o cadastro da empresa. UsuarioId: {UsuarioId}.",
                     usuario.Id);
 
-                // A exceção precisa propagar para o TransactionMiddleware
-                // executar rollback da transação SaaS.
-                if (vinculoTentado)
+                // A exceção deve propagar para que o middleware execute
+                // rollback da transação SaaS.
+                if (vinculoTentado && empresaIdCriada.HasValue)
                 {
                     try
                     {

@@ -1,5 +1,6 @@
 ﻿using Application.Saas.Empresas.DTOs;
 using Application.Saas.Empresas.Enums;
+using Application.Saas.Planos.DTOs;
 using Domain.Entities.Saas;
 using System;
 using System.Collections.Generic;
@@ -15,28 +16,25 @@ namespace Application.Interfaces.Empresas
                      int pageNumber,int pageSize, string? searchTerm, string? sortBy, string? Status,
                                             CancellationToken cancellationToken = default);
 
-                    Task<bool> ExisteAsync(
-            Guid empresaId,
+         Task<bool> ExisteAsync( Guid empresaId,
             CancellationToken cancellationToken = default);
 
 
         Task<ResultadoAlteracaoAcessoEmpresa> AlterarAcessoAsync(
-    Guid empresaId,
-    bool habilitarAcesso,
-    string? motivo,
-    CancellationToken cancellationToken = default);
+        Guid empresaId, bool habilitarAcesso, string? motivo,
+        CancellationToken cancellationToken = default);
 
 
         Task<PlanoCadastroDto?> ObterPlanoAtivoAsync(
-Guid planoId,
-CancellationToken cancellationToken = default);
+        Guid planoId,
+        CancellationToken cancellationToken = default);
 
         Task CriarCadastroAsync(
-            Responsavel responsavel,
-            Empresa empresa,
+            Responsavel responsavel, Empresa empresa,
             Assinatura assinatura,
             CancellationToken cancellationToken = default);
 
-      
+        Task<List<PlanoPublicoDto>> ListarPlanosPublicosAsync(
+        CancellationToken cancellationToken = default);
     }
 }

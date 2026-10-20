@@ -5,4 +5,5 @@
   <Project Path="Application/Application.csproj" />
   <Project Path="Domain/Domain.csproj" />
   <Project Path="Infrastructure/Infrastructure.csproj" />
+  <Project Path="Tests.Integration/Tests.Integration.csproj" Id="b21b41cb-2280-4f12-a3d7-70e8bf273f67" />
 </Solution>

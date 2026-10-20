@@ -10,5 +10,5 @@ namespace Application.Saas.Empresas.DTOs
     Guid Id,
     string Nome,
     decimal ValorMensal,
-    decimal ValorAnual);
+    decimal ValorAnual, bool EhTrial, int DuracaoTrialDias);
 }

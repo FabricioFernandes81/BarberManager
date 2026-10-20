@@ -22,5 +22,10 @@ namespace Application.Interfaces.Empresas
         Task AdicionarAsync(
             Fatura fatura,
             CancellationToken cancellationToken = default);
+
+        Task<IReadOnlyList<Assinatura>>
+    ObterAssinaturasParaFaturamentoAsync(
+        DateTime limiteVencimento,
+        CancellationToken cancellationToken = default);
     }
 }

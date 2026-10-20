@@ -90,8 +90,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                             Id = new Guid("60000000-0000-0000-0000-000000000001"),
                             Ativa = 2,
                             DataAtualizacao = new DateTime(2026, 12, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DataCadastro = new DateTime(2026, 10, 19, 23, 30, 4, 762, DateTimeKind.Utc).AddTicks(53),
-                            DataFimTrial = new DateTime(2026, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DataCadastro = new DateTime(2026, 10, 20, 3, 13, 55, 523, DateTimeKind.Utc).AddTicks(4701),
                             DataInicio = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DataVencimento = new DateTime(2026, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DiaVencimento = 15,
@@ -107,7 +106,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                             Id = new Guid("60000000-0000-0000-0000-000000000002"),
                             Ativa = 5,
                             DataAtualizacao = new DateTime(2026, 12, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DataCadastro = new DateTime(2026, 10, 19, 23, 30, 4, 762, DateTimeKind.Utc).AddTicks(2729),
+                            DataCadastro = new DateTime(2026, 10, 20, 3, 13, 55, 523, DateTimeKind.Utc).AddTicks(6954),
                             DataFimTrial = new DateTime(2026, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DataInicio = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DataVencimento = new DateTime(2027, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -115,8 +114,8 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000002"),
                             PeriodicidadeCobranca = 1,
                             PlanoId = new Guid("20000000-0000-0000-0000-000000000001"),
-                            RenovacaoAutomatica = true,
-                            Trial = false,
+                            RenovacaoAutomatica = false,
+                            Trial = true,
                             Valor = 0m
                         },
                         new
@@ -124,8 +123,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                             Id = new Guid("60000000-0000-0000-0000-000000000003"),
                             Ativa = 2,
                             DataAtualizacao = new DateTime(2026, 12, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DataCadastro = new DateTime(2026, 10, 19, 23, 30, 4, 762, DateTimeKind.Utc).AddTicks(2737),
-                            DataFimTrial = new DateTime(2026, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DataCadastro = new DateTime(2026, 10, 20, 3, 13, 55, 523, DateTimeKind.Utc).AddTicks(6969),
                             DataInicio = new DateTime(2026, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DataVencimento = new DateTime(2027, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DiaVencimento = 15,
@@ -141,8 +139,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                             Id = new Guid("60000000-0000-0000-0000-000000000004"),
                             Ativa = 2,
                             DataAtualizacao = new DateTime(2026, 12, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DataCadastro = new DateTime(2026, 10, 19, 23, 30, 4, 762, DateTimeKind.Utc).AddTicks(2741),
-                            DataFimTrial = new DateTime(2026, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
+                            DataCadastro = new DateTime(2026, 10, 20, 3, 13, 55, 523, DateTimeKind.Utc).AddTicks(6975),
                             DataInicio = new DateTime(2026, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DataVencimento = new DateTime(2027, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DiaVencimento = 15,
@@ -157,7 +154,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("60000000-0000-0000-0000-000000000005"),
                             Ativa = 2,
-                            DataCadastro = new DateTime(2026, 10, 19, 23, 30, 4, 762, DateTimeKind.Utc).AddTicks(2744),
+                            DataCadastro = new DateTime(2026, 10, 20, 3, 13, 55, 523, DateTimeKind.Utc).AddTicks(6996),
                             DataInicio = new DateTime(2026, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DataVencimento = new DateTime(2027, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DiaVencimento = 0,
@@ -166,14 +163,14 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                             PlanoId = new Guid("20000000-0000-0000-0000-000000000005"),
                             RenovacaoAutomatica = true,
                             Trial = false,
-                            Valor = 0m
+                            Valor = 249.90m
                         },
                         new
                         {
                             Id = new Guid("60000000-0000-0000-0000-000000000006"),
                             Ativa = 2,
                             DataAtualizacao = new DateTime(2026, 12, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DataCadastro = new DateTime(2026, 10, 19, 23, 30, 4, 762, DateTimeKind.Utc).AddTicks(2782),
+                            DataCadastro = new DateTime(2026, 10, 20, 3, 13, 55, 523, DateTimeKind.Utc).AddTicks(7003),
                             DataFimTrial = new DateTime(2026, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DataInicio = new DateTime(2026, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DataVencimento = new DateTime(2027, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -183,7 +180,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                             PlanoId = new Guid("20000000-0000-0000-0000-000000000006"),
                             RenovacaoAutomatica = true,
                             Trial = false,
-                            Valor = 0m
+                            Valor = 499.90m
                         });
                 });
 
@@ -247,7 +244,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                             Id = new Guid("50000000-0000-0000-0000-000000000001"),
                             Ativa = 1,
                             Cnpj = "85.804.648/0001-73",
-                            DataCadastro = new DateTime(2026, 10, 19, 23, 30, 4, 758, DateTimeKind.Utc).AddTicks(7216),
+                            DataCadastro = new DateTime(2026, 10, 20, 3, 13, 55, 520, DateTimeKind.Utc).AddTicks(7147),
                             Email = "contato@barbeariavintage.com.br",
                             NomeFantasia = "Barbearia Vintage",
                             RazaoSocial = "Barbearia Vintage LTDA",
@@ -259,7 +256,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                             Id = new Guid("50000000-0000-0000-0000-000000000002"),
                             Ativa = 1,
                             Cnpj = "80.856.888/0001-06",
-                            DataCadastro = new DateTime(2026, 10, 19, 23, 30, 4, 759, DateTimeKind.Utc).AddTicks(537),
+                            DataCadastro = new DateTime(2026, 10, 20, 3, 13, 55, 521, DateTimeKind.Utc).AddTicks(1243),
                             Email = "contato@oldschoolbarber.com.br",
                             NomeFantasia = "Old School Barber",
                             RazaoSocial = "Old School Barber LTDA",
@@ -271,7 +268,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                             Id = new Guid("50000000-0000-0000-0000-000000000003"),
                             Ativa = 1,
                             Cnpj = "21.416.493/0001-15",
-                            DataCadastro = new DateTime(2026, 10, 19, 23, 30, 4, 759, DateTimeKind.Utc).AddTicks(552),
+                            DataCadastro = new DateTime(2026, 10, 20, 3, 13, 55, 521, DateTimeKind.Utc).AddTicks(1247),
                             Email = "contato@blackbeard.com.br",
                             NomeFantasia = "Black Beard Barber",
                             RazaoSocial = "Black Beard Barber LTDA",
@@ -283,7 +280,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                             Id = new Guid("50000000-0000-0000-0000-000000000004"),
                             Ativa = 1,
                             Cnpj = "01.985.559/0001-80",
-                            DataCadastro = new DateTime(2026, 10, 19, 23, 30, 4, 759, DateTimeKind.Utc).AddTicks(556),
+                            DataCadastro = new DateTime(2026, 10, 20, 3, 13, 55, 521, DateTimeKind.Utc).AddTicks(1249),
                             Email = "contato@imperiobarber.com.br",
                             NomeFantasia = "Império Barber",
                             RazaoSocial = "Império Barber LTDA",
@@ -295,7 +292,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                             Id = new Guid("50000000-0000-0000-0000-000000000005"),
                             Ativa = 1,
                             Cnpj = "38.170.265/0001-00",
-                            DataCadastro = new DateTime(2026, 10, 19, 23, 30, 4, 759, DateTimeKind.Utc).AddTicks(559),
+                            DataCadastro = new DateTime(2026, 10, 20, 3, 13, 55, 521, DateTimeKind.Utc).AddTicks(1264),
                             Email = "contato@domcorte.com.br",
                             NomeFantasia = "Dom Corte",
                             RazaoSocial = "Dom Corte LTDA",
@@ -307,7 +304,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                             Id = new Guid("50000000-0000-0000-0000-000000000006"),
                             Ativa = 1,
                             Cnpj = "76.676.405/0001-06",
-                            DataCadastro = new DateTime(2026, 10, 19, 23, 30, 4, 759, DateTimeKind.Utc).AddTicks(562),
+                            DataCadastro = new DateTime(2026, 10, 20, 3, 13, 55, 521, DateTimeKind.Utc).AddTicks(1267),
                             Email = "contato@primebarber.com.br",
                             NomeFantasia = "Prime Barber Club",
                             RazaoSocial = "Prime Barber Club LTDA",
@@ -329,6 +326,278 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                     b.HasIndex("ModuloId");
 
                     b.ToTable("EmpresaModulos", "Saas");
+
+                    b.HasData(
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000001")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000002")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000003")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000004")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000013")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000002"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000001")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000002"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000002")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000002"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000003")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000002"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000004")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000002"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000013")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000003"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000001")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000003"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000002")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000003"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000003")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000003"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000004")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000003"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000013")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000003"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000005")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000003"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000006")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000004"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000001")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000004"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000002")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000004"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000003")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000004"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000004")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000004"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000013")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000004"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000005")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000004"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000006")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000004"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000007")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000004"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000008")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000004"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000009")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000004"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000012")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000005"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000001")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000005"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000002")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000005"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000003")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000005"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000004")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000005"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000013")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000005"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000005")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000005"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000006")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000005"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000007")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000005"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000008")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000005"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000009")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000005"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000012")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000005"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000010")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000005"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000011")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000006"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000001")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000006"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000002")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000006"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000003")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000006"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000004")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000006"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000013")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000006"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000005")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000006"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000006")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000006"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000007")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000006"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000008")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000006"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000009")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000006"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000012")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000006"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000010")
+                        },
+                        new
+                        {
+                            EmpresaId = new Guid("50000000-0000-0000-0000-000000000006"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000011")
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Saas.Fatura", b =>
@@ -389,7 +658,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("50000000-0000-0000-0000-000000000001"),
                             AssinaturaId = new Guid("60000000-0000-0000-0000-000000000001"),
-                            DataCadastro = new DateTime(2026, 10, 19, 23, 30, 4, 762, DateTimeKind.Utc).AddTicks(9364),
+                            DataCadastro = new DateTime(2026, 10, 20, 3, 13, 55, 524, DateTimeKind.Utc).AddTicks(2156),
                             DataPagamento = new DateTime(2026, 1, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             PeriodoFim = new DateTime(2026, 1, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             PeriodoInicio = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -402,7 +671,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("50000000-0000-0000-0000-000000000002"),
                             AssinaturaId = new Guid("60000000-0000-0000-0000-000000000001"),
-                            DataCadastro = new DateTime(2026, 10, 19, 23, 30, 4, 763, DateTimeKind.Utc).AddTicks(906),
+                            DataCadastro = new DateTime(2026, 10, 20, 3, 13, 55, 524, DateTimeKind.Utc).AddTicks(3427),
                             DataPagamento = new DateTime(2026, 2, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             PeriodoFim = new DateTime(2026, 2, 28, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             PeriodoInicio = new DateTime(2026, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -415,7 +684,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("50000000-0000-0000-0000-000000000003"),
                             AssinaturaId = new Guid("60000000-0000-0000-0000-000000000001"),
-                            DataCadastro = new DateTime(2026, 10, 19, 23, 30, 4, 763, DateTimeKind.Utc).AddTicks(912),
+                            DataCadastro = new DateTime(2026, 10, 20, 3, 13, 55, 524, DateTimeKind.Utc).AddTicks(3432),
                             PeriodoFim = new DateTime(2026, 3, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             PeriodoInicio = new DateTime(2026, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Status = 3,
@@ -426,7 +695,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("50000000-0000-0000-0000-000000000004"),
                             AssinaturaId = new Guid("60000000-0000-0000-0000-000000000001"),
-                            DataCadastro = new DateTime(2026, 10, 19, 23, 30, 4, 763, DateTimeKind.Utc).AddTicks(914),
+                            DataCadastro = new DateTime(2026, 10, 20, 3, 13, 55, 524, DateTimeKind.Utc).AddTicks(3435),
                             PeriodoFim = new DateTime(2026, 4, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             PeriodoInicio = new DateTime(2026, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Status = 4,
@@ -437,7 +706,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("50000000-0000-0000-0000-000000000005"),
                             AssinaturaId = new Guid("60000000-0000-0000-0000-000000000001"),
-                            DataCadastro = new DateTime(2026, 10, 19, 23, 30, 4, 763, DateTimeKind.Utc).AddTicks(917),
+                            DataCadastro = new DateTime(2026, 10, 20, 3, 13, 55, 524, DateTimeKind.Utc).AddTicks(3445),
                             PeriodoFim = new DateTime(2026, 5, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             PeriodoInicio = new DateTime(2026, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ReferenciaGateway = "TESTE-FATURA-005",
@@ -449,7 +718,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("50000000-0000-0000-0000-000000000006"),
                             AssinaturaId = new Guid("60000000-0000-0000-0000-000000000001"),
-                            DataCadastro = new DateTime(2026, 10, 19, 23, 30, 4, 763, DateTimeKind.Utc).AddTicks(920),
+                            DataCadastro = new DateTime(2026, 10, 20, 3, 13, 55, 524, DateTimeKind.Utc).AddTicks(3448),
                             PeriodoFim = new DateTime(2026, 6, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             PeriodoInicio = new DateTime(2026, 6, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ReferenciaGateway = "TESTE-FATURA-006",
@@ -489,6 +758,125 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                     b.HasKey("Id");
 
                     b.ToTable("Modulo", "Saas");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = new Guid("70000000-0000-0000-0000-000000000001"),
+                            Ativo = 1,
+                            Codigo = "CLIENTES",
+                            DataCadastro = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Descricao = "Cadastro e gestão de clientes.",
+                            Nome = "Clientes"
+                        },
+                        new
+                        {
+                            Id = new Guid("70000000-0000-0000-0000-000000000002"),
+                            Ativo = 1,
+                            Codigo = "PROFISSIONAIS",
+                            DataCadastro = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Descricao = "Cadastro e gestão de profissionais.",
+                            Nome = "Profissionais"
+                        },
+                        new
+                        {
+                            Id = new Guid("70000000-0000-0000-0000-000000000003"),
+                            Ativo = 1,
+                            Codigo = "SERVICOS",
+                            DataCadastro = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Descricao = "Catálogo de serviços e preços.",
+                            Nome = "Serviços"
+                        },
+                        new
+                        {
+                            Id = new Guid("70000000-0000-0000-0000-000000000004"),
+                            Ativo = 1,
+                            Codigo = "AGENDA",
+                            DataCadastro = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Descricao = "Agendamentos e disponibilidade.",
+                            Nome = "Agenda"
+                        },
+                        new
+                        {
+                            Id = new Guid("70000000-0000-0000-0000-000000000005"),
+                            Ativo = 1,
+                            Codigo = "FINANCEIRO",
+                            DataCadastro = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Descricao = "Gestão financeira da barbearia.",
+                            Nome = "Financeiro"
+                        },
+                        new
+                        {
+                            Id = new Guid("70000000-0000-0000-0000-000000000006"),
+                            Ativo = 1,
+                            Codigo = "VENDAS",
+                            DataCadastro = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Descricao = "Vendas de serviços e produtos.",
+                            Nome = "Vendas"
+                        },
+                        new
+                        {
+                            Id = new Guid("70000000-0000-0000-0000-000000000007"),
+                            Ativo = 1,
+                            Codigo = "ESTOQUE",
+                            DataCadastro = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Descricao = "Controle de estoque e movimentações.",
+                            Nome = "Estoque"
+                        },
+                        new
+                        {
+                            Id = new Guid("70000000-0000-0000-0000-000000000008"),
+                            Ativo = 1,
+                            Codigo = "COMPRAS",
+                            DataCadastro = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Descricao = "Gestão de compras e fornecedores.",
+                            Nome = "Compras"
+                        },
+                        new
+                        {
+                            Id = new Guid("70000000-0000-0000-0000-000000000009"),
+                            Ativo = 1,
+                            Codigo = "COMISSOES",
+                            DataCadastro = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Descricao = "Apuração de comissões dos profissionais.",
+                            Nome = "Comissões"
+                        },
+                        new
+                        {
+                            Id = new Guid("70000000-0000-0000-0000-000000000010"),
+                            Ativo = 1,
+                            Codigo = "FIDELIDADE",
+                            DataCadastro = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Descricao = "Programas de fidelidade e benefícios.",
+                            Nome = "Fidelidade"
+                        },
+                        new
+                        {
+                            Id = new Guid("70000000-0000-0000-0000-000000000011"),
+                            Ativo = 1,
+                            Codigo = "AVALIACOES",
+                            DataCadastro = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Descricao = "Avaliações e feedback dos clientes.",
+                            Nome = "Avaliações"
+                        },
+                        new
+                        {
+                            Id = new Guid("70000000-0000-0000-0000-000000000012"),
+                            Ativo = 1,
+                            Codigo = "RELATORIOS",
+                            DataCadastro = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Descricao = "Relatórios gerenciais.",
+                            Nome = "Relatórios"
+                        },
+                        new
+                        {
+                            Id = new Guid("70000000-0000-0000-0000-000000000013"),
+                            Ativo = 1,
+                            Codigo = "CONFIGURACOES",
+                            DataCadastro = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
+                            Descricao = "Configurações operacionais da barbearia.",
+                            Nome = "Configurações"
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Saas.Plano", b =>
@@ -505,6 +893,12 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
 
                     b.Property<DateTime>("DataCadastro")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("DuracaoTrialDias")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("EhTrial")
+                        .HasColumnType("bit");
 
                     b.Property<int>("LimiteEmpresas")
                         .HasColumnType("int");
@@ -533,7 +927,9 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000001"),
                             Ativo = 1,
-                            DataCadastro = new DateTime(2026, 10, 19, 23, 30, 4, 760, DateTimeKind.Utc).AddTicks(6358),
+                            DataCadastro = new DateTime(2026, 10, 20, 3, 13, 55, 522, DateTimeKind.Utc).AddTicks(7143),
+                            DuracaoTrialDias = 30,
+                            EhTrial = true,
                             LimiteEmpresas = 1,
                             LimiteProfissionais = 2,
                             Nome = "Trial",
@@ -544,7 +940,9 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000002"),
                             Ativo = 1,
-                            DataCadastro = new DateTime(2026, 10, 19, 23, 30, 4, 760, DateTimeKind.Utc).AddTicks(8824),
+                            DataCadastro = new DateTime(2026, 10, 20, 3, 13, 55, 522, DateTimeKind.Utc).AddTicks(9114),
+                            DuracaoTrialDias = 0,
+                            EhTrial = false,
                             LimiteEmpresas = 1,
                             LimiteProfissionais = 3,
                             Nome = "Starter",
@@ -555,7 +953,9 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000003"),
                             Ativo = 1,
-                            DataCadastro = new DateTime(2026, 10, 19, 23, 30, 4, 760, DateTimeKind.Utc).AddTicks(8926),
+                            DataCadastro = new DateTime(2026, 10, 20, 3, 13, 55, 522, DateTimeKind.Utc).AddTicks(9190),
+                            DuracaoTrialDias = 0,
+                            EhTrial = false,
                             LimiteEmpresas = 1,
                             LimiteProfissionais = 5,
                             Nome = "Basic",
@@ -566,18 +966,22 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000004"),
                             Ativo = 1,
-                            DataCadastro = new DateTime(2026, 10, 19, 23, 30, 4, 760, DateTimeKind.Utc).AddTicks(8928),
+                            DataCadastro = new DateTime(2026, 10, 20, 3, 13, 55, 522, DateTimeKind.Utc).AddTicks(9193),
+                            DuracaoTrialDias = 0,
+                            EhTrial = false,
                             LimiteEmpresas = 1,
                             LimiteProfissionais = 10,
                             Nome = "Professional",
-                            ValorAnual = 130m,
+                            ValorAnual = 130.00m,
                             ValorMensal = 149.90m
                         },
                         new
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000005"),
                             Ativo = 1,
-                            DataCadastro = new DateTime(2026, 10, 19, 23, 30, 4, 760, DateTimeKind.Utc).AddTicks(8939),
+                            DataCadastro = new DateTime(2026, 10, 20, 3, 13, 55, 522, DateTimeKind.Utc).AddTicks(9195),
+                            DuracaoTrialDias = 0,
+                            EhTrial = false,
                             LimiteEmpresas = 1,
                             LimiteProfissionais = 25,
                             Nome = "Premium",
@@ -588,7 +992,9 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000006"),
                             Ativo = 1,
-                            DataCadastro = new DateTime(2026, 10, 19, 23, 30, 4, 760, DateTimeKind.Utc).AddTicks(8952),
+                            DataCadastro = new DateTime(2026, 10, 20, 3, 13, 55, 522, DateTimeKind.Utc).AddTicks(9201),
+                            DuracaoTrialDias = 0,
+                            EhTrial = false,
                             LimiteEmpresas = 999,
                             LimiteProfissionais = 999,
                             Nome = "Enterprise",
@@ -610,6 +1016,278 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                     b.HasIndex("ModuloId");
 
                     b.ToTable("PlanoModulos", "Saas");
+
+                    b.HasData(
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000001"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000001")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000001"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000002")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000001"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000003")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000001"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000004")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000001"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000013")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000002"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000001")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000002"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000002")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000002"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000003")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000002"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000004")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000002"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000013")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000003"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000001")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000003"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000002")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000003"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000003")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000003"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000004")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000003"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000013")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000003"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000005")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000003"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000006")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000004"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000001")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000004"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000002")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000004"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000003")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000004"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000004")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000004"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000013")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000004"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000005")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000004"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000006")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000004"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000007")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000004"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000008")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000004"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000009")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000004"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000012")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000005"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000001")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000005"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000002")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000005"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000003")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000005"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000004")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000005"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000013")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000005"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000005")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000005"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000006")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000005"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000007")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000005"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000008")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000005"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000009")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000005"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000012")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000005"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000010")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000005"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000011")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000006"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000001")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000006"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000002")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000006"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000003")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000006"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000004")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000006"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000013")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000006"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000005")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000006"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000006")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000006"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000007")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000006"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000008")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000006"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000009")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000006"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000012")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000006"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000010")
+                        },
+                        new
+                        {
+                            PlanoId = new Guid("20000000-0000-0000-0000-000000000006"),
+                            ModuloId = new Guid("70000000-0000-0000-0000-000000000011")
+                        });
                 });
 
             modelBuilder.Entity("Domain.Entities.Saas.Responsavel", b =>
@@ -657,7 +1335,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("30000000-0000-0000-0000-000000000001"),
                             Cpf = "111.111.111-11",
-                            DataCadastro = new DateTime(2026, 10, 19, 23, 30, 4, 759, DateTimeKind.Utc).AddTicks(9728),
+                            DataCadastro = new DateTime(2026, 10, 20, 3, 13, 55, 522, DateTimeKind.Utc).AddTicks(136),
                             Email = "joao.silva@barberpro.com.br",
                             Nome = "João Carlos Silva",
                             Telefone = "(51) 99991-0001",
@@ -667,7 +1345,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("30000000-0000-0000-0000-000000000002"),
                             Cpf = "222.222.222-22",
-                            DataCadastro = new DateTime(2026, 10, 19, 23, 30, 4, 760, DateTimeKind.Utc).AddTicks(1157),
+                            DataCadastro = new DateTime(2026, 10, 20, 3, 13, 55, 522, DateTimeKind.Utc).AddTicks(1516),
                             Email = "marcos.oliveira@barberpro.com.br",
                             Nome = "Marcos Oliveira",
                             Telefone = "(51) 99991-0002",
@@ -677,7 +1355,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("30000000-0000-0000-0000-000000000003"),
                             Cpf = "333.333.333-33",
-                            DataCadastro = new DateTime(2026, 10, 19, 23, 30, 4, 760, DateTimeKind.Utc).AddTicks(1159),
+                            DataCadastro = new DateTime(2026, 10, 20, 3, 13, 55, 522, DateTimeKind.Utc).AddTicks(1519),
                             Email = "pedro.souza@barberpro.com.br",
                             Nome = "Pedro Henrique Souza",
                             Telefone = "(51) 99991-0003",
@@ -687,7 +1365,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("30000000-0000-0000-0000-000000000004"),
                             Cpf = "444.444.444-44",
-                            DataCadastro = new DateTime(2026, 10, 19, 23, 30, 4, 760, DateTimeKind.Utc).AddTicks(1161),
+                            DataCadastro = new DateTime(2026, 10, 20, 3, 13, 55, 522, DateTimeKind.Utc).AddTicks(1521),
                             Email = "lucas.ferreira@barberpro.com.br",
                             Nome = "Lucas Ferreira",
                             Telefone = "(51) 99991-0004",
@@ -697,7 +1375,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("30000000-0000-0000-0000-000000000005"),
                             Cpf = "555.555.555-55",
-                            DataCadastro = new DateTime(2026, 10, 19, 23, 30, 4, 760, DateTimeKind.Utc).AddTicks(1168),
+                            DataCadastro = new DateTime(2026, 10, 20, 3, 13, 55, 522, DateTimeKind.Utc).AddTicks(1522),
                             Email = "rafael.almeida@barberpro.com.br",
                             Nome = "Rafael Almeida",
                             Telefone = "(51) 99991-0005",
@@ -707,7 +1385,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("30000000-0000-0000-0000-000000000006"),
                             Cpf = "666.666.666-66",
-                            DataCadastro = new DateTime(2026, 10, 19, 23, 30, 4, 760, DateTimeKind.Utc).AddTicks(1170),
+                            DataCadastro = new DateTime(2026, 10, 20, 3, 13, 55, 522, DateTimeKind.Utc).AddTicks(1524),
                             Email = "gabriel.martins@barberpro.com.br",
                             Nome = "Gabriel Martins",
                             Telefone = "(51) 99991-0006",

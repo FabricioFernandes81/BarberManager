@@ -54,6 +54,15 @@ namespace Infrastructure.Context
             SeedsPlanoAssinatura.InicializerSeed(modelBuilder);
             SeedFatura.InicializerSeed(modelBuilder);
             SeedTransacaoPagamento.InicializerSeed(modelBuilder);
+
+            // Catálogo de módulos
+            SeedModulos.InicializerSeed(modelBuilder);
+
+            // Módulos disponibilizados por cada plano
+            SeedPlanoModulo.InicializerSeed(modelBuilder);
+
+            // Módulos habilitados nas empresas de demonstração
+            SeedEmpresaModulo.InicializerSeed(modelBuilder);
         }
 
 

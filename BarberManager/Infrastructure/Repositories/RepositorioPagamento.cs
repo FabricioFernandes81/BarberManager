@@ -63,6 +63,7 @@ namespace Infrastructure.Repositories
         {
             return await _dbContext.TransacoesPagamento
         .Include(t => t.Fatura)
+        .ThenInclude(a=>a.Assinatura)
         .FirstOrDefaultAsync(
             t => t.Provedor == provedor &&
                  t.ReferenciaGateway == referenciaGateway,

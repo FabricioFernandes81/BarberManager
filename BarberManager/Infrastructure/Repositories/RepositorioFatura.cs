@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces.Empresas;
+using Domain.Entities.Common.Enuns;
 using Domain.Entities.Saas;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +30,19 @@ namespace Infrastructure.Repositories
             return await _dbContext.Assinaturas
                 .FirstOrDefaultAsync(x => x.Id == assinaturaId, cancellationToken);
 
+        }
+
+        public async Task<IReadOnlyList<Assinatura>> ObterAssinaturasParaFaturamentoAsync(DateTime limiteVencimento, CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.Assinaturas
+       .AsNoTracking()
+       .Where(a =>
+           !a.Trial &&
+           (a.Ativa == StatusAssinaturaCliente.Ativa ||
+            a.Ativa == StatusAssinaturaCliente.Pendente) &&
+           a.DataVencimento < limiteVencimento)
+       .OrderBy(a => a.DataVencimento)
+       .ToListAsync(cancellationToken);
         }
 
         public async Task<Fatura?> ObterPorPeriodoAsync(Guid assinaturaId, DateTime periodoInicio, DateTime periodoFim, CancellationToken cancellationToken = default)

@@ -92,12 +92,29 @@ namespace Application.Saas.Pagamentos.Commands.Handlers
                     "Não é possível gerar uma fatura para uma assinatura com valor zero.");
             }
 
+            var valorFatura = assinatura.PeriodicidadeCobranca switch
+            {
+                PeriodicidadeCobranca.Mensal =>
+                    assinatura.Valor,
+
+                PeriodicidadeCobranca.Anual =>
+                    assinatura.Valor * 12m,
+
+                _ => throw ErroValidacao(
+                    "Periodicidade de cobrança não suportada.")
+            };
+
+            if (valorFatura <= 0)
+            {
+                throw ErroValidacao(
+                    "O valor da fatura deve ser maior que zero.");
+            }
 
             // 5. Criar a fatura com o valor contratado.
             var fatura = new Fatura
             {
                 AssinaturaId = assinatura.Id,
-                Valor = assinatura.Valor,
+                Valor = valorFatura,
                 PeriodoInicio = periodoInicio,
                 PeriodoFim = periodoFim,
                 Vencimento = vencimento,

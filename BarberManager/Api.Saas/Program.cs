@@ -1,3 +1,4 @@
+using Api.Saas.BackgroundServices;
 using Application;
 using Application.Common.Exceptions;
 using Application.Common.Security;
@@ -56,6 +57,9 @@ builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddScoped<IUsuarioLogado, UsuarioLogado>();
 builder.Services.AddScoped<ITenantContext, TenantContext>();
+
+builder.Services.AddHostedService<TrialExpirationWorker>();
+builder.Services.AddHostedService<FaturamentoAutomaticoWorker>();
 
 // ==========================================
 // 6. Controllers e OpenAPI
@@ -140,6 +144,9 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseRouting();
+app.UseRateLimiter();
 
 app.UseAuthentication();
 app.UseAuthorization();

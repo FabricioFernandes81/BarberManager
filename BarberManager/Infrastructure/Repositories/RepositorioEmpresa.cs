@@ -1,6 +1,7 @@
 ﻿using Application.Interfaces.Empresas;
 using Application.Saas.Empresas.DTOs;
 using Application.Saas.Empresas.Enums;
+using Application.Saas.Planos.DTOs;
 using Domain.Entities.Common.Enuns;
 using Domain.Entities.Saas;
 using Infrastructure.Context;
@@ -136,6 +137,35 @@ namespace Infrastructure.Repositories
             return (itemsQuery, recordTotal);
         }
 
+        public async Task<List<PlanoPublicoDto>> ListarPlanosPublicosAsync(CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.Planos
+                .AsNoTracking()
+                .Where(plano => plano.Ativo == StatusGeral.Ativo)
+                .OrderBy(plano => plano.ValorMensal)
+                .ThenBy(plano => plano.Nome)
+                .Select(plano => new PlanoPublicoDto
+                {
+                    Id = plano.Id,
+                    Nome = plano.Nome,
+                    ValorMensal = plano.ValorMensal,
+                    ValorAnual = plano.ValorAnual,
+                    LimiteProfissionais = plano.LimiteProfissionais,
+                    LimiteEmpresas = plano.LimiteEmpresas,
+                    Modulos = (List<ModuloPlanoDto>)plano.Modulos
+                    .Where(pm => pm.Modulo.Ativo == StatusGeral.Ativo)
+                    .OrderBy(pm => pm.Modulo.Nome)
+                    .Select(pm => new ModuloPlanoDto
+                    {
+                        Id = pm.Modulo.Id,
+                        Nome = pm.Modulo.Nome,
+                        Codigo = pm.Modulo.Codigo,
+                        Descricao = pm.Modulo.Descricao
+
+                    }).ToList()
+                }).ToListAsync(cancellationToken);
+        }
+
         public async Task<PlanoCadastroDto?> ObterPlanoAtivoAsync(Guid planoId, CancellationToken cancellationToken = default)
         {
             return await _dbContext.Planos
@@ -145,7 +175,9 @@ namespace Infrastructure.Repositories
                     p.Id,
                     p.Nome,
                     p.ValorMensal,
-                    p.ValorAnual
+                    p.ValorAnual,
+                    p.EhTrial,
+                    p.DuracaoTrialDias
                     )).SingleOrDefaultAsync(cancellationToken);
         }
     }

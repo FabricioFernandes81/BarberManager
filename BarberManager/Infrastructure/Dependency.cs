@@ -2,6 +2,7 @@
 using Application.Interfaces;
 using Application.Interfaces.Empresas;
 using Application.Interfaces.Empresas.Pagamentos;
+using Application.Saas.Empresas;
 using Application.Saas.Pagamentos.Services;
 using Infrastructure.Context;
 using Infrastructure.Payments;
@@ -9,6 +10,7 @@ using Infrastructure.Payments.Asaas;
 using Infrastructure.Repositories;
 using Infrastructure.Repositories.Interfaces;
 using Infrastructure.Seeds.Operacional;
+using Infrastructure.Services;
 using Infrastructure.Transactions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -77,6 +79,9 @@ namespace Infrastructure
 
             services.AddScoped<
                             IAsaasWebhookService, AsaasWebhookService>();
+
+            services.AddScoped<ITrialExpirationService, TrialExpirationService>();
+
 
             return services;
         }

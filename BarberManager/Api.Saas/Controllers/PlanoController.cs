@@ -3,6 +3,7 @@ using Application.Common.Pagination;
 using Application.Dispatcher;
 using Application.Saas.Planos.DTOs;
 using Application.Saas.Planos.Queries;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Api.Saas.Controllers
@@ -37,6 +38,24 @@ namespace Api.Saas.Controllers
 
             
 
+        }
+
+        [AllowAnonymous]
+        [HttpGet("listaPlanos")]
+        [ProducesResponseType(
+        typeof(List<PlanoPublicoDto>),
+        StatusCodes.Status200OK)]
+        public async Task<ActionResult> ListarPlanos(CancellationToken cancellationToken)
+        {
+
+            var planos = await _dispacher.Query<ListarPlanosPublicosQuery, List<PlanoPublicoDto>>
+                (
+                new ListarPlanosPublicosQuery()
+                ,cancellationToken);
+                
+           
+
+            return Ok(planos);
         }
 
     }

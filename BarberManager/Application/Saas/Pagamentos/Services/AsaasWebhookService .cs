@@ -90,14 +90,30 @@ namespace Application.Saas.Pagamentos.Services
                     "Não é possível confirmar automaticamente uma fatura cancelada.");
             }
 
-            transacao.Status = StatusTransacaoPagamento.Aprovada;
-            transacao.DataProcessamento = DateTime.UtcNow;
+            var agora = DateTime.UtcNow;
+            var assinatura = transacao.Fatura.Assinatura;
 
+            transacao.Status = StatusTransacaoPagamento.Aprovada;
+            transacao.DataProcessamento = agora;
             transacao.CodigoErro = null;
             transacao.MensagemErro = null;
 
             transacao.Fatura.Status = StatusFatura.Paga;
-            transacao.Fatura.DataPagamento = DateTime.UtcNow;
+            transacao.Fatura.DataPagamento = agora;
+
+            // O período faturado termina na próxima data de cobrança.
+            if (assinatura.Ativa is
+                StatusAssinaturaCliente.Pendente or
+                StatusAssinaturaCliente.Ativa)
+            {
+                assinatura.DataUltimoPagamento = agora;
+                assinatura.DataVencimento = transacao.Fatura.PeriodoFim;
+
+                if (assinatura.Ativa == StatusAssinaturaCliente.Pendente)
+                {
+                    assinatura.Ativa = StatusAssinaturaCliente.Ativa;
+                }
+            }
 
             await _repositorio.SalvarAlteracoesAsync(
                 cancellationToken);

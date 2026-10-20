@@ -26,5 +26,9 @@ namespace Domain.Entities.Saas
         = new List<Assinatura>();
 
        public ICollection<PlanoModulo> Modulos { get; set; } = [];
+
+        public bool EhTrial { get; set; }
+
+        public int DuracaoTrialDias { get; set; } = 0;
     }
 }

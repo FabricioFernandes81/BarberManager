@@ -77,11 +77,11 @@ namespace Infrastructure.Seeds.Empresas
                 RenovacaoAutomatica = false,
                 Ativa = StatusAssinaturaCliente.Ativa,
                 DataAtualizacao = new DateTime(2026,12,15),
-                DataFimTrial = new DateTime(2026,10,15),
+                DataFimTrial = null,
                 DiaVencimento = 15,
                 Valor = 49.90m,
                 PeriodicidadeCobranca = PeriodicidadeCobranca.Mensal,
-                
+
             },
 
             new Assinatura
@@ -91,14 +91,15 @@ namespace Infrastructure.Seeds.Empresas
                 PlanoId = Trial,
                 DataInicio = new DateTime(2026, 1, 10),
                 DataVencimento = new DateTime(2027, 1, 10),
-                Trial = false,
-                RenovacaoAutomatica = true,
+                Trial = true,
+                RenovacaoAutomatica = false,
                 Ativa = StatusAssinaturaCliente.Expirada,
                 DataAtualizacao = new DateTime(2026,12,15),
                 DataFimTrial = new DateTime(2026,10,15),
                 DiaVencimento = 15,
                 Valor = 0,
                 PeriodicidadeCobranca = PeriodicidadeCobranca.Mensal,
+
             },
 
             new Assinatura
@@ -112,10 +113,11 @@ namespace Infrastructure.Seeds.Empresas
                 RenovacaoAutomatica = true,
                 Ativa = StatusAssinaturaCliente.Ativa,
                 DataAtualizacao = new DateTime(2026,12,15),
-                DataFimTrial = new DateTime(2026,10,15),
+                DataFimTrial = null,
                 DiaVencimento = 15,
                 Valor = 0,
                 PeriodicidadeCobranca = PeriodicidadeCobranca.Mensal,
+
             },
 
             new Assinatura
@@ -129,7 +131,7 @@ namespace Infrastructure.Seeds.Empresas
                 RenovacaoAutomatica = true,
                 Ativa = StatusAssinaturaCliente.Ativa,
                 DataAtualizacao = new DateTime(2026,12,15),
-                DataFimTrial = new DateTime(2026,10,15),
+                DataFimTrial = null,
                 DiaVencimento = 15,
                 Valor = 0,
                 PeriodicidadeCobranca = PeriodicidadeCobranca.Mensal,
@@ -146,6 +148,9 @@ namespace Infrastructure.Seeds.Empresas
                 RenovacaoAutomatica = true,
                 Ativa = StatusAssinaturaCliente.Ativa,
                 PeriodicidadeCobranca = PeriodicidadeCobranca.Mensal,
+                DataFimTrial =  null,
+                Valor = 249.90m,
+
             },
 
             new Assinatura
@@ -161,74 +166,91 @@ namespace Infrastructure.Seeds.Empresas
                 DataAtualizacao = new DateTime(2026,12,15),
                 DataFimTrial = new DateTime(2026,10,15),
                 DiaVencimento = 15,
-                Valor = 0,
+                Valor = 499.90m,
                 PeriodicidadeCobranca = PeriodicidadeCobranca.Mensal,
             }
         };
         }
 
+
         private static List<Plano> SetPlanos()
         {
             return new List<Plano>
-            {
-                new Plano
-                {
-                    Id = Trial,
-                    Nome = "Trial",
-                    ValorMensal = 0,
-                    LimiteProfissionais = 2,
-                    LimiteEmpresas = 1,
-                    Ativo = StatusGeral.Ativo,
-                    ValorAnual = 0,
-                },new Plano
-                {
-                    Id = Starter,
-                    Nome = "Starter",
-                    ValorMensal = 49.90m,
-                    LimiteProfissionais = 3,
-                    LimiteEmpresas = 1,
-                    Ativo = StatusGeral.Ativo,
-                    ValorAnual = 0,
-                },new Plano
-                {
-                     Id = Basic,
-                    Nome = "Basic",
-                    ValorMensal = 89.90m,
-                    LimiteProfissionais = 5,
-                    LimiteEmpresas = 1,
-                    Ativo = StatusGeral.Ativo,
-                    ValorAnual = 49.90m,
-                },new Plano
-                {
-                    Id = Professional,
-                    Nome = "Professional",
-                    ValorMensal = 149.90m,
-                    LimiteProfissionais = 10,
-                    LimiteEmpresas = 1,
-                    Ativo = StatusGeral.Ativo,
-                    ValorAnual = 130m,
-                },new Plano
-            {
-                Id = Premium,
-                Nome = "Premium",
-                ValorMensal = 249.90m,
-                LimiteProfissionais = 25,
-                LimiteEmpresas = 1,
-                Ativo = StatusGeral.Ativo,
-                ValorAnual = 211.50m,
-            },
-
-            new Plano
-            {
-                Id = Enterprise,
-                Nome = "Enterprise",
-                ValorMensal = 499.90m,
-                LimiteProfissionais = 999,
-                LimiteEmpresas = 999,
-                Ativo = StatusGeral.Ativo,
-                ValorAnual = 480.65m,
-            }
-           };
+    {
+        new Plano
+        {
+            Id = Trial,
+            Nome = "Trial",
+            ValorMensal = 0m,
+            ValorAnual = 0m,
+            LimiteProfissionais = 2,
+            LimiteEmpresas = 1,
+            Ativo = StatusGeral.Ativo,
+            EhTrial = true,
+            DuracaoTrialDias = 30
+        },
+        new Plano
+        {
+            Id = Starter,
+            Nome = "Starter",
+            ValorMensal = 49.90m,
+            ValorAnual = 0m,
+            LimiteProfissionais = 3,
+            LimiteEmpresas = 1,
+            Ativo = StatusGeral.Ativo,
+            EhTrial = false,
+            DuracaoTrialDias = 0
+        },
+        new Plano
+        {
+            Id = Basic,
+            Nome = "Basic",
+            ValorMensal = 89.90m,
+            ValorAnual = 49.90m,
+            LimiteProfissionais = 5,
+            LimiteEmpresas = 1,
+            Ativo = StatusGeral.Ativo,
+            EhTrial = false,
+            DuracaoTrialDias = 0
+        },
+        new Plano
+        {
+            Id = Professional,
+            Nome = "Professional",
+            ValorMensal = 149.90m,
+            ValorAnual = 130.00m,
+            LimiteProfissionais = 10,
+            LimiteEmpresas = 1,
+            Ativo = StatusGeral.Ativo,
+            EhTrial = false,
+            DuracaoTrialDias = 0
+        },
+        new Plano
+        {
+            Id = Premium,
+            Nome = "Premium",
+            ValorMensal = 249.90m,
+            ValorAnual = 211.50m,
+            LimiteProfissionais = 25,
+            LimiteEmpresas = 1,
+            Ativo = StatusGeral.Ativo,
+            EhTrial = false,
+            DuracaoTrialDias = 0
+        },
+        new Plano
+        {
+            Id = Enterprise,
+            Nome = "Enterprise",
+            ValorMensal = 499.90m,
+            ValorAnual = 480.65m,
+            LimiteProfissionais = 999,
+            LimiteEmpresas = 999,
+            Ativo = StatusGeral.Ativo,
+            EhTrial = false,
+            DuracaoTrialDias = 0
         }
+    };
+        }
+
     }
 }
