@@ -130,7 +130,7 @@ app.UseMiddleware<ExceptionMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
-    await SeederClientes.InicializarAsync(app.Services);
+
   //  await SeederVinculos.InicializarAsync(app.Services);
     app.UseSwagger();
     app.UseSwaggerUI(options =>

@@ -1,4 +1,5 @@
-﻿using Domain.Entities.Assinaturas;
+﻿using Domain.Entities.Agendamentos;
+using Domain.Entities.Assinaturas;
 using Domain.Entities.Clientes;
 using Domain.Entities.Profissionais;
 using Domain.Entities.Servicos;
@@ -49,7 +50,13 @@ namespace Infrastructure.Context
         public DbSet<ClienteEmpresa> ClientesEmpresas
             => Set<ClienteEmpresa>();
 
-
+        public DbSet<Agendamento> Agendamentos => Set<Agendamento>();
+        public DbSet<AgendamentoServico> AgendamentoServicos => Set<AgendamentoServico>();
+        public DbSet<HorarioFuncionamento> HorariosFuncionamento => Set<HorarioFuncionamento>();
+        public DbSet<HorarioProfissional> HorariosProfissionais => Set<HorarioProfissional>();
+        public DbSet<BloqueioAgenda> BloqueiosAgenda => Set<BloqueioAgenda>();
+        
+        public DbSet<Feriado> Feriados => Set<Feriado>();
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -65,6 +72,12 @@ namespace Infrastructure.Context
             modelBuilder.ApplyConfiguration(new BeneficiarioAssinaturaConfiguration());
             modelBuilder.ApplyConfiguration(new UtilizacaoAssinaturaConfiguration());
             modelBuilder.ApplyConfiguration(new ClienteConfiguration());
+            modelBuilder.ApplyConfiguration(new AgendamentoConfiguration());
+            modelBuilder.ApplyConfiguration(new AgendamentoServicoConfiguration());
+            modelBuilder.ApplyConfiguration(new HorarioFuncionamentoConfiguration());
+            modelBuilder.ApplyConfiguration(new HorarioProfissionalConfiguration());
+            modelBuilder.ApplyConfiguration(new BloqueioAgendaConfiguration());
+            modelBuilder.ApplyConfiguration(new FeriadoConfiguration());
 
             modelBuilder.ApplyConfiguration(
                 new ClienteEmpresaConfiguration());

@@ -92,7 +92,7 @@ namespace Infrastructure
 
             services.AddScoped<IRepositorioCliente, RepositorioCliente>();
 
-
+            services.AddScoped<IRepositorioClienteAutenticacao, RepositorioClienteAutenticacao>();
 
             return services;
         }

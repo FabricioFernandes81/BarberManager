@@ -10,8 +10,8 @@ namespace Application.Autenticacao.Commands
     public sealed record LoginCommand(
         string Email,
         string Senha,
-        TipoAcesso TipoAcesso,
-        Guid? EmpresaId = null);
+        TipoAcesso TipoAcesso/*,
+        Guid? EmpresaId = null*/);
 
     public sealed record LoginResult(
      bool Sucesso,

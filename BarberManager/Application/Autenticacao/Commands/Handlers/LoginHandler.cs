@@ -27,6 +27,8 @@ namespace Application.Autenticacao.Commands.Handlers
         private readonly IValidadorEmpresaAutenticacao _validadorEmpresa;
         private readonly IJwtTokenService _jwtTokenService;
 
+        private readonly IRepositorioClienteAutenticacao _repositorioClienteAutenticacao;
+
         private readonly IRepositorioProfissionalAutenticacao _repositorioProfissionalAutenticacao;
 
         public LoginHandler(
@@ -37,7 +39,7 @@ namespace Application.Autenticacao.Commands.Handlers
             IRepositorioProfissionalAutenticacao repositorioProfissionalAutenticacao,
             // IRepositorioPermissoesUsuario repositorioPermissoes,
             IValidadorEmpresaAutenticacao validadorEmpresa,
-            IJwtTokenService jwtTokenService)
+            IJwtTokenService jwtTokenService, IRepositorioClienteAutenticacao repositorioClienteAutenticacao)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -46,6 +48,7 @@ namespace Application.Autenticacao.Commands.Handlers
           //  _repositorioPermissoes = repositorioPermissoes;
             _validadorEmpresa = validadorEmpresa;
             _jwtTokenService = jwtTokenService;
+            _repositorioClienteAutenticacao = repositorioClienteAutenticacao;
         }
 
         public async Task<LoginResult> Handle(
@@ -135,12 +138,12 @@ namespace Application.Autenticacao.Commands.Handlers
                             if (profissional is null)
                                 return FalhaLogin();
 
-                            if (command.EmpresaId.HasValue &&
+                           /* if (command.EmpresaId.HasValue &&
                                 command.EmpresaId.Value !=
                                     profissional.EmpresaId)
                             {
                                 return FalhaLogin();
-                            }
+                            }*/
 
                             var possuiVinculo =
                                 await _repositorioUsuarioEmpresa
@@ -166,7 +169,7 @@ namespace Application.Autenticacao.Commands.Handlers
                                         usuario.Id,
                                         cancellationToken);
 
-                            if (command.EmpresaId.HasValue)
+                           /* if (command.EmpresaId.HasValue)
                             {
                                 if (!empresas.Contains(
                                         command.EmpresaId.Value))
@@ -177,7 +180,7 @@ namespace Application.Autenticacao.Commands.Handlers
                                 empresaId = command.EmpresaId.Value;
                             }
                             else
-                            {
+                            {*/
                                 if (empresas.Count == 0)
                                     return FalhaLogin();
 
@@ -209,18 +212,26 @@ namespace Application.Autenticacao.Commands.Handlers
 
                         tipoUsuario = "Operacional";
                         break;
-                    }
+                  //  }
 
                 case TipoAcesso.Cliente:
                     {
-                        // Mantém o comportamento atual: não emitir
-                        // token Cliente sem vínculo implementado.
-                        return new LoginResult(
-                            Sucesso: false,
-                            AccessToken: null,
-                            ExpiraEm: null,
-                            Mensagem:
-                                "O acesso de cliente ainda não está configurado.");
+                        var possuiClienteAtivo =
+                            await _repositorioClienteAutenticacao
+                                .PossuiClienteAtivoPorUsuarioIdAsync(
+                                    usuario.Id,
+                                    cancellationToken);
+
+                        if (!possuiClienteAtivo)
+                            return FalhaLogin();
+
+                        // Cliente possui identidade global.
+                        // A escolha da barbearia ocorre em outro momento.
+                        tipoUsuario = "Cliente";
+                        empresaId = null;
+                        profissionalId = null;
+
+                        break;
                     }
 
                 default:

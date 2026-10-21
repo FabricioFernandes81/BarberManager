@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Infrastructure.Migrations.BarbeariaSaasDb
 {
     [DbContext(typeof(BarbeariaSaasDbContext))]
-    [Migration("20261020225557_InitialSaas")]
+    [Migration("20261021013610_InitialSaas")]
     partial class InitialSaas
     {
         /// <inheritdoc />
@@ -152,7 +152,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                             Id = new Guid("60000000-0000-0000-0000-000000000001"),
                             Ativa = 2,
                             DataAtualizacao = new DateTime(2026, 12, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DataCadastro = new DateTime(2026, 10, 20, 22, 55, 57, 3, DateTimeKind.Utc).AddTicks(1133),
+                            DataCadastro = new DateTime(2026, 10, 21, 1, 36, 10, 176, DateTimeKind.Utc).AddTicks(6003),
                             DataInicio = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DataVencimento = new DateTime(2026, 1, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DiaVencimento = 15,
@@ -168,7 +168,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                             Id = new Guid("60000000-0000-0000-0000-000000000002"),
                             Ativa = 5,
                             DataAtualizacao = new DateTime(2026, 12, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DataCadastro = new DateTime(2026, 10, 20, 22, 55, 57, 3, DateTimeKind.Utc).AddTicks(5630),
+                            DataCadastro = new DateTime(2026, 10, 21, 1, 36, 10, 176, DateTimeKind.Utc).AddTicks(9114),
                             DataFimTrial = new DateTime(2026, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DataInicio = new DateTime(2026, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DataVencimento = new DateTime(2027, 1, 10, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -185,7 +185,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                             Id = new Guid("60000000-0000-0000-0000-000000000003"),
                             Ativa = 2,
                             DataAtualizacao = new DateTime(2026, 12, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DataCadastro = new DateTime(2026, 10, 20, 22, 55, 57, 3, DateTimeKind.Utc).AddTicks(5647),
+                            DataCadastro = new DateTime(2026, 10, 21, 1, 36, 10, 176, DateTimeKind.Utc).AddTicks(9128),
                             DataInicio = new DateTime(2026, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DataVencimento = new DateTime(2027, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DiaVencimento = 15,
@@ -201,7 +201,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                             Id = new Guid("60000000-0000-0000-0000-000000000004"),
                             Ativa = 2,
                             DataAtualizacao = new DateTime(2026, 12, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DataCadastro = new DateTime(2026, 10, 20, 22, 55, 57, 3, DateTimeKind.Utc).AddTicks(5651),
+                            DataCadastro = new DateTime(2026, 10, 21, 1, 36, 10, 176, DateTimeKind.Utc).AddTicks(9131),
                             DataInicio = new DateTime(2026, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DataVencimento = new DateTime(2027, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DiaVencimento = 15,
@@ -216,7 +216,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("60000000-0000-0000-0000-000000000005"),
                             Ativa = 2,
-                            DataCadastro = new DateTime(2026, 10, 20, 22, 55, 57, 3, DateTimeKind.Utc).AddTicks(5656),
+                            DataCadastro = new DateTime(2026, 10, 21, 1, 36, 10, 176, DateTimeKind.Utc).AddTicks(9135),
                             DataInicio = new DateTime(2026, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DataVencimento = new DateTime(2027, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DiaVencimento = 0,
@@ -232,7 +232,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                             Id = new Guid("60000000-0000-0000-0000-000000000006"),
                             Ativa = 2,
                             DataAtualizacao = new DateTime(2026, 12, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DataCadastro = new DateTime(2026, 10, 20, 22, 55, 57, 3, DateTimeKind.Utc).AddTicks(5668),
+                            DataCadastro = new DateTime(2026, 10, 21, 1, 36, 10, 176, DateTimeKind.Utc).AddTicks(9148),
                             DataFimTrial = new DateTime(2026, 10, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DataInicio = new DateTime(2026, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             DataVencimento = new DateTime(2027, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -306,7 +306,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                             Id = new Guid("50000000-0000-0000-0000-000000000001"),
                             Ativa = 1,
                             Cnpj = "85.804.648/0001-73",
-                            DataCadastro = new DateTime(2026, 10, 20, 22, 55, 57, 0, DateTimeKind.Utc).AddTicks(2576),
+                            DataCadastro = new DateTime(2026, 10, 21, 1, 36, 10, 173, DateTimeKind.Utc).AddTicks(3902),
                             Email = "contato@barbeariavintage.com.br",
                             NomeFantasia = "Barbearia Vintage",
                             RazaoSocial = "Barbearia Vintage LTDA",
@@ -318,7 +318,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                             Id = new Guid("50000000-0000-0000-0000-000000000002"),
                             Ativa = 1,
                             Cnpj = "80.856.888/0001-06",
-                            DataCadastro = new DateTime(2026, 10, 20, 22, 55, 57, 0, DateTimeKind.Utc).AddTicks(4906),
+                            DataCadastro = new DateTime(2026, 10, 21, 1, 36, 10, 173, DateTimeKind.Utc).AddTicks(7297),
                             Email = "contato@oldschoolbarber.com.br",
                             NomeFantasia = "Old School Barber",
                             RazaoSocial = "Old School Barber LTDA",
@@ -330,7 +330,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                             Id = new Guid("50000000-0000-0000-0000-000000000003"),
                             Ativa = 1,
                             Cnpj = "21.416.493/0001-15",
-                            DataCadastro = new DateTime(2026, 10, 20, 22, 55, 57, 0, DateTimeKind.Utc).AddTicks(4909),
+                            DataCadastro = new DateTime(2026, 10, 21, 1, 36, 10, 173, DateTimeKind.Utc).AddTicks(7301),
                             Email = "contato@blackbeard.com.br",
                             NomeFantasia = "Black Beard Barber",
                             RazaoSocial = "Black Beard Barber LTDA",
@@ -342,7 +342,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                             Id = new Guid("50000000-0000-0000-0000-000000000004"),
                             Ativa = 1,
                             Cnpj = "01.985.559/0001-80",
-                            DataCadastro = new DateTime(2026, 10, 20, 22, 55, 57, 0, DateTimeKind.Utc).AddTicks(4912),
+                            DataCadastro = new DateTime(2026, 10, 21, 1, 36, 10, 173, DateTimeKind.Utc).AddTicks(7303),
                             Email = "contato@imperiobarber.com.br",
                             NomeFantasia = "Império Barber",
                             RazaoSocial = "Império Barber LTDA",
@@ -354,7 +354,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                             Id = new Guid("50000000-0000-0000-0000-000000000005"),
                             Ativa = 1,
                             Cnpj = "38.170.265/0001-00",
-                            DataCadastro = new DateTime(2026, 10, 20, 22, 55, 57, 0, DateTimeKind.Utc).AddTicks(4914),
+                            DataCadastro = new DateTime(2026, 10, 21, 1, 36, 10, 173, DateTimeKind.Utc).AddTicks(7311),
                             Email = "contato@domcorte.com.br",
                             NomeFantasia = "Dom Corte",
                             RazaoSocial = "Dom Corte LTDA",
@@ -366,7 +366,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                             Id = new Guid("50000000-0000-0000-0000-000000000006"),
                             Ativa = 1,
                             Cnpj = "76.676.405/0001-06",
-                            DataCadastro = new DateTime(2026, 10, 20, 22, 55, 57, 0, DateTimeKind.Utc).AddTicks(4916),
+                            DataCadastro = new DateTime(2026, 10, 21, 1, 36, 10, 173, DateTimeKind.Utc).AddTicks(7314),
                             Email = "contato@primebarber.com.br",
                             NomeFantasia = "Prime Barber Club",
                             RazaoSocial = "Prime Barber Club LTDA",
@@ -720,7 +720,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("50000000-0000-0000-0000-000000000001"),
                             AssinaturaId = new Guid("60000000-0000-0000-0000-000000000001"),
-                            DataCadastro = new DateTime(2026, 10, 20, 22, 55, 57, 4, DateTimeKind.Utc).AddTicks(1191),
+                            DataCadastro = new DateTime(2026, 10, 21, 1, 36, 10, 177, DateTimeKind.Utc).AddTicks(6103),
                             DataPagamento = new DateTime(2026, 1, 8, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             PeriodoFim = new DateTime(2026, 1, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             PeriodoInicio = new DateTime(2026, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -733,7 +733,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("50000000-0000-0000-0000-000000000002"),
                             AssinaturaId = new Guid("60000000-0000-0000-0000-000000000001"),
-                            DataCadastro = new DateTime(2026, 10, 20, 22, 55, 57, 4, DateTimeKind.Utc).AddTicks(2457),
+                            DataCadastro = new DateTime(2026, 10, 21, 1, 36, 10, 177, DateTimeKind.Utc).AddTicks(7945),
                             DataPagamento = new DateTime(2026, 2, 9, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             PeriodoFim = new DateTime(2026, 2, 28, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             PeriodoInicio = new DateTime(2026, 2, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
@@ -746,7 +746,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("50000000-0000-0000-0000-000000000003"),
                             AssinaturaId = new Guid("60000000-0000-0000-0000-000000000001"),
-                            DataCadastro = new DateTime(2026, 10, 20, 22, 55, 57, 4, DateTimeKind.Utc).AddTicks(2463),
+                            DataCadastro = new DateTime(2026, 10, 21, 1, 36, 10, 177, DateTimeKind.Utc).AddTicks(7952),
                             PeriodoFim = new DateTime(2026, 3, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             PeriodoInicio = new DateTime(2026, 3, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Status = 3,
@@ -757,7 +757,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("50000000-0000-0000-0000-000000000004"),
                             AssinaturaId = new Guid("60000000-0000-0000-0000-000000000001"),
-                            DataCadastro = new DateTime(2026, 10, 20, 22, 55, 57, 4, DateTimeKind.Utc).AddTicks(2466),
+                            DataCadastro = new DateTime(2026, 10, 21, 1, 36, 10, 177, DateTimeKind.Utc).AddTicks(7956),
                             PeriodoFim = new DateTime(2026, 4, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             PeriodoInicio = new DateTime(2026, 4, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Status = 4,
@@ -768,7 +768,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("50000000-0000-0000-0000-000000000005"),
                             AssinaturaId = new Guid("60000000-0000-0000-0000-000000000001"),
-                            DataCadastro = new DateTime(2026, 10, 20, 22, 55, 57, 4, DateTimeKind.Utc).AddTicks(2475),
+                            DataCadastro = new DateTime(2026, 10, 21, 1, 36, 10, 177, DateTimeKind.Utc).AddTicks(7964),
                             PeriodoFim = new DateTime(2026, 5, 31, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             PeriodoInicio = new DateTime(2026, 5, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ReferenciaGateway = "TESTE-FATURA-005",
@@ -780,7 +780,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("50000000-0000-0000-0000-000000000006"),
                             AssinaturaId = new Guid("60000000-0000-0000-0000-000000000001"),
-                            DataCadastro = new DateTime(2026, 10, 20, 22, 55, 57, 4, DateTimeKind.Utc).AddTicks(2478),
+                            DataCadastro = new DateTime(2026, 10, 21, 1, 36, 10, 177, DateTimeKind.Utc).AddTicks(7967),
                             PeriodoFim = new DateTime(2026, 6, 30, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             PeriodoInicio = new DateTime(2026, 6, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             ReferenciaGateway = "TESTE-FATURA-006",
@@ -989,7 +989,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000001"),
                             Ativo = 1,
-                            DataCadastro = new DateTime(2026, 10, 20, 22, 55, 57, 2, DateTimeKind.Utc).AddTicks(167),
+                            DataCadastro = new DateTime(2026, 10, 21, 1, 36, 10, 175, DateTimeKind.Utc).AddTicks(6430),
                             DuracaoTrialDias = 30,
                             EhTrial = true,
                             LimiteEmpresas = 1,
@@ -1002,7 +1002,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000002"),
                             Ativo = 1,
-                            DataCadastro = new DateTime(2026, 10, 20, 22, 55, 57, 2, DateTimeKind.Utc).AddTicks(2279),
+                            DataCadastro = new DateTime(2026, 10, 21, 1, 36, 10, 175, DateTimeKind.Utc).AddTicks(9189),
                             DuracaoTrialDias = 0,
                             EhTrial = false,
                             LimiteEmpresas = 1,
@@ -1015,7 +1015,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000003"),
                             Ativo = 1,
-                            DataCadastro = new DateTime(2026, 10, 20, 22, 55, 57, 2, DateTimeKind.Utc).AddTicks(5167),
+                            DataCadastro = new DateTime(2026, 10, 21, 1, 36, 10, 175, DateTimeKind.Utc).AddTicks(9298),
                             DuracaoTrialDias = 0,
                             EhTrial = false,
                             LimiteEmpresas = 1,
@@ -1028,7 +1028,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000004"),
                             Ativo = 1,
-                            DataCadastro = new DateTime(2026, 10, 20, 22, 55, 57, 2, DateTimeKind.Utc).AddTicks(5172),
+                            DataCadastro = new DateTime(2026, 10, 21, 1, 36, 10, 175, DateTimeKind.Utc).AddTicks(9300),
                             DuracaoTrialDias = 0,
                             EhTrial = false,
                             LimiteEmpresas = 1,
@@ -1041,7 +1041,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000005"),
                             Ativo = 1,
-                            DataCadastro = new DateTime(2026, 10, 20, 22, 55, 57, 2, DateTimeKind.Utc).AddTicks(5175),
+                            DataCadastro = new DateTime(2026, 10, 21, 1, 36, 10, 175, DateTimeKind.Utc).AddTicks(9302),
                             DuracaoTrialDias = 0,
                             EhTrial = false,
                             LimiteEmpresas = 1,
@@ -1054,7 +1054,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("20000000-0000-0000-0000-000000000006"),
                             Ativo = 1,
-                            DataCadastro = new DateTime(2026, 10, 20, 22, 55, 57, 2, DateTimeKind.Utc).AddTicks(5194),
+                            DataCadastro = new DateTime(2026, 10, 21, 1, 36, 10, 175, DateTimeKind.Utc).AddTicks(9312),
                             DuracaoTrialDias = 0,
                             EhTrial = false,
                             LimiteEmpresas = 999,
@@ -1397,7 +1397,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("30000000-0000-0000-0000-000000000001"),
                             Cpf = "111.111.111-11",
-                            DataCadastro = new DateTime(2026, 10, 20, 22, 55, 57, 1, DateTimeKind.Utc).AddTicks(3183),
+                            DataCadastro = new DateTime(2026, 10, 21, 1, 36, 10, 174, DateTimeKind.Utc).AddTicks(7331),
                             Email = "joao.silva@barberpro.com.br",
                             Nome = "João Carlos Silva",
                             Telefone = "(51) 99991-0001",
@@ -1407,7 +1407,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("30000000-0000-0000-0000-000000000002"),
                             Cpf = "222.222.222-22",
-                            DataCadastro = new DateTime(2026, 10, 20, 22, 55, 57, 1, DateTimeKind.Utc).AddTicks(4845),
+                            DataCadastro = new DateTime(2026, 10, 21, 1, 36, 10, 174, DateTimeKind.Utc).AddTicks(9293),
                             Email = "marcos.oliveira@barberpro.com.br",
                             Nome = "Marcos Oliveira",
                             Telefone = "(51) 99991-0002",
@@ -1417,7 +1417,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("30000000-0000-0000-0000-000000000003"),
                             Cpf = "333.333.333-33",
-                            DataCadastro = new DateTime(2026, 10, 20, 22, 55, 57, 1, DateTimeKind.Utc).AddTicks(4848),
+                            DataCadastro = new DateTime(2026, 10, 21, 1, 36, 10, 174, DateTimeKind.Utc).AddTicks(9296),
                             Email = "pedro.souza@barberpro.com.br",
                             Nome = "Pedro Henrique Souza",
                             Telefone = "(51) 99991-0003",
@@ -1427,7 +1427,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("30000000-0000-0000-0000-000000000004"),
                             Cpf = "444.444.444-44",
-                            DataCadastro = new DateTime(2026, 10, 20, 22, 55, 57, 1, DateTimeKind.Utc).AddTicks(4856),
+                            DataCadastro = new DateTime(2026, 10, 21, 1, 36, 10, 174, DateTimeKind.Utc).AddTicks(9297),
                             Email = "lucas.ferreira@barberpro.com.br",
                             Nome = "Lucas Ferreira",
                             Telefone = "(51) 99991-0004",
@@ -1437,7 +1437,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("30000000-0000-0000-0000-000000000005"),
                             Cpf = "555.555.555-55",
-                            DataCadastro = new DateTime(2026, 10, 20, 22, 55, 57, 1, DateTimeKind.Utc).AddTicks(4858),
+                            DataCadastro = new DateTime(2026, 10, 21, 1, 36, 10, 174, DateTimeKind.Utc).AddTicks(9299),
                             Email = "rafael.almeida@barberpro.com.br",
                             Nome = "Rafael Almeida",
                             Telefone = "(51) 99991-0005",
@@ -1447,7 +1447,7 @@ namespace Infrastructure.Migrations.BarbeariaSaasDb
                         {
                             Id = new Guid("30000000-0000-0000-0000-000000000006"),
                             Cpf = "666.666.666-66",
-                            DataCadastro = new DateTime(2026, 10, 20, 22, 55, 57, 1, DateTimeKind.Utc).AddTicks(4859),
+                            DataCadastro = new DateTime(2026, 10, 21, 1, 36, 10, 174, DateTimeKind.Utc).AddTicks(9301),
                             Email = "gabriel.martins@barberpro.com.br",
                             Nome = "Gabriel Martins",
                             Telefone = "(51) 99991-0006",
