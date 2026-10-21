@@ -29,6 +29,8 @@ namespace Infrastructure.Configurations.Operacional
 
             builder.Property(x => x.HoraFim)
                 .IsRequired();
+            builder.Property(x => x.Ativo)
+                .IsRequired();
 
             builder.HasIndex(x => new
             {

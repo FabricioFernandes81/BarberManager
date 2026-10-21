@@ -35,7 +35,10 @@ namespace Infrastructure.Configurations.Operacional
                 x.DiaSemana
             });
             builder.Property(x => x.Ativo)
-    .IsRequired();
+                 .IsRequired();
+            builder.Property(x => x.EmpresaId)
+                 .IsRequired();
+
 
             builder.HasOne(x => x.Profissional)
                 .WithMany()

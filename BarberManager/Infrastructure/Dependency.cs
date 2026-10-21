@@ -1,6 +1,7 @@
 ﻿using Application.Common;
 using Application.Common.Outbox;
 using Application.Interfaces;
+using Application.Interfaces.Agendamentos;
 using Application.Interfaces.Clientes;
 using Application.Interfaces.Empresas;
 using Application.Interfaces.Empresas.Pagamentos;
@@ -93,6 +94,10 @@ namespace Infrastructure
             services.AddScoped<IRepositorioCliente, RepositorioCliente>();
 
             services.AddScoped<IRepositorioClienteAutenticacao, RepositorioClienteAutenticacao>();
+
+            services.AddScoped<IRepositorioDisponibilidadeAgenda, RepositorioDisponibilidadeAgenda>();
+
+            services.AddScoped<IRepositorioCriarAgendamento, RepositorioCriarAgendamento>();
 
             return services;
         }
