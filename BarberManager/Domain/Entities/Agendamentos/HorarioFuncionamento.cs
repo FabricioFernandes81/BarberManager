@@ -12,8 +12,7 @@ namespace Domain.Entities.Agendamentos
     {
         public Guid EmpresaId { get; set; }
 
-        public Guid ProfissionalId { get; set; }
-
+    
         public DayOfWeek DiaSemana { get; set; }
 
         // Horários locais da barbearia.
@@ -22,7 +21,5 @@ namespace Domain.Entities.Agendamentos
         public TimeOnly HoraFim { get; set; }
 
         public bool Ativo { get; set; } = true;
-
-        public Profissional Profissional { get; set; } = null!;
     }
 }

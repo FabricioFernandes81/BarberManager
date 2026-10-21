@@ -85,7 +85,10 @@ namespace Infrastructure.Context
             SeedProfissionais.SeedProfissial(modelBuilder);
             SeedModuloServicos.SeedIniciarServico(modelBuilder);
             SeedPlanosAssinatura.InicializarSeed(modelBuilder);
-        
+
+
+            SeedHorariosFuncionamento.InicializarSeed(modelBuilder);
+            SeedHorariosProfissionais.InicializarSeed(modelBuilder);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
