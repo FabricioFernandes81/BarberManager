@@ -17,13 +17,32 @@ namespace Application.Interfaces.Profissionais
        StatusProfissional? status, CancellationToken cancellationToken);
 
         Task<bool> ExisteCpfAsync(
-        Guid empresaId,
-        string cpf,
-        CancellationToken cancellationToken);
+      Guid empresaId,
+      string cpf,
+      CancellationToken cancellationToken,
+      Guid? profissionalIdIgnorado = null);
 
         Task<bool> ExisteMatriculaAsync(
             Guid empresaId,
             string matricula,
+            CancellationToken cancellationToken,
+            Guid? profissionalIdIgnorado = null);
+
+        Task<Profissional?> ObterPorIdAsync(
+            Guid empresaId,
+            Guid profissionalId,
+            CancellationToken cancellationToken,
+            bool rastrearAlteracoes = false);
+
+        Task<IReadOnlyList<HorarioProfissional>>
+            ObterHorariosPorProfissionalAsync(
+                Guid empresaId,
+                Guid profissionalId,
+                CancellationToken cancellationToken,
+                bool rastrearAlteracoes = false);
+
+        Task AdicionarHorarioAsync(
+            HorarioProfissional horario,
             CancellationToken cancellationToken);
 
         Task CriarAsync(

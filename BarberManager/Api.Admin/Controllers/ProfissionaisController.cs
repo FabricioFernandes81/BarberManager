@@ -64,39 +64,42 @@ namespace Api.Admin.Controllers
                     CriarProfissionalDto>(
                     new CriarProfissionalCommand
                     {
-                    Nome = command.Nome,
-                    Cpf = command.Cpf, Celular = command.Celular, Email = command.Email,
-                    Matricula = command.Matricula,
-                    Cargo = command.Cargo, 
-                    DataAdmissao = command.DataAdmissao, 
-                     Horarios = command.Horarios?
+                        Nome = command.Nome,
+                        Cpf = command.Cpf,
+                        Celular = command.Celular,
+                        Email = command.Email,
+                        Matricula = command.Matricula,
+                        Cargo = command.Cargo,
+                        DataAdmissao = command.DataAdmissao,
+                        Horarios = command.Horarios?
                      .Select(h => new HorarioProfissionalInput
                      {
                          DiaSemana = h.DiaSemana,
                          HoraInicio = h.HoraInicio,
                          HoraFim = h.HoraFim
-                     }).ToList(), 
+                     }).ToList(),
                         Sobrenome = command.Sobrenome,
-                     DataNascimento=  command.DataNascimento, 
-                     Sexo= command.Sexo, 
-                     Rg=  command.Rg,
-                     Telefone= command.Telefone, 
-                     TipoComissao= command.TipoComissao,
-                     ValorTipoPagamento= command.ValorTipoPagamento,
-                      IntervaloAtendimento = command.IntervaloAtendimento,
-                       PermiteEncaixe = command.PermiteEncaixe, 
-                       AgendaOnline = command.AgendaOnline,
+                        DataNascimento = command.DataNascimento,
+                        Sexo = command.Sexo,
+                        Rg = command.Rg,
+                        Telefone = command.Telefone,
+                        TipoComissao = command.TipoComissao,
+                        ValorTipoPagamento = command.ValorTipoPagamento,
+                        IntervaloAtendimento = command.IntervaloAtendimento,
+                        PermiteEncaixe = command.PermiteEncaixe,
+                        AgendaOnline = command.AgendaOnline,
                         Biografia = command.Biografia,
                         Foto = command.Foto,
-                    Status= command.Status, ExibirAgendamentoOnline = 
+                        Status = command.Status,
+                        ExibirAgendamentoOnline =
                     command.ExibirAgendamentoOnline,
-                     RecebePagamentoDireto= command.RecebePagamentoDireto,
-                        OrdemAgenda = command.OrdemAgenda, 
+                        RecebePagamentoDireto = command.RecebePagamentoDireto,
+                        OrdemAgenda = command.OrdemAgenda,
                         Instagram = command.Instagram,
-                         Facebook = command.Facebook,
-                       Especialidade = command.Especialidade,
+                        Facebook = command.Facebook,
+                        Especialidade = command.Especialidade,
                         Destaque = command.Destaque
-                    },cancellationToken);
+                    }, cancellationToken);
 
             return StatusCode(
                 StatusCodes.Status201Created,
@@ -121,6 +124,34 @@ namespace Api.Admin.Controllers
                     ProfissionalDetalheDto>(
                         query,
                         cancellationToken);
+
+            return Ok(resultado);
+        }
+
+    
+
+    [HttpPut("{id:guid}")]
+        [ProducesResponseType(
+    typeof(AtualizarProfissionalDto),
+    StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<AtualizarProfissionalDto>> Atualizar(
+    [FromRoute] Guid id,
+    [FromBody] AtualizarProfissionalCommand command,
+    CancellationToken cancellationToken)
+        {
+            var comando = command with
+            {
+                ProfissionalId = id
+            };
+
+            var resultado = await _dispatcher.Command<
+                AtualizarProfissionalCommand,
+                AtualizarProfissionalDto>(
+                    comando,
+                    cancellationToken);
 
             return Ok(resultado);
         }

@@ -1,9 +1,4 @@
 ﻿using Domain.Entities.Profissionais;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.Entities.Agendamentos
 {
@@ -38,16 +33,21 @@ namespace Domain.Entities.Agendamentos
             TimeOnly horaFim)
         {
             if (empresaId == Guid.Empty)
+            {
                 throw new ArgumentException(
-                    "A empresa deve ser informada.", nameof(empresaId));
+                    "A empresa deve ser informada.",
+                    nameof(empresaId));
+            }
 
             if (profissionalId == Guid.Empty)
+            {
                 throw new ArgumentException(
-                    "O profissional deve ser informado.", nameof(profissionalId));
+                    "O profissional deve ser informado.",
+                    nameof(profissionalId));
+            }
 
-            if (horaFim <= horaInicio)
-                throw new ArgumentException(
-                    "O horário final deve ser posterior ao horário inicial.");
+            ValidarDiaSemana(diaSemana);
+            ValidarIntervalo(horaInicio, horaFim);
 
             Id = Guid.NewGuid();
             EmpresaId = empresaId;
@@ -62,16 +62,54 @@ namespace Domain.Entities.Agendamentos
             TimeOnly horaInicio,
             TimeOnly horaFim)
         {
-            if (horaFim <= horaInicio)
-                throw new ArgumentException(
-                    "O horário final deve ser posterior ao horário inicial.");
+            ValidarIntervalo(horaInicio, horaFim);
 
             HoraInicio = horaInicio;
             HoraFim = horaFim;
         }
 
-        public void Ativar() => Ativo = true;
+        public void AtualizarDiaEHorario(
+            DayOfWeek diaSemana,
+            TimeOnly horaInicio,
+            TimeOnly horaFim)
+        {
+            ValidarDiaSemana(diaSemana);
+            ValidarIntervalo(horaInicio, horaFim);
 
-        public void Desativar() => Ativo = false;
+            DiaSemana = diaSemana;
+            HoraInicio = horaInicio;
+            HoraFim = horaFim;
+        }
+
+        public void Ativar()
+        {
+            Ativo = true;
+        }
+
+        public void Desativar()
+        {
+            Ativo = false;
+        }
+
+        private static void ValidarDiaSemana(DayOfWeek diaSemana)
+        {
+            if (!Enum.IsDefined(typeof(DayOfWeek), diaSemana))
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(diaSemana),
+                    "O dia da semana informado é inválido.");
+            }
+        }
+
+        private static void ValidarIntervalo(
+            TimeOnly horaInicio,
+            TimeOnly horaFim)
+        {
+            if (horaFim <= horaInicio)
+            {
+                throw new ArgumentException(
+                    "O horário final deve ser posterior ao horário inicial.");
+            }
+        }
     }
 }
