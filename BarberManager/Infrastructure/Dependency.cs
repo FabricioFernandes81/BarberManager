@@ -5,6 +5,7 @@ using Application.Interfaces.Agendamentos;
 using Application.Interfaces.Clientes;
 using Application.Interfaces.Empresas;
 using Application.Interfaces.Empresas.Pagamentos;
+using Application.Interfaces.Profissionais;
 using Application.Saas.Empresas;
 using Application.Saas.Pagamentos.Services;
 using Infrastructure.Context;
@@ -98,6 +99,8 @@ namespace Infrastructure
             services.AddScoped<IRepositorioDisponibilidadeAgenda, RepositorioDisponibilidadeAgenda>();
 
             services.AddScoped<IRepositorioCriarAgendamento, RepositorioCriarAgendamento>();
+            services.AddScoped<IRepositorioProfissionais, RepositorioProfissionais>();
+
 
             return services;
         }
