@@ -16,6 +16,12 @@ namespace Infrastructure.Repositories.Interfaces
     public class RepositorioDisponibilidadeAgenda : IRepositorioDisponibilidadeAgenda
     {
         private readonly BarbeariaOperacionalDbContext _dbContext;
+
+        public RepositorioDisponibilidadeAgenda(BarbeariaOperacionalDbContext dbContext)
+        {
+            _dbContext = dbContext;
+
+        }
         public async Task<bool> ExisteFeriadoAsync(Guid empresaId, DateOnly data, CancellationToken cancellationToken)
         {
             return await _dbContext.Feriados.AsNoTracking()
@@ -41,6 +47,13 @@ namespace Infrastructure.Repositories.Interfaces
                  .Where(x => x.EmpresaId == empresaId && x.Ativo && (x.ProfissionalId == null ||
                  x.ProfissionalId == profissionalId) && x.DataHoraInicio < fim && x.DataHoraFim > inicio)
                  .ToListAsync(cancellationToken);
+        }
+
+        public async Task<ConfiguracaoAgendaEmpresa?> ObterConfiguracaoAgendaEmpresaAsync(Guid empresaId, CancellationToken cancellationToken)
+        {
+            return await _dbContext.ConfiguracoesAgendaEmpresa
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.EmpresaId == empresaId, cancellationToken);
         }
 
         public async Task<List<HorarioFuncionamento>> ObterFuncionamentoAsync(Guid empresaId, DayOfWeek diaSemana, CancellationToken cancellationToken)
@@ -79,6 +92,15 @@ namespace Infrastructure.Repositories.Interfaces
                 .AsNoTracking()
                     .FirstOrDefaultAsync(x => x.Id == servicoId &&
                     x.EmpresaId == empresaId, cancellationToken);
+        }
+
+        public async Task<ProfissionalServicos?> ObterVinculoProfissionalServicoAsync(Guid empresaId, Guid profissionalId, Guid servicoId, CancellationToken cancellationToken)
+        {
+            return await _dbContext.ProfissionalServicos
+                 .AsNoTracking()
+                 .FirstOrDefaultAsync(x =>
+                 x.EmpresaId == empresaId && x.ProfissionalId == profissionalId &&
+                 x.ServicoId == servicoId && x.Ativo == StatusGeral.Ativo, cancellationToken);
         }
 
         public async Task<bool> ProfissionalExecutaServicoAsync(Guid empresaId, Guid profissionalId, Guid servicoId, CancellationToken cancellationToken)

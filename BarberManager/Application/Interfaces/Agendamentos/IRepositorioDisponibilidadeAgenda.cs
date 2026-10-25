@@ -56,5 +56,12 @@ namespace Application.Interfaces.Agendamentos
             DateTimeOffset inicio,
             DateTimeOffset fim,
             CancellationToken cancellationToken);
+
+        Task<ProfissionalServicos?> ObterVinculoProfissionalServicoAsync(
+    Guid empresaId, Guid profissionalId, Guid servicoId,
+    CancellationToken cancellationToken);
+        Task<ConfiguracaoAgendaEmpresa?> ObterConfiguracaoAgendaEmpresaAsync(
+    Guid empresaId,
+    CancellationToken cancellationToken);
     }
 }

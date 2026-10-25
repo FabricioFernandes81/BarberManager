@@ -51,10 +51,10 @@ namespace Application.Interfaces.Profissionais
             CancellationToken cancellationToken);
 
 
-        Task<Profissional?> ObterPorIdAsync(
+    /*    Task<Profissional?> ObterPorIdAsync(
     Guid empresaId, Guid profissionalId,
     CancellationToken cancellationToken);
-
+    */
         Task<IReadOnlyList<HorarioProfissional>>
             ObterHorariosPorProfissionalAsync(
                 Guid empresaId, Guid profissionalId,

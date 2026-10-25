@@ -70,5 +70,9 @@ namespace Application.Interfaces.Agendamentos
         Task CriarAsync(
             Agendamento agendamento,
             CancellationToken cancellationToken);
+
+        Task<ConfiguracaoAgendaEmpresa?> ObterConfiguracaoAgendaEmpresaAsync(
+    Guid empresaId,
+    CancellationToken cancellationToken);
     }
 }

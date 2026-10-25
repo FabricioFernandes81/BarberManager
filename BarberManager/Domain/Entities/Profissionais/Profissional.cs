@@ -58,7 +58,7 @@ namespace Domain.Entities.Profissionais
 
         public string? Foto { get; set; }
 
-
+        public int? ToleranciaEncerramentoMinutos { get; set; }
         // Situação
 
         public StatusProfissional Status { get; set; }

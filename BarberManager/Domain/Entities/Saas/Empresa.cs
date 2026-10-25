@@ -23,6 +23,7 @@ namespace Domain.Entities.Saas
         public DateTime? DataBloqueio { get; set; }
         public string? MotivoBloqueio { get; set; }
 
+     
 
         //Navegação 
         public ICollection<Assinatura> Assinaturas { get; set; }

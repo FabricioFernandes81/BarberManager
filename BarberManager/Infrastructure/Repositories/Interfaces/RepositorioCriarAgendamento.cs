@@ -188,5 +188,12 @@ namespace Infrastructure.Repositories.Interfaces
             // A gravação é confirmada pelo TransactionMiddleware
             // ao finalizar a transação operacional.
         }
+
+        public async Task<ConfiguracaoAgendaEmpresa?> ObterConfiguracaoAgendaEmpresaAsync(Guid empresaId, CancellationToken cancellationToken)
+        {
+            return await _context.ConfiguracoesAgendaEmpresa
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x => x.EmpresaId == empresaId, cancellationToken);
+        }
     }
 }

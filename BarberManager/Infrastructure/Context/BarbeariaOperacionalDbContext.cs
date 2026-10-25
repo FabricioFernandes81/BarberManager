@@ -57,6 +57,9 @@ namespace Infrastructure.Context
         public DbSet<BloqueioAgenda> BloqueiosAgenda => Set<BloqueioAgenda>();
         
         public DbSet<Feriado> Feriados => Set<Feriado>();
+
+        public DbSet<ConfiguracaoAgendaEmpresa> ConfiguracoesAgendaEmpresa
+    => Set<ConfiguracaoAgendaEmpresa>();
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -78,6 +81,8 @@ namespace Infrastructure.Context
             modelBuilder.ApplyConfiguration(new HorarioProfissionalConfiguration());
             modelBuilder.ApplyConfiguration(new BloqueioAgendaConfiguration());
             modelBuilder.ApplyConfiguration(new FeriadoConfiguration());
+            modelBuilder.ApplyConfiguration(new ConfiguracaoAgendaEmpresaConfiguration());
+
 
             modelBuilder.ApplyConfiguration(
                 new ClienteEmpresaConfiguration());

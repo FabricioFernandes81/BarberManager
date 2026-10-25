@@ -26,6 +26,15 @@ namespace Infrastructure.Configurations.Operacional
 
             builder.HasIndex(x => x.EmpresaId);
             builder.HasIndex(x => x.Cpf);
+
+            builder.Property(x => x.ToleranciaEncerramentoMinutos)
+    .IsRequired(false);
+
+            builder.ToTable(table =>
+                table.HasCheckConstraint(
+                    "CK_Profissionais_ToleranciaEncerramento",
+                    "[ToleranciaEncerramentoMinutos] IS NULL " +
+                    "OR [ToleranciaEncerramentoMinutos] >= 0"));
         }
     }
 }
