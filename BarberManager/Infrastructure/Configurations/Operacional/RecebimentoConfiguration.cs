@@ -13,24 +13,44 @@ namespace Infrastructure.Configurations.Operacional
     {
         public void Configure(EntityTypeBuilder<Recebimento> builder)
         {
-            builder.ToTable("Recebimento");
+            builder.ToTable("Recebimento", table =>
+            {
+                table.HasCheckConstraint(
+                    "CK_Recebimento_Valor_Positivo",
+                    "[Valor] > 0");
+            });
 
             builder.HasKey(x => x.Id);
 
+            builder.Property(x => x.ContaReceberId)
+                .IsRequired();
+
+            builder.Property(x => x.FormaPagamentoId)
+                .IsRequired();
+
+            builder.Property(x => x.DataRecebimento)
+                .IsRequired();
+
             builder.Property(x => x.Valor)
-                .HasColumnType("decimal(18,2)");
+                .HasPrecision(18, 2)
+                .IsRequired();
 
             builder.Property(x => x.Observacao)
                 .HasMaxLength(500);
 
             builder.HasOne(x => x.ContaReceber)
                 .WithMany(x => x.Recebimentos)
-                .HasForeignKey(x => x.ContaReceberId);
+                .HasForeignKey(x => x.ContaReceberId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasOne(x => x.FormaPagamento)
                 .WithMany()
                 .HasForeignKey(x => x.FormaPagamentoId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasIndex(x => x.ContaReceberId);
+
+            builder.HasIndex(x => x.FormaPagamentoId);
 
             builder.HasIndex(x => x.DataRecebimento);
         }

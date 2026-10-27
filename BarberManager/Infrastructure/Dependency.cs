@@ -5,6 +5,7 @@ using Application.Interfaces.Agendamentos;
 using Application.Interfaces.Clientes;
 using Application.Interfaces.Empresas;
 using Application.Interfaces.Empresas.Pagamentos;
+using Application.Interfaces.Financeiro;
 using Application.Interfaces.Profissionais;
 using Application.Saas.Empresas;
 using Application.Saas.Pagamentos.Services;
@@ -14,6 +15,7 @@ using Infrastructure.Payments;
 using Infrastructure.Payments.Asaas;
 using Infrastructure.Repositories;
 using Infrastructure.Repositories.Clientes;
+using Infrastructure.Repositories.Financeiro;
 using Infrastructure.Repositories.Interfaces;
 using Infrastructure.Seeds.Operacional;
 using Infrastructure.Services;
@@ -102,6 +104,9 @@ namespace Infrastructure
             services.AddScoped<IRepositorioProfissionais, RepositorioProfissionais>();
 
             services.AddScoped<IRepositorioGerenciarAgendamento, RepositorioGerenciarAgendamento>();
+
+            services.AddScoped<IRepositorioRecebimento, RepositorioRecebimento>();
+
 
             return services;
         }

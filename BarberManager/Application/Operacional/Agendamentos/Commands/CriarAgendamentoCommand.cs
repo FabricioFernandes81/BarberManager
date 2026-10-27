@@ -1,9 +1,5 @@
 ﻿using Application.Common.Transactions;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Application.Operacional.Agendamentos.Commands
 {
@@ -14,6 +10,7 @@ namespace Application.Operacional.Agendamentos.Commands
      DateTimeOffset DataHoraInicio,
      string? Observacoes) : ITransactionalCommand
     {
+        [NotMapped]
         public TransactionContext TransactionContext =>
             TransactionContext.Operacional;
     }

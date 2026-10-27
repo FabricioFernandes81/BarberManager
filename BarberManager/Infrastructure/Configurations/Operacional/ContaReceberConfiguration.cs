@@ -17,29 +17,69 @@ namespace Infrastructure.Configurations.Operacional
 
             builder.HasKey(x => x.Id);
 
-            builder.Property(x => x.Descricao)
-                .HasMaxLength(300);
+            builder.Property(x => x.EmpresaId)
+                .IsRequired();
+
+            builder.Property(x => x.ClienteId)
+                .IsRequired(false);
+
+            builder.Property(x => x.DataEmissao)
+                .IsRequired();
+
+            builder.Property(x => x.DataVencimento)
+                .IsRequired();
 
             builder.Property(x => x.Valor)
-                .HasColumnType("decimal(18,2)");
+                .HasPrecision(18, 2)
+                .IsRequired();
 
             builder.Property(x => x.ValorRecebido)
-                .HasColumnType("decimal(18,2)");
+                .HasPrecision(18, 2)
+                .IsRequired();
 
+            builder.Property(x => x.Status)
+                .HasConversion<int>()
+                .IsRequired();
+
+            builder.Property(x => x.Descricao)
+                .HasMaxLength(300)
+                .IsRequired();
+
+            // Relacionamento opcional com Cliente.
             builder.HasOne(x => x.Cliente)
                 .WithMany()
                 .HasForeignKey(x => x.ClienteId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            // Uma conta pode ter vários recebimentos.
             builder.HasMany(x => x.Recebimentos)
                 .WithOne(x => x.ContaReceber)
-                .HasForeignKey(x => x.ContaReceberId);
+                .HasForeignKey(x => x.ContaReceberId)
+                .OnDelete(DeleteBehavior.Restrict);
 
+            // Índices para consultas por empresa.
             builder.HasIndex(x => x.EmpresaId);
 
-            builder.HasIndex(x => x.Status);
+            // Consultas de contas por situação.
+            builder.HasIndex(x => new
+            {
+                x.EmpresaId,
+                x.Status
+            });
 
-            builder.HasIndex(x => x.DataVencimento);
+            // Consultas de vencimentos por empresa.
+            builder.HasIndex(x => new
+            {
+                x.EmpresaId,
+                x.DataVencimento
+            });
+
+            // Consultas financeiras por cliente.
+            builder.HasIndex(x => new
+            {
+                x.EmpresaId,
+                x.ClienteId
+            });
         }
     }
 
