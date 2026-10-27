@@ -100,7 +100,7 @@ namespace Infrastructure.Repositories.Interfaces
                  .AsNoTracking()
                  .FirstOrDefaultAsync(x =>
                  x.EmpresaId == empresaId && x.ProfissionalId == profissionalId &&
-                 x.ServicoId == servicoId && x.Ativo == StatusGeral.Ativo, cancellationToken);
+                 x.ServicoId == servicoId /*&& x.Ativo == StatusGeral.Ativo*/, cancellationToken);
         }
 
         public async Task<bool> ProfissionalExecutaServicoAsync(Guid empresaId, Guid profissionalId, Guid servicoId, CancellationToken cancellationToken)

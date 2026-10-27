@@ -7,6 +7,8 @@ using Domain.Entities.AuthUsers;
 using Infrastructure;
 using Infrastructure.Context;
 using Infrastructure.Seeds.AuthUsers;
+using Infrastructure.Seeds.Clientes;
+using Infrastructure.Seeds.Operacional;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -107,7 +109,10 @@ app.UseMiddleware<ExceptionMiddleware>();
 
 if (app.Environment.IsDevelopment())
 {
-  //  await SeederVinculos.InicializarAsync(app.Services);
+    //  await SeederVinculos.InicializarAsync(app.Services);
+    await SeederClientes.InicializarAsync(app.Services);
+    await AgendamentoSeed.InicializarAsync(app.Services);
+
     app.UseSwagger();
     app.UseSwaggerUI(options =>
     {

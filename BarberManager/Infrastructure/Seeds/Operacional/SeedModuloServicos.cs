@@ -64,6 +64,7 @@ namespace Infrastructure.Seeds.Operacional
                 {
                     Id = Guid.NewGuid(),
                     ProfissionalId = SeedProfissionais.Profissional1,
+                    EmpresaId = SeedEmpresa.Empresa1,
                     ServicoId = Servico1,
                     ValorPersonalizado = 50,
                     DuracaoPersonalizada = 25,
@@ -72,6 +73,7 @@ namespace Infrastructure.Seeds.Operacional
                 {
                     Id = Guid.NewGuid(),
                     ProfissionalId = SeedProfissionais.Profissional1,
+                    EmpresaId = SeedEmpresa.Empresa1,
                     ServicoId = Servico2,
                     ValorPersonalizado = 70,
                     DuracaoPersonalizada = 35,
@@ -81,6 +83,7 @@ namespace Infrastructure.Seeds.Operacional
                     Id = Guid.NewGuid(),
                     ProfissionalId = SeedProfissionais.Profissional1,
                     ServicoId = Servico3,
+                    EmpresaId = SeedEmpresa.Empresa1,
                     ValorPersonalizado = 80,
                     DuracaoPersonalizada = 40,
                     Ativo = StatusGeral.Inativo
@@ -89,6 +92,7 @@ namespace Infrastructure.Seeds.Operacional
                     Id = Guid.NewGuid(),
                     ProfissionalId = SeedProfissionais.Profissional2,
                     ServicoId = Servico4,
+                    EmpresaId = SeedEmpresa.Empresa1,
                     ValorPersonalizado = 90,
                     DuracaoPersonalizada = 45,
                     Ativo = StatusGeral.Inativo,
@@ -97,6 +101,7 @@ namespace Infrastructure.Seeds.Operacional
                     Id = Guid.NewGuid(),
                     ProfissionalId = SeedProfissionais.Profissional2,
                     ServicoId = Servico5,
+                    EmpresaId = SeedEmpresa.Empresa1,
                     ValorPersonalizado = 90,
                     DuracaoPersonalizada = 45,
                     Ativo = StatusGeral.Inativo,
@@ -106,6 +111,7 @@ namespace Infrastructure.Seeds.Operacional
                     ProfissionalId = SeedProfissionais.Profissional3,
                     ServicoId = Servico5,
                     ValorPersonalizado = 90,
+                    EmpresaId = SeedEmpresa.Empresa1,
                     DuracaoPersonalizada = 45,
                     Ativo = StatusGeral.Inativo,
                 },new ProfissionalServicos
@@ -113,6 +119,7 @@ namespace Infrastructure.Seeds.Operacional
                     Id = Guid.NewGuid(),
                     ProfissionalId = SeedProfissionais.Profissional3,
                     ServicoId = Servico6,
+                    EmpresaId = SeedEmpresa.Empresa1,
                     ValorPersonalizado = 90,
                     DuracaoPersonalizada = 45,
                     Ativo = StatusGeral.Inativo,
@@ -122,6 +129,7 @@ namespace Infrastructure.Seeds.Operacional
                     Id = Guid.NewGuid(),
                     ProfissionalId = SeedProfissionais.Profissional11,
                     ServicoId = Servico1,
+                    EmpresaId = SeedEmpresa.Empresa1,
                     ValorPersonalizado = 50,
                     DuracaoPersonalizada = 10,
                     Ativo = StatusGeral.Inativo

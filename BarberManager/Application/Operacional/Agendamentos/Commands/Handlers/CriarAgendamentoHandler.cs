@@ -51,6 +51,17 @@ namespace Application.Operacional.Agendamentos.Commands.Handlers
 
             var inicio = command.DataHoraInicio;
 
+         /*   if (inicio.Date < DateTimeOffset.Now.Date)
+            {
+                throw Erro("O agendamento não pode ser feito em uma data passada.");
+            }
+
+            if (inicio <= DateTimeOffset.Now)
+            {
+                throw Erro("O horário do agendamento deve ser futuro.");
+            }*/
+
+            
             if (inicio <= DateTimeOffset.Now)
             {
                 throw Erro(

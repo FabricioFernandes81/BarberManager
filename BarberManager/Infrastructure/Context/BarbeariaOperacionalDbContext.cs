@@ -1,9 +1,11 @@
 ﻿using Domain.Entities.Agendamentos;
 using Domain.Entities.Assinaturas;
 using Domain.Entities.Clientes;
+using Domain.Entities.Financeiro;
 using Domain.Entities.Profissionais;
 using Domain.Entities.Servicos;
 using Infrastructure.Configurations.Operacional;
+using Infrastructure.Configurations.Saas;
 using Infrastructure.Seeds.Operacional;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
@@ -58,6 +60,22 @@ namespace Infrastructure.Context
         
         public DbSet<Feriado> Feriados => Set<Feriado>();
 
+        public DbSet<Caixa> Caixas => Set<Caixa>();
+        public DbSet<MovimentoCaixa> MovimentoCaixas => Set<MovimentoCaixa>();
+
+        public DbSet<FormaPagamento> FormaPagamentos => Set<FormaPagamento>();
+
+        public DbSet<Recebimento> Recebimentos => Set<Recebimento>();
+
+
+        public DbSet<ContaPagar> ContasPagar => Set<ContaPagar>();
+        public DbSet<ContaReceber> ContasReceber => Set<ContaReceber>();
+        public DbSet<Pagamento> Pagamentos => Set<Pagamento>();
+
+
+
+
+
         public DbSet<ConfiguracaoAgendaEmpresa> ConfiguracoesAgendaEmpresa
     => Set<ConfiguracaoAgendaEmpresa>();
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -81,7 +99,16 @@ namespace Infrastructure.Context
             modelBuilder.ApplyConfiguration(new HorarioProfissionalConfiguration());
             modelBuilder.ApplyConfiguration(new BloqueioAgendaConfiguration());
             modelBuilder.ApplyConfiguration(new FeriadoConfiguration());
+
             modelBuilder.ApplyConfiguration(new ConfiguracaoAgendaEmpresaConfiguration());
+            modelBuilder.ApplyConfiguration(new CaixaConfiguration());
+            modelBuilder.ApplyConfiguration(new MovimentoCaixaConfiguration());
+            modelBuilder.ApplyConfiguration(new FormaPagamentoConfiguration());
+            modelBuilder.ApplyConfiguration(new RecebimentoConfiguration());
+
+            modelBuilder.ApplyConfiguration(new ContaPagarConfiguration());
+            modelBuilder.ApplyConfiguration(new ContaReceberConfiguration());
+            modelBuilder.ApplyConfiguration(new PagamentoConfiguration());
 
 
             modelBuilder.ApplyConfiguration(

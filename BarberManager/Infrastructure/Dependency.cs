@@ -101,6 +101,7 @@ namespace Infrastructure
             services.AddScoped<IRepositorioCriarAgendamento, RepositorioCriarAgendamento>();
             services.AddScoped<IRepositorioProfissionais, RepositorioProfissionais>();
 
+            services.AddScoped<IRepositorioGerenciarAgendamento, RepositorioGerenciarAgendamento>();
 
             return services;
         }

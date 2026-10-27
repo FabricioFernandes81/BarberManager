@@ -88,8 +88,8 @@ namespace Infrastructure.Repositories.Interfaces
                 .FirstOrDefaultAsync(
                     x => x.EmpresaId == empresaId
                       && x.ProfissionalId == profissionalId
-                      && x.ServicoId == servicoId
-                      && x.Ativo == StatusGeral.Ativo,
+                      && x.ServicoId == servicoId,
+                    /*  && x.Ativo == StatusGeral.Ativo,*/
                     cancellationToken);
         }
 
