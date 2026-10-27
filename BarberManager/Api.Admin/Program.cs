@@ -9,6 +9,7 @@ using Infrastructure.Context;
 using Infrastructure.Seeds.AuthUsers;
 using Infrastructure.Seeds.Clientes;
 using Infrastructure.Seeds.Operacional;
+using Infrastructure.Seeds.Operacional.Financeiro;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -112,6 +113,8 @@ if (app.Environment.IsDevelopment())
     //  await SeederVinculos.InicializarAsync(app.Services);
     await SeederClientes.InicializarAsync(app.Services);
     await AgendamentoSeed.InicializarAsync(app.Services);
+
+    await SeedersFinanceiro.InicializarAsync(app.Services);
 
     app.UseSwagger();
     app.UseSwaggerUI(options =>

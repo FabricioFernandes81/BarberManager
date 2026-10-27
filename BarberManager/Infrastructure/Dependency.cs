@@ -106,7 +106,7 @@ namespace Infrastructure
             services.AddScoped<IRepositorioGerenciarAgendamento, RepositorioGerenciarAgendamento>();
 
             services.AddScoped<IRepositorioRecebimento, RepositorioRecebimento>();
-
+            services.AddScoped<IRepositorioCaixa, RepositorioCaixa>();
 
             return services;
         }

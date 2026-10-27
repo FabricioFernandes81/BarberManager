@@ -22,7 +22,6 @@
     <Folder Include="Operacional\Agenda\Configuracoes\" />
     <Folder Include="Operacional\Agenda\DTOs\" />
     <Folder Include="Operacional\Agenda\Queries\" />
-    <Folder Include="Operacional\Financeiro\NovaPasta\" />
     <Folder Include="Saas\NovaPasta\" />
   </ItemGroup>
 

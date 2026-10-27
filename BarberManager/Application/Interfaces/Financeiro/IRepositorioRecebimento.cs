@@ -10,17 +10,26 @@ namespace Application.Interfaces.Financeiro
     public interface IRepositorioRecebimento
     {
         Task<ContaReceber?> ObterContaParaRecebimentoAsync(
-            Guid empresaId,
-            Guid contaReceberId,
-            CancellationToken cancellationToken);
+           Guid empresaId,
+           Guid contaReceberId,
+           CancellationToken cancellationToken);
 
         Task<FormaPagamento?> ObterFormaPagamentoAtivaAsync(
             Guid empresaId,
             Guid formaPagamentoId,
             CancellationToken cancellationToken);
 
+        Task<Caixa?> ObterCaixaAbertoAsync(
+            Guid empresaId,
+            Guid usuarioId,
+            CancellationToken cancellationToken);
+
         Task AdicionarAsync(
             Recebimento recebimento,
+            CancellationToken cancellationToken);
+
+        Task AdicionarMovimentoCaixaAsync(
+            MovimentoCaixa movimento,
             CancellationToken cancellationToken);
     }
 }

@@ -4,6 +4,7 @@ using Application.Common.Security;
 using Application.Common.Tenancy;
 using Application.Interfaces.Financeiro;
 using Application.Operacional.Financeiro.DTOs;
+using Domain.Entities.Common.Enuns;
 using Domain.Entities.Financeiro;
 using System;
 using System.Collections.Generic;
@@ -50,6 +51,17 @@ namespace Application.Operacional.Financeiro.Commands.Handlers
             {
                 throw Erro(
                     "É necessário estar autenticado para registrar um recebimento.");
+            }
+            var caixa = await _repositorio.ObterCaixaAbertoAsync(
+                              empresaId,
+                                  _usuarioLogado.UsuarioId,
+                                                      cancellationToken);
+
+            if (caixa is null)
+            {
+                throw Erro(
+                    "Não existe um caixa aberto para este usuário nesta empresa. " +
+                    "Abra o caixa antes de registrar o recebimento.");
             }
 
             // 3. Validar os identificadores.
@@ -128,7 +140,7 @@ namespace Application.Operacional.Financeiro.Commands.Handlers
             }
 
             // 10. Criar o registro individual do recebimento.
-            var recebimento = new Recebimento
+            /*var recebimento = new Recebimento
             {
                 ContaReceberId = conta.Id,
                 ContaReceber = conta,
@@ -137,11 +149,44 @@ namespace Application.Operacional.Financeiro.Commands.Handlers
                 DataRecebimento = dataRecebimento,
                 Valor = command.Valor,
                 Observacao = observacao
+            };*/
+            var recebimento = new Recebimento
+            {
+                ContaReceberId = conta.Id,
+                ContaReceber = conta,
+                FormaPagamentoId = formaPagamento.Id,
+                DataRecebimento = dataRecebimento,
+                Valor = command.Valor,
+                Observacao = observacao
             };
 
             await _repositorio.AdicionarAsync(
                 recebimento,
                 cancellationToken);
+
+
+            var movimento = new MovimentoCaixa
+            {
+                CaixaId = caixa.Id,
+                Caixa = caixa,
+
+                TipoMovimento = TipoMovimentoCaixa.Entrada,
+
+                FormaPagamentoId = formaPagamento.Id,
+
+                DataMovimento = dataRecebimento,
+                Valor = command.Valor,
+
+                Historico = $"Recebimento da conta a receber {conta.Id}",
+
+                Documento = recebimento.Id.ToString()
+            };
+
+            await _repositorio.AdicionarMovimentoCaixaAsync(
+                movimento,
+                cancellationToken);
+
+
 
             // 11. O TransactionMiddleware persiste a conta
             // atualizada e o recebimento na mesma transação.

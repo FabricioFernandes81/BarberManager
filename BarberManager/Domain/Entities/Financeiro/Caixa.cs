@@ -25,6 +25,11 @@ namespace Domain.Entities.Financeiro
 
         public string? Observacao { get; set; }
 
+        public decimal? SaldoEsperadoFechamento { get; set; }
+
+        public decimal? DiferencaFechamento { get; set; }
+
+        public string? ObservacaoFechamento { get; set; }
         public ICollection<MovimentoCaixa> Movimentos { get; set; }
             = new List<MovimentoCaixa>();
 

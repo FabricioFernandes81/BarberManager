@@ -1,5 +1,8 @@
 ﻿using Application.Interfaces.Financeiro;
+using Domain.Entities.AuthUsers;
+using Domain.Entities.Common.Enuns;
 using Domain.Entities.Financeiro;
+using Domain.Entities.Saas;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -59,5 +62,24 @@ namespace Infrastructure.Repositories.Financeiro
             // Não chamar SaveChangesAsync aqui.
             // O TransactionMiddleware confirma a transação.
         }
+
+        public async Task<Caixa?> ObterCaixaAbertoAsync(Guid empresaId, Guid usuarioId, CancellationToken cancellationToken)
+        {
+            return await _context.Caixas
+        .SingleOrDefaultAsync(
+            x => x.EmpresaId == empresaId
+              && x.UsuarioId == usuarioId
+              && x.Status == StatusCaixa.Aberto,
+            cancellationToken);
+        }
+
+        public async Task AdicionarMovimentoCaixaAsync(MovimentoCaixa movimento, CancellationToken cancellationToken)
+        {
+            await _context.MovimentoCaixas.AddAsync(
+         movimento,
+         cancellationToken);
+        }
+
+    
     }
 }

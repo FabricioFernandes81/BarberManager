@@ -40,6 +40,23 @@ namespace Infrastructure.Configurations.Operacional
 
             builder.HasIndex(x => x.DataAbertura);
 
+            builder.Property(x => x.SaldoEsperadoFechamento)
+    .HasColumnType("decimal(18,2)");
+
+            builder.Property(x => x.DiferencaFechamento)
+                .HasColumnType("decimal(18,2)");
+
+            builder.Property(x => x.ObservacaoFechamento)
+                .HasMaxLength(1000);
+
+             builder.HasIndex(x => new
+             {
+                 x.EmpresaId,
+                 x.UsuarioId
+             })
+                 .IsUnique()
+                 .HasFilter("[Status] = 1");
+
         }
     }
 }
