@@ -72,7 +72,7 @@ namespace Infrastructure.Context
         public DbSet<ContaReceber> ContasReceber => Set<ContaReceber>();
         public DbSet<Pagamento> Pagamentos => Set<Pagamento>();
 
-
+        public DbSet<ConfiguracaoAssasClient> ConfiguracaoAssasClients => Set<ConfiguracaoAssasClient>();
 
 
 
@@ -110,6 +110,7 @@ namespace Infrastructure.Context
             modelBuilder.ApplyConfiguration(new ContaReceberConfiguration());
             modelBuilder.ApplyConfiguration(new PagamentoConfiguration());
 
+            modelBuilder.ApplyConfiguration(new ConfiguracaoAssasClientConfiguration());
 
             modelBuilder.ApplyConfiguration(
                 new ClienteEmpresaConfiguration());
