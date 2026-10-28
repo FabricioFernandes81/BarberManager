@@ -59,6 +59,13 @@ namespace Application.Operacional.Financeiro.Commands.Handlers
             if (observacao?.Length > 1000)
                 throw Validacao("A observação de fechamento deve possuir no máximo 1000 caracteres.");
 
+            await _repositorio.BloquearOperacaoCaixaAsync(
+                                      _tenantContext.EmpresaId,
+                                           _usuarioLogado.UsuarioId,
+                                                         cancellationToken);
+
+
+
             var caixa = await _repositorio
                 .ObterCaixaAbertoComMovimentosParaAtualizacaoAsync(
                     _tenantContext.EmpresaId,

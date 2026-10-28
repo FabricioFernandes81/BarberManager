@@ -22,14 +22,17 @@ namespace Application.Operacional.Financeiro.Commands.Handlers
         private readonly IRepositorioRecebimento _repositorio;
         private readonly ITenantContext _tenantContext;
         private readonly IUsuarioLogado _usuarioLogado;
+        private readonly IRepositorioCaixa _repositorioCaixa;
 
         public RegistrarRecebimentoHandler(
             IRepositorioRecebimento repositorio,
-            ITenantContext tenantContext,
+            IRepositorioCaixa repositorioCaixa,
+        ITenantContext tenantContext,
             IUsuarioLogado usuarioLogado)
         {
             _repositorio = repositorio;
             _tenantContext = tenantContext;
+            _repositorioCaixa = repositorioCaixa;
             _usuarioLogado = usuarioLogado;
         }
 
@@ -52,10 +55,21 @@ namespace Application.Operacional.Financeiro.Commands.Handlers
                 throw Erro(
                     "É necessário estar autenticado para registrar um recebimento.");
             }
+
+            if (_usuarioLogado.UsuarioId == Guid.Empty)
+            {
+                throw Erro("O identificador do usuário é inválido.");
+            }
+
+            await _repositorioCaixa.BloquearOperacaoCaixaAsync(
+                empresaId,
+                _usuarioLogado.UsuarioId,
+                cancellationToken);
+
             var caixa = await _repositorio.ObterCaixaAbertoAsync(
-                              empresaId,
-                                  _usuarioLogado.UsuarioId,
-                                                      cancellationToken);
+                empresaId,
+                _usuarioLogado.UsuarioId,
+                cancellationToken);
 
             if (caixa is null)
             {

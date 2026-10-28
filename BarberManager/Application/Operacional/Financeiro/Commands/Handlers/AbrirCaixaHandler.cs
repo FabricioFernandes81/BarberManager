@@ -47,12 +47,28 @@ namespace Application.Operacional.Financeiro.Commands.Handlers
             var empresaId = _tenantContext.EmpresaId;
             var usuarioId = _usuarioLogado.UsuarioId;
 
+            /*  if (await _repositorio.ExisteCaixaAbertoAsync(
+                  empresaId, usuarioId, cancellationToken))
+              {
+                  throw Validacao(
+                      "Já existe um caixa aberto para este usuário nesta empresa.");
+              }*/
+
+            await _repositorio.BloquearOperacaoCaixaAsync(
+    empresaId,
+    usuarioId,
+    cancellationToken);
+
             if (await _repositorio.ExisteCaixaAbertoAsync(
-                empresaId, usuarioId, cancellationToken))
+                empresaId,
+                usuarioId,
+                cancellationToken))
             {
                 throw Validacao(
                     "Já existe um caixa aberto para este usuário nesta empresa.");
             }
+
+
 
             var observacao = string.IsNullOrWhiteSpace(command.Observacao)
                 ? null

@@ -43,5 +43,10 @@ namespace Application.Interfaces.Financeiro
     Guid empresaId,
     Guid usuarioId,
     CancellationToken cancellationToken);
+
+        Task BloquearOperacaoCaixaAsync(
+            Guid empresaId,
+            Guid usuarioId,
+            CancellationToken cancellationToken);
     }
 }

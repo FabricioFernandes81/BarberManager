@@ -141,5 +141,37 @@ namespace Infrastructure.Repositories.Financeiro
              && x.Status == StatusCaixa.Aberto,
            cancellationToken);
         }
+
+        public async Task BloquearOperacaoCaixaAsync(Guid empresaId, Guid usuarioId, CancellationToken cancellationToken)
+        {
+            if (empresaId == Guid.Empty)
+                throw new ArgumentException(
+                    "A empresa deve ser informada.",
+                    nameof(empresaId));
+
+            if (usuarioId == Guid.Empty)
+                throw new ArgumentException(
+                    "O usuário deve ser informado.",
+                    nameof(usuarioId));
+
+            var recurso = $"BarberManager:Caixa:{empresaId:N}:{usuarioId:N}";
+
+            await _context.Database.ExecuteSqlInterpolatedAsync(
+                $"""
+        DECLARE @resultado INT;
+
+        EXEC @resultado = sys.sp_getapplock
+            @Resource = {recurso},
+            @LockMode = 'Exclusive',
+            @LockOwner = 'Transaction',
+            @LockTimeout = 10000;
+
+        IF @resultado < 0
+        BEGIN
+            THROW 51000, 'Não foi possível obter o bloqueio do caixa.', 1;
+        END;
+        """,
+                cancellationToken);
+        }
     }
 }
