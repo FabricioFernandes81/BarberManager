@@ -2,6 +2,7 @@
 using Domain.Entities.Common;
 using Domain.Entities.Common.Enuns;
 using Domain.Entities.Profissionais;
+using Domain.Entities.Vendas;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -38,6 +39,9 @@ namespace Domain.Entities.Agendamentos
         public Cliente Cliente { get; set; } = null!;
 
         public Profissional Profissional { get; set; } = null!;
+
+        public Venda? Venda { get; set; }
+
 
         public ICollection<AgendamentoServico> Servicos { get; set; }
             = new List<AgendamentoServico>();

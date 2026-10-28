@@ -4,7 +4,9 @@ using Domain.Entities.Clientes;
 using Domain.Entities.Financeiro;
 using Domain.Entities.Profissionais;
 using Domain.Entities.Servicos;
+using Domain.Entities.Vendas;
 using Infrastructure.Configurations.Operacional;
+using Infrastructure.Configurations.Operacional.Vendas;
 using Infrastructure.Configurations.Saas;
 using Infrastructure.Seeds.Operacional;
 using Microsoft.EntityFrameworkCore;
@@ -74,7 +76,9 @@ namespace Infrastructure.Context
 
         public DbSet<ConfiguracaoAssasClient> ConfiguracaoAssasClients => Set<ConfiguracaoAssasClient>();
 
+        public DbSet<Venda> Vendas => Set<Venda>();
 
+        public DbSet<VendaItem> VendaItens => Set<VendaItem>();
 
         public DbSet<ConfiguracaoAgendaEmpresa> ConfiguracoesAgendaEmpresa
     => Set<ConfiguracaoAgendaEmpresa>();
@@ -109,6 +113,8 @@ namespace Infrastructure.Context
             modelBuilder.ApplyConfiguration(new ContaPagarConfiguration());
             modelBuilder.ApplyConfiguration(new ContaReceberConfiguration());
             modelBuilder.ApplyConfiguration(new PagamentoConfiguration());
+            modelBuilder.ApplyConfiguration(new VendaConfiguration());
+            modelBuilder.ApplyConfiguration(new VendaItemConfiguration());
 
             modelBuilder.ApplyConfiguration(new ConfiguracaoAssasClientConfiguration());
 
