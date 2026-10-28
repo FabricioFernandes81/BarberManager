@@ -73,5 +73,10 @@ namespace Infrastructure.Repositories.Vendas
             // A persistência será coordenada pela transação
             // da aplicação.
         }
+
+        public Task RemoverItemAsync(Guid empresaId, Guid vendaId, Guid itemVendaId, CancellationToken cancellationToken)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
