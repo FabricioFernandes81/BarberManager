@@ -96,6 +96,26 @@ namespace Domain.Entities.Vendas
             RecalcularTotais();
         }
 
+        public void RemoverItem(Guid itemId)
+        {
+            if (Status != StatusVenda.Aberta)
+            {
+                throw new InvalidOperationException(
+                    "Só é permitido remover itens de uma venda aberta.");
+            }
+
+            var item = Itens.SingleOrDefault(i => i.Id == itemId);
+
+            if (item is null)
+            {
+                throw new InvalidOperationException(
+                    "O item informado não pertence a esta venda.");
+            }
+
+            Itens.Remove(item);
+
+            RecalcularTotais();
+        }
         private void RecalcularTotais()
         {
             Subtotal = decimal.Round(

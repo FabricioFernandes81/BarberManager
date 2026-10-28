@@ -164,6 +164,7 @@ namespace Application.Operacional.Vendas.Commands.Handlers
             // O método recalcula subtotal, desconto e total da venda.
             venda.AdicionarItem(itemVenda);
 
+            await _repositorioVenda.AdicionarItemAsync(itemVenda, cancellationToken);
             // Não chamar SaveChangesAsync aqui.
             // A persistência é coordenada pelo TransactionMiddleware.
 

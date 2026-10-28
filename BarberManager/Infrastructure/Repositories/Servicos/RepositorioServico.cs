@@ -26,12 +26,12 @@ namespace Infrastructure.Repositories.Servicos
             CancellationToken cancellationToken)
         {
             return await _context.Servicos
-                .AsNoTracking()
-                .SingleOrDefaultAsync(
-                    servico =>
-                        servico.Id == servicoId &&
-                        servico.EmpresaId == empresaId,
-                    cancellationToken);
+                    .AsNoTracking()
+                    .SingleOrDefaultAsync(
+                        servico =>
+                            servico.Id == servicoId &&
+                            servico.EmpresaId == empresaId,
+                        cancellationToken);
         }
     }
 }

@@ -38,5 +38,32 @@ namespace Api.Admin.Controllers
 
             return Ok(resultado);
         }
+
+        [HttpDelete("{vendaId:guid}/itens/{itemVendaId:guid}")]
+        [ProducesResponseType(
+        typeof(RemoverItemVendaDto),
+        StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<RemoverItemVendaDto>> RemoverItem(
+        Guid vendaId,
+        Guid itemVendaId,
+        CancellationToken cancellationToken)
+        {
+            var command = new RemoverItemVendaCommand
+            {
+                VendaId = vendaId,
+                ItemVendaId = itemVendaId
+            };
+
+            var resultado = await _dispatcher.Command<
+                RemoverItemVendaCommand,
+                RemoverItemVendaDto>(
+                    command,
+                    cancellationToken);
+
+            return Ok(resultado);
+        }
     }
 }

@@ -36,6 +36,32 @@ public sealed class EfUnitOfWork<TContext> : IUnitOfWork
             throw new InvalidOperationException(
                 "Não existe uma transação ativa.");
         }
+     /*   try
+        {
+            await _context.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateConcurrencyException ex)
+        {
+            foreach (var entry in ex.Entries)
+            {
+                Console.WriteLine(
+                    $"Entidade: {entry.Metadata.ClrType.Name}");
+
+                Console.WriteLine(
+                    $"Estado: {entry.State}");
+
+                foreach (var property in entry.Properties
+                             .Where(p => p.Metadata.IsPrimaryKey()))
+                {
+                    Console.WriteLine(
+                        $"Chave {property.Metadata.Name}: {property.CurrentValue}");
+                }
+            }
+
+            throw;
+        }*/
+
+        
         await _context.SaveChangesAsync(cancellationToken);
 
         await _transaction.CommitAsync(cancellationToken);

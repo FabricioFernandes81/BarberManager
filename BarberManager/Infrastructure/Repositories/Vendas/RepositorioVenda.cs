@@ -5,6 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -74,9 +75,20 @@ namespace Infrastructure.Repositories.Vendas
             // da aplicação.
         }
 
-        public Task RemoverItemAsync(Guid empresaId, Guid vendaId, Guid itemVendaId, CancellationToken cancellationToken)
+       
+
+        public async Task AdicionarItemAsync(VendaItem item, CancellationToken cancellationToken)
         {
-            throw new NotImplementedException();
+            await _context.VendaItens.AddAsync(
+        item,
+        cancellationToken);
+        }
+
+        public Task RemoverItemAsync(VendaItem item, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            _context.VendaItens.Remove(item);
+            return Task.CompletedTask;
         }
     }
 }
