@@ -105,7 +105,11 @@ namespace Infrastructure.Repositories.Interfaces
         public async Task<Agendamento?> ObterParaAtualizacaoAsync(Guid empresaId, Guid agendamentoId, CancellationToken cancellationToken)
         {
             return await _dbContext.Agendamentos
-                .FirstOrDefaultAsync(x => x.EmpresaId == empresaId && x.Id == agendamentoId, cancellationToken);
+        .Include(a => a.Servicos)
+        .SingleOrDefaultAsync(
+            a => a.EmpresaId == empresaId
+              && a.Id == agendamentoId,
+            cancellationToken);
         }
     }
 }

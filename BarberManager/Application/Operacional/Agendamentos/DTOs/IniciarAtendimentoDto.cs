@@ -8,8 +8,9 @@ using System.Threading.Tasks;
 namespace Application.Operacional.Agendamentos.DTOs
 {
     public sealed record IniciarAtendimentoDto(
-       Guid AgendamentoId,
-       StatusAgendamento Status,
-       DateTimeOffset DataHoraInicio,
-       DateTimeOffset DataHoraFim);
+        Guid AgendamentoId,
+        Guid VendaId,
+        StatusAgendamento Status,
+        DateTimeOffset DataHoraInicio,
+        DateTimeOffset DataHoraFim);
 }

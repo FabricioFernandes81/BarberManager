@@ -27,5 +27,11 @@ namespace Application.Interfaces.Vendas
         Task AdicionarAsync(
             Venda venda,
             CancellationToken cancellationToken);
+
+        Task RemoverItemAsync(
+    Guid empresaId,
+    Guid vendaId,
+    Guid itemVendaId,
+    CancellationToken cancellationToken);
     }
 }

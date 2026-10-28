@@ -74,5 +74,44 @@ namespace Domain.Entities.Vendas
             DataAbertura = dataAbertura;
             Status = StatusVenda.Aberta;
         }
+
+        public void AdicionarItem(VendaItem item)
+        {
+            ArgumentNullException.ThrowIfNull(item);
+
+            if (Status != StatusVenda.Aberta)
+            {
+                throw new InvalidOperationException(
+                    "Só é possível adicionar itens a uma venda aberta.");
+            }
+
+            if (item.VendaId != Id)
+            {
+                throw new InvalidOperationException(
+                    "O item informado não pertence a esta venda.");
+            }
+
+            Itens.Add(item);
+
+            RecalcularTotais();
+        }
+
+        private void RecalcularTotais()
+        {
+            Subtotal = decimal.Round(
+                Itens.Sum(i => i.Quantidade * i.ValorUnitario),
+                2,
+                MidpointRounding.AwayFromZero);
+
+            Desconto = decimal.Round(
+                Itens.Sum(i => i.Desconto),
+                2,
+                MidpointRounding.AwayFromZero);
+
+            ValorTotal = decimal.Round(
+                Subtotal - Desconto,
+                2,
+                MidpointRounding.AwayFromZero);
+        }
     }
 }
