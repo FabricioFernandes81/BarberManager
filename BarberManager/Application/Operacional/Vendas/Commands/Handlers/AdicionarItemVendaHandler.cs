@@ -16,9 +16,9 @@ using System.Threading.Tasks;
 namespace Application.Operacional.Vendas.Commands.Handlers
 {
     public sealed class AdicionarItemVendaHandler
-      : ICommandHandler<
-          AdicionarItemVendaCommand,
-          AdicionarItemVendaDto>
+        : ICommandHandler<
+            AdicionarItemVendaCommand,
+            AdicionarItemVendaDto>
     {
         private readonly IRepositorioVenda _repositorioVenda;
         private readonly IRepositorioServico _repositorioServico;
@@ -49,14 +49,14 @@ namespace Application.Operacional.Vendas.Commands.Handlers
                     "Não foi possível identificar a empresa.");
             }
 
-            // 2. Validar o usuário autenticado.
+            // 2. Validar a autenticação.
             if (!_usuarioLogado.IsAuthenticated)
             {
                 throw Validacao(
                     "Usuário não autenticado.");
             }
 
-            // 3. Validar os dados recebidos.
+            // 3. Validar os identificadores.
             if (command.VendaId == Guid.Empty)
             {
                 throw Validacao(
@@ -69,6 +69,14 @@ namespace Application.Operacional.Vendas.Commands.Handlers
                     "O identificador do serviço é obrigatório.");
             }
 
+            // 4. Nesta etapa, somente serviços são aceitos.
+            if (command.TipoItem != TipoItemVenda.Servico)
+            {
+                throw Validacao(
+                    "Nesta etapa, somente serviços podem ser adicionados à venda.");
+            }
+
+            // 5. Validar quantidade e desconto.
             if (command.Quantidade <= 0)
             {
                 throw Validacao(
@@ -81,16 +89,9 @@ namespace Application.Operacional.Vendas.Commands.Handlers
                     "O desconto não pode ser negativo.");
             }
 
-            // 4. Nesta etapa, somente serviços são aceitos.
-            if (command.TipoItem != TipoItemVenda.Servico)
-            {
-                throw Validacao(
-                    "A inclusão de produtos ainda não está disponível.");
-            }
-
             var empresaId = _tenantContext.EmpresaId;
 
-            // 5. Recuperar a venda rastreada pelo EF Core.
+            // 6. Obter a venda com rastreamento para atualização.
             var venda =
                 await _repositorioVenda.ObterParaAtualizacaoAsync(
                     empresaId,
@@ -103,18 +104,19 @@ namespace Application.Operacional.Vendas.Commands.Handlers
                     "Venda não encontrada para a empresa informada.");
             }
 
-            // 6. Validar o estado da venda.
+            // 7. Impedir alterações em vendas encerradas.
             if (venda.Status != StatusVenda.Aberta)
             {
                 throw Validacao(
-                    "Somente vendas abertas podem receber novos itens.");
+                    "Só é possível adicionar itens a uma venda aberta.");
             }
 
-            // 7. Consultar o serviço no catálogo.
+            // 8. Consultar o serviço dentro da empresa atual.
             var servico =
                 await _repositorioServico.ObterPorIdAsync(
+                    empresaId,
                     command.ItemId,
-                    empresaId, cancellationToken);
+                    cancellationToken);
 
             if (servico is null)
             {
@@ -122,13 +124,20 @@ namespace Application.Operacional.Vendas.Commands.Handlers
                     "Serviço não encontrado para a empresa informada.");
             }
 
+            // 9. Impedir a venda de serviços inativos.
             if (servico.Ativo != StatusGeral.Ativo)
             {
                 throw Validacao(
                     "Não é possível adicionar um serviço inativo à venda.");
             }
 
-            // 8. Validar o desconto em relação ao subtotal.
+            if (servico.Valor < 0)
+            {
+                throw Validacao(
+                    "O valor do serviço não pode ser negativo.");
+            }
+
+            // 10. Validar o desconto em relação ao subtotal do item.
             var subtotalItem = decimal.Round(
                 command.Quantidade * servico.Valor,
                 2,
@@ -137,11 +146,12 @@ namespace Application.Operacional.Vendas.Commands.Handlers
             if (command.Desconto > subtotalItem)
             {
                 throw Validacao(
-                    "O desconto não pode superar o subtotal do item.");
+                    "O desconto não pode ser superior ao subtotal do item.");
             }
 
-            // 9. Criar o item com dados confiáveis do backend.
-            var item = new VendaItem(
+            // 11. Criar o item utilizando os dados do serviço.
+            // O preço e a descrição vêm do banco, não da requisição.
+            var itemVenda = new VendaItem(
                 vendaId: venda.Id,
                 tipoItem: TipoItemVenda.Servico,
                 itemId: servico.Id,
@@ -150,23 +160,24 @@ namespace Application.Operacional.Vendas.Commands.Handlers
                 valorUnitario: servico.Valor,
                 desconto: command.Desconto);
 
-            // 10. Aplicar as regras de domínio e recalcular os totais.
-            venda.AdicionarItem(item);
+            // 12. Adicionar o item através do domínio.
+            // O método recalcula subtotal, desconto e total da venda.
+            venda.AdicionarItem(itemVenda);
 
-            // A entidade Venda já está rastreada pelo EF Core.
-            // A persistência será realizada pelo mecanismo
-            // transacional da aplicação.
+            // Não chamar SaveChangesAsync aqui.
+            // A persistência é coordenada pelo TransactionMiddleware.
 
+            // 13. Retornar os valores atualizados.
             return new AdicionarItemVendaDto(
-                venda.Id,
-                item.Id,
-                item.Descricao,
-                item.Quantidade,
-                item.ValorUnitario,
-                item.Desconto,
-                item.ValorTotal,
-                venda.Subtotal,
-                venda.ValorTotal);
+                VendaId: venda.Id,
+                ItemVendaId: itemVenda.Id,
+                Descricao: itemVenda.Descricao,
+                Quantidade: itemVenda.Quantidade,
+                ValorUnitario: itemVenda.ValorUnitario,
+                Desconto: itemVenda.Desconto,
+                ValorTotalItem: itemVenda.ValorTotal,
+                SubtotalVenda: venda.Subtotal,
+                ValorTotalVenda: venda.ValorTotal);
         }
 
         private static CustomValidationException Validacao(
