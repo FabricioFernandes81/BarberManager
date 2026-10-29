@@ -5,16 +5,10 @@ using Application.Common.Tenancy;
 using Application.Interfaces.Financeiro;
 using Application.Operacional.Financeiro.DTOs;
 using Domain.Entities.Common.Enuns;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Operacional.Financeiro.Queries.Handlers
 {
-    public class ObterResumoCaixaHandler
-    : IQueryHandler<ObterResumoCaixaQuery, ResumoCaixaDto>
+    public class ObterResumoCaixaHandler : IQueryHandler<ObterResumoCaixaQuery, ResumoCaixaDto>
     {
         private readonly IRepositorioCaixa _repositorio;
         private readonly ITenantContext _tenantContext;
@@ -37,13 +31,15 @@ namespace Application.Operacional.Financeiro.Queries.Handlers
             if (!_usuarioLogado.IsAuthenticated ||
                 _usuarioLogado.UsuarioId == Guid.Empty)
             {
-                throw Validacao("O usuário precisa estar autenticado.");
+                throw Validacao(
+                    "O usuário precisa estar autenticado.");
             }
 
             if (!_tenantContext.IsAvailable ||
                 _tenantContext.EmpresaId == Guid.Empty)
             {
-                throw Validacao("Não foi possível identificar a empresa do usuário.");
+                throw Validacao(
+                    "Não foi possível identificar a empresa do usuário.");
             }
 
             var caixa = await _repositorio.ObterCaixaAbertoComMovimentosAsync(
@@ -52,26 +48,46 @@ namespace Application.Operacional.Financeiro.Queries.Handlers
                 cancellationToken);
 
             if (caixa is null)
-                throw Validacao("Não existe um caixa aberto para este usuário.");
+            {
+                throw Validacao(
+                    "Não existe um caixa aberto para este usuário.");
+            }
 
+            // Total financeiro de todas as entradas.
             var entradas = caixa.Movimentos
-                .Where(m => m.TipoMovimento == TipoMovimentoCaixa.Entrada)
+                .Where(m =>
+                    m.TipoMovimento == TipoMovimentoCaixa.Entrada)
+                .Sum(m => m.Valor);
+
+            // Entradas que efetivamente aumentam o dinheiro físico.
+            var entradasEmDinheiro = caixa.Movimentos
+                .Where(m =>
+                    m.TipoMovimento == TipoMovimentoCaixa.Entrada &&
+                    m.FormaPagamento.Tipo == TipoFormaPagamento.Dinheiro)
                 .Sum(m => m.Valor);
 
             var suprimentos = caixa.Movimentos
-                .Where(m => m.TipoMovimento == TipoMovimentoCaixa.Suprimento)
+                .Where(m =>
+                    m.TipoMovimento == TipoMovimentoCaixa.Suprimento)
                 .Sum(m => m.Valor);
 
             var saidas = caixa.Movimentos
-                .Where(m => m.TipoMovimento == TipoMovimentoCaixa.Saida)
+                .Where(m =>
+                    m.TipoMovimento == TipoMovimentoCaixa.Saida)
                 .Sum(m => m.Valor);
 
             var sangrias = caixa.Movimentos
-                .Where(m => m.TipoMovimento == TipoMovimentoCaixa.Sangria)
+                .Where(m =>
+                    m.TipoMovimento == TipoMovimentoCaixa.Sangria)
                 .Sum(m => m.Valor);
 
+            // O saldo esperado representa o dinheiro físico disponível.
             var saldoEsperado = decimal.Round(
-                caixa.SaldoInicial + entradas + suprimentos - saidas - sangrias,
+                caixa.SaldoInicial
+                + entradasEmDinheiro
+                + suprimentos
+                - saidas
+                - sangrias,
                 2);
 
             return new ResumoCaixaDto(
@@ -81,6 +97,7 @@ namespace Application.Operacional.Financeiro.Queries.Handlers
                 caixa.DataFechamento,
                 caixa.SaldoInicial,
                 entradas,
+                entradasEmDinheiro,
                 suprimentos,
                 saidas,
                 sangrias,
@@ -89,7 +106,8 @@ namespace Application.Operacional.Financeiro.Queries.Handlers
                 null);
         }
 
-        private static CustomValidationException Validacao(string mensagem) =>
+        private static CustomValidationException Validacao(
+            string mensagem) =>
             new(new[] { mensagem });
     }
 }

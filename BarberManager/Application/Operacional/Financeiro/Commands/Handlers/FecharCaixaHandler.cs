@@ -91,6 +91,7 @@ namespace Application.Operacional.Financeiro.Commands.Handlers
             var sangrias = caixa.Movimentos
                 .Where(m => m.TipoMovimento == TipoMovimentoCaixa.Sangria)
                 .Sum(m => m.Valor);
+
             var entradasEmDinheiro = caixa.Movimentos
              .Where(m =>
                 m.TipoMovimento == TipoMovimentoCaixa.Entrada &&
@@ -124,18 +125,19 @@ namespace Application.Operacional.Financeiro.Commands.Handlers
             caixa.DataAtualizacao = dataFechamento;
 
             return new ResumoCaixaDto(
-                caixa.Id,
-                caixa.Status,
-                caixa.DataAbertura,
-                caixa.DataFechamento,
-                caixa.SaldoInicial,
-                entradas,
-                suprimentos,
-                saidas,
-                sangrias,
-                saldoEsperado,
-                command.SaldoContado,
-                diferenca);
+                     caixa.Id,
+                     caixa.Status,
+                     caixa.DataAbertura,
+                     caixa.DataFechamento,
+                     caixa.SaldoInicial,
+                     entradas,
+                     entradasEmDinheiro,
+                     suprimentos,
+                     saidas,
+                     sangrias,
+                     saldoEsperado,
+                     command.SaldoContado,
+                     diferenca);
         }
 
         private static CustomValidationException Validacao(string mensagem) =>

@@ -8,17 +8,18 @@ using System.Threading.Tasks;
 namespace Application.Operacional.Financeiro.DTOs
 {
     public sealed record ResumoCaixaDto(
-     Guid CaixaId,
-     StatusCaixa Status,
-     DateTime DataAbertura,
-     DateTime? DataFechamento,
-     decimal SaldoInicial,
-     decimal TotalEntradas,
-     decimal TotalSuprimentos,
-     decimal TotalSaidas,
-     decimal TotalSangrias,
-     decimal SaldoEsperado,
-     decimal? SaldoContado,
-     decimal? DiferencaFechamento
+       Guid CaixaId,
+        StatusCaixa Status,
+        DateTime DataAbertura,
+        DateTime? DataFechamento,
+        decimal SaldoInicial,
+        decimal TotalEntradas,
+        decimal TotalEntradasEmDinheiro,
+        decimal TotalSuprimentos,
+        decimal TotalSaidas,
+        decimal TotalSangrias,
+        decimal SaldoEsperado,
+        decimal? SaldoContado,
+        decimal? DiferencaFechamento
  );
 }
