@@ -31,5 +31,13 @@ namespace Application.Interfaces.Financeiro
         Task AdicionarMovimentoCaixaAsync(
             MovimentoCaixa movimento,
             CancellationToken cancellationToken);
+
+        Task<ContaReceber?> ObterPorVendaAsync(
+                 Guid empresaId, Guid vendaId, CancellationToken cancellationToken);
+
+
+        Task AdicionarContaAsync(
+    ContaReceber conta,
+    CancellationToken cancellationToken);
     }
 }

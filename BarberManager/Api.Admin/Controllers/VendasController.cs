@@ -65,5 +65,48 @@ namespace Api.Admin.Controllers
 
             return Ok(resultado);
         }
+
+        [HttpPut("{vendaId:guid}/finalizar")]
+        [ProducesResponseType(
+        typeof(FinalizarVendaDto),
+        StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<FinalizarVendaDto>> FinalizarVenda(
+        [FromRoute] Guid vendaId,
+        [FromBody] FinalizarVendaRequest request,
+        CancellationToken cancellationToken)
+        {
+            if (vendaId == Guid.Empty)
+            {
+                return BadRequest(new
+                {
+                    mensagem = "O identificador da venda é obrigatório."
+                });
+            }
+
+            if (request.FormaPagamentoId == Guid.Empty)
+            {
+                return BadRequest(new
+                {
+                    mensagem = "A forma de pagamento deve ser informada."
+                });
+            }
+
+            var command = new FinalizarVendaCommand(
+                VendaId: vendaId,
+                FormaPagamentoId: request.FormaPagamentoId,
+                Observacao: request.Observacao
+            );
+
+            var resultado = await _dispatcher.Command<
+                FinalizarVendaCommand,
+                FinalizarVendaDto>(
+                    command,
+                    cancellationToken);
+
+            return Ok(resultado);
+        }
     }
 }

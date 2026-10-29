@@ -36,7 +36,7 @@ public sealed class EfUnitOfWork<TContext> : IUnitOfWork
             throw new InvalidOperationException(
                 "Não existe uma transação ativa.");
         }
-     /*   try
+      /*  try
         {
             await _context.SaveChangesAsync(cancellationToken);
         }
@@ -62,9 +62,9 @@ public sealed class EfUnitOfWork<TContext> : IUnitOfWork
         }*/
 
         
-        await _context.SaveChangesAsync(cancellationToken);
+      await _context.SaveChangesAsync(cancellationToken);
 
-        await _transaction.CommitAsync(cancellationToken);
+       await _transaction.CommitAsync(cancellationToken);
     }
 
     public async Task RollbackTransactionAsync(

@@ -80,6 +80,16 @@ namespace Infrastructure.Repositories.Financeiro
          cancellationToken);
         }
 
-    
+        public async Task AdicionarContaAsync(ContaReceber conta, CancellationToken cancellationToken)
+        {
+            await _context.ContasReceber.AddAsync(conta, cancellationToken);
+        }
+
+        public async Task<ContaReceber?> ObterPorVendaAsync(Guid empresaId, Guid vendaId, CancellationToken cancellationToken)
+        {
+            return await _context.ContasReceber
+                     .SingleOrDefaultAsync(x => x.EmpresaId == empresaId &&
+                     x.VendaId == vendaId, cancellationToken);
+        }
     }
 }

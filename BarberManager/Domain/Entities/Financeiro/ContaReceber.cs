@@ -1,6 +1,7 @@
 ﻿using Domain.Entities.Clientes;
 using Domain.Entities.Common;
 using Domain.Entities.Common.Enuns;
+using Domain.Entities.Vendas;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -28,6 +29,10 @@ namespace Domain.Entities.Financeiro
         public StatusContas Status { get; private set; }
 
         public string Descricao { get; private set; } = string.Empty;
+
+        public Guid? VendaId { get; private set; }
+
+        public Venda? Venda { get; private set; }
 
         public ICollection<Recebimento> Recebimentos { get; private set; }
             = new List<Recebimento>();
@@ -125,6 +130,20 @@ namespace Domain.Entities.Financeiro
         public decimal ObterSaldoRestante()
         {
             return Math.Max(Valor - ValorRecebido, 0);
+        }
+
+        public void VincularVenda(Guid vendaId)
+        {
+            if (vendaId == Guid.Empty)
+                throw new ArgumentException(
+                    "O identificador da venda é obrigatório.",
+                    nameof(vendaId));
+
+            if (VendaId.HasValue && VendaId.Value != vendaId)
+                throw new InvalidOperationException(
+                    "A conta a receber já está vinculada a outra venda.");
+
+            VendaId = vendaId;
         }
     }
 

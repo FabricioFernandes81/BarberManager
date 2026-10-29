@@ -116,6 +116,30 @@ namespace Domain.Entities.Vendas
 
             RecalcularTotais();
         }
+
+        public void Finalizar(DateTimeOffset dataFinalizacao)
+        {
+            if (Status != StatusVenda.Aberta)
+            {
+                throw new InvalidOperationException(
+                    "Só é possível finalizar uma venda aberta.");
+            }
+
+            if (Itens.Count == 0)
+            {
+                throw new InvalidOperationException(
+                    "Não é possível finalizar uma venda sem itens.");
+            }
+
+            if (dataFinalizacao < DataAbertura)
+            {
+                throw new InvalidOperationException(
+                    "A data de finalização não pode ser anterior à abertura da venda.");
+            }
+
+            DataFinalizacao = dataFinalizacao;
+            Status = StatusVenda.Finalizada;
+        }
         private void RecalcularTotais()
         {
             Subtotal = decimal.Round(
@@ -133,5 +157,7 @@ namespace Domain.Entities.Vendas
                 2,
                 MidpointRounding.AwayFromZero);
         }
+
+
     }
 }

@@ -80,6 +80,19 @@ namespace Infrastructure.Configurations.Operacional
                 x.EmpresaId,
                 x.ClienteId
             });
+
+            builder.Property(x => x.VendaId)
+    .IsRequired(false);
+
+            builder.HasOne(x => x.Venda)
+    .WithOne()
+    .HasForeignKey<ContaReceber>(x => x.VendaId)
+    .OnDelete(DeleteBehavior.Restrict);
+
+
+            builder.HasIndex(x => x.VendaId)
+    .IsUnique()
+    .HasFilter("[VendaId] IS NOT NULL");
         }
     }
 
