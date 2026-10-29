@@ -9,13 +9,18 @@ using System.Threading.Tasks;
 namespace Application.Operacional.Vendas.Commands
 {
     public sealed record FinalizarVendaCommand(
-     Guid VendaId,
-     Guid FormaPagamentoId,
-     string? Observacao
- ) : ITransactionalCommand
+        Guid VendaId,
+        IReadOnlyCollection<PagamentoVendaCommand> Pagamentos,
+        string? Observacao
+    ) : ITransactionalCommand
     {
         [NotMapped]
         public TransactionContext TransactionContext =>
             TransactionContext.Operacional;
     }
+
+    public sealed record PagamentoVendaCommand(
+        Guid FormaPagamentoId,
+        decimal Valor
+    );
 }

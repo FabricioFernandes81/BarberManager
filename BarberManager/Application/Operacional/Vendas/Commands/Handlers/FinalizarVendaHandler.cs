@@ -76,11 +76,40 @@ namespace Application.Operacional.Vendas.Commands.Handlers
                     "O identificador da venda é obrigatório.");
             }
 
-            if (command.FormaPagamentoId == Guid.Empty)
-            {
-                throw Erro(
-                    "A forma de pagamento deve ser informada.");
-            }
+           if (command.Pagamentos is null ||
+    command.Pagamentos.Count == 0)
+{
+    throw Erro(
+        "Informe pelo menos uma forma de pagamento.");
+}
+
+if (command.Pagamentos.Any(
+    p => p.FormaPagamentoId == Guid.Empty))
+{
+    throw Erro(
+        "Todas as formas de pagamento devem possuir identificadores válidos.");
+}
+
+if (command.Pagamentos.Any(p => p.Valor <= 0))
+{
+    throw Erro(
+        "O valor de cada pagamento deve ser maior que zero.");
+}
+
+if (command.Pagamentos.Any(
+    p => p.Valor != decimal.Round(p.Valor, 2)))
+{
+    throw Erro(
+        "Os valores dos pagamentos devem possuir no máximo duas casas decimais.");
+}
+
+if (command.Pagamentos
+    .GroupBy(p => p.FormaPagamentoId)
+    .Any(g => g.Count() > 1))
+{
+    throw Erro(
+        "Informe cada forma de pagamento apenas uma vez.");
+}
 
             // 4. Carregar a venda rastreada pelo EF Core.
             var venda = await _repositorioVenda.ObterParaAtualizacaoAsync(
@@ -144,17 +173,54 @@ namespace Application.Operacional.Vendas.Commands.Handlers
             }
 
             // 9. Validar a forma de pagamento.
-            var formaPagamento =
-                await _repositorioRecebimento.ObterFormaPagamentoAtivaAsync(
-                    empresaId,
-                    command.FormaPagamentoId,
-                    cancellationToken);
+            var valorVenda = decimal.Round(
+    venda.ValorTotal,
+    2,
+    MidpointRounding.AwayFromZero);
 
-            if (formaPagamento is null)
+            if (valorVenda <= 0)
             {
                 throw Erro(
-                    "A forma de pagamento não existe, está inativa " +
-                    "ou não pertence à empresa.");
+                    "O valor total da venda deve ser maior que zero.");
+            }
+
+            // 2. Somar os pagamentos informados.
+            var totalPagamentos = decimal.Round(
+                command.Pagamentos.Sum(p => p.Valor),
+                2,
+                MidpointRounding.AwayFromZero);
+
+            // 3. Exigir quitação integral.
+            if (totalPagamentos != valorVenda)
+            {
+                throw Erro(
+                    $"A soma dos pagamentos ({totalPagamentos:N2}) " +
+                    $"deve ser igual ao total da venda ({valorVenda:N2}).");
+            }
+
+            // 4. Validar todas as formas de pagamento.
+            var formasPagamento = new Dictionary<Guid, FormaPagamento>();
+
+            foreach (var pagamento in command.Pagamentos)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                var formaPagamento =
+                    await _repositorioRecebimento.ObterFormaPagamentoAtivaAsync(
+                        empresaId,
+                        pagamento.FormaPagamentoId,
+                        cancellationToken);
+
+                if (formaPagamento is null)
+                {
+                    throw Erro(
+                        $"A forma de pagamento {pagamento.FormaPagamentoId} " +
+                        "não existe, está inativa ou não pertence à empresa.");
+                }
+
+                formasPagamento.Add(
+                    pagamento.FormaPagamentoId,
+                    formaPagamento);
             }
 
             // 10. Impedir duplicidade de conta financeira.
@@ -175,12 +241,7 @@ namespace Application.Operacional.Vendas.Commands.Handlers
             var dataFinalizacao = DateTimeOffset.UtcNow;
             var dataOperacao = dataFinalizacao.UtcDateTime;
 
-            var valorVenda = decimal.Round(
-                venda.ValorTotal,
-                2,
-                MidpointRounding.AwayFromZero);
-
-            // 12. Criar a conta a receber para a venda.
+            // Criar uma única conta a receber para a venda.
             var contaReceber = new ContaReceber(
                 empresaId: empresaId,
                 clienteId: venda.ClienteId,
@@ -191,7 +252,7 @@ namespace Application.Operacional.Vendas.Commands.Handlers
 
             contaReceber.VincularVenda(venda.Id);
 
-            // Registrar o recebimento integral da venda.
+            // A conta será quitada integralmente pelos pagamentos informados.
             try
             {
                 contaReceber.RegistrarRecebimento(
@@ -207,42 +268,55 @@ namespace Application.Operacional.Vendas.Commands.Handlers
                 contaReceber,
                 cancellationToken);
 
-            // 13. Criar o registro individual do recebimento.
-            
-            var recebimento = new Recebimento
+            // Criar um recebimento e um movimento de caixa por forma de pagamento.
+            foreach (var pagamento in command.Pagamentos)
             {
-                ContaReceberId = contaReceber.Id,
-                FormaPagamentoId = formaPagamento.Id,
-                DataRecebimento = dataOperacao,
-                Valor = valorVenda,
-                Observacao = observacao
-            };
+                cancellationToken.ThrowIfCancellationRequested();
 
-            await _repositorioRecebimento.AdicionarAsync(
-                recebimento,
-                cancellationToken);
+                var formaPagamento =
+                    formasPagamento[pagamento.FormaPagamentoId];
 
-            // 14. Registrar a entrada no caixa.
-           
-            var movimento = new MovimentoCaixa
-            {
-                CaixaId = caixa.Id,
-                Caixa = caixa,
-                TipoMovimento = TipoMovimentoCaixa.Entrada,
-                FormaPagamentoId = formaPagamento.Id,
-                DataMovimento = dataOperacao,
-                Valor = valorVenda,
-                Historico = $"Recebimento da venda {venda.Id}",
-                Documento = recebimento.Id.ToString()
-            };
+                var recebimento = new Recebimento
+                {
+                    ContaReceberId = contaReceber.Id,
+                    ContaReceber = contaReceber,
 
+                    FormaPagamentoId = formaPagamento.Id,
+                 //   FormaPagamento = formaPagamento,
 
+                    DataRecebimento = dataOperacao,
+                    Valor = pagamento.Valor,
+                    Observacao = observacao
+                };
 
-            await _repositorioRecebimento.AdicionarMovimentoCaixaAsync(
-                movimento,
-                cancellationToken);
+                await _repositorioRecebimento.AdicionarAsync(
+                    recebimento,
+                    cancellationToken);
 
-            // 15. Finalizar a venda.
+                var movimento = new MovimentoCaixa
+                {
+                    CaixaId = caixa.Id,
+                    Caixa = caixa,
+
+                    TipoMovimento = TipoMovimentoCaixa.Entrada,
+
+                    FormaPagamentoId = formaPagamento.Id,
+                //    FormaPagamento = formaPagamento,
+
+                    DataMovimento = dataOperacao,
+                    Valor = pagamento.Valor,
+
+                    Historico = $"Recebimento da venda {venda.Id}",
+
+                    Documento = recebimento.Id.ToString()
+                };
+
+                await _repositorioRecebimento.AdicionarMovimentoCaixaAsync(
+                    movimento,
+                    cancellationToken);
+            }
+
+            // Finalizar a venda depois de preparar todos os registros financeiros.
             venda.Finalizar(dataFinalizacao);
 
             // Não chamar SaveChangesAsync.

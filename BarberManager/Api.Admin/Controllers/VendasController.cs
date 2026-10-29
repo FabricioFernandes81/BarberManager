@@ -86,17 +86,24 @@ namespace Api.Admin.Controllers
                 });
             }
 
-            if (request.FormaPagamentoId == Guid.Empty)
+            if (request.Pagamentos is null ||
+                request.Pagamentos.Count == 0)
             {
                 return BadRequest(new
                 {
-                    mensagem = "A forma de pagamento deve ser informada."
+                    mensagem = "Informe pelo menos uma forma de pagamento."
                 });
             }
 
             var command = new FinalizarVendaCommand(
                 VendaId: vendaId,
-                FormaPagamentoId: request.FormaPagamentoId,
+
+                Pagamentos: request.Pagamentos
+                    .Select(p => new PagamentoVendaCommand(
+                        p.FormaPagamentoId,
+                        p.Valor))
+                    .ToArray(),
+
                 Observacao: request.Observacao
             );
 
