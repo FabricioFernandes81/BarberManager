@@ -51,8 +51,9 @@ namespace Infrastructure.Repositories.Financeiro
             CancellationToken cancellationToken)
         {
             return await _context.Caixas
-                .AsNoTracking()
+                //.AsNoTracking()
                 .Include(x => x.Movimentos)
+                .ThenInclude(x=>x.FormaPagamento)
                 .FirstOrDefaultAsync(
                     x => x.EmpresaId == empresaId
                       && x.UsuarioId == usuarioId
@@ -134,11 +135,12 @@ namespace Infrastructure.Repositories.Financeiro
         public async Task<Caixa?> ObterCaixaAbertoComMovimentosParaAtualizacaoAsync(Guid empresaId, Guid usuarioId, CancellationToken cancellationToken)
         {
             return await _context.Caixas
-       .Include(x => x.Movimentos)
-       .FirstOrDefaultAsync(
-           x => x.EmpresaId == empresaId
-             && x.UsuarioId == usuarioId
-             && x.Status == StatusCaixa.Aberto,
+                   .Include(x => x.Movimentos)
+                   .ThenInclude(m=>m.FormaPagamento)
+                   .FirstOrDefaultAsync(
+                       x => x.EmpresaId == empresaId
+                         && x.UsuarioId == usuarioId
+                         && x.Status == StatusCaixa.Aberto,
            cancellationToken);
         }
 

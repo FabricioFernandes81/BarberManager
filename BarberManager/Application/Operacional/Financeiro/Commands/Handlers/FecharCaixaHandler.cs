@@ -91,10 +91,23 @@ namespace Application.Operacional.Financeiro.Commands.Handlers
             var sangrias = caixa.Movimentos
                 .Where(m => m.TipoMovimento == TipoMovimentoCaixa.Sangria)
                 .Sum(m => m.Valor);
+            var entradasEmDinheiro = caixa.Movimentos
+             .Where(m =>
+                m.TipoMovimento == TipoMovimentoCaixa.Entrada &&
+                m.FormaPagamento.Tipo == TipoFormaPagamento.Dinheiro)
+                .Sum(m => m.Valor);
 
             var saldoEsperado = decimal.Round(
-                caixa.SaldoInicial + entradas + suprimentos - saidas - sangrias,
+                caixa.SaldoInicial
+                + entradasEmDinheiro
+                + suprimentos
+                - saidas
+                - sangrias,
                 2);
+            /*
+            var saldoEsperado = decimal.Round(
+                caixa.SaldoInicial + entradas + suprimentos - saidas - sangrias,
+                2);*/
 
             var diferenca = decimal.Round(
                 command.SaldoContado - saldoEsperado,

@@ -1,4 +1,5 @@
-﻿using Domain.Entities.Financeiro;
+﻿using Domain.Entities.Common.Enuns;
+using Domain.Entities.Financeiro;
 using Infrastructure.Context;
 using Infrastructure.Seeds.Empresas;
 using Microsoft.EntityFrameworkCore;
@@ -67,7 +68,9 @@ namespace Infrastructure.Seeds.Operacional.Financeiro
                 Nome = "Dinheiro - Teste",
                 PermiteParcelamento = false,
                 GeraTroco = true,
-                Ativo = true
+                Ativo = true,
+                Tipo = TipoFormaPagamento.Dinheiro,
+                
             },
             new FormaPagamento
             {
@@ -76,7 +79,8 @@ namespace Infrastructure.Seeds.Operacional.Financeiro
                 Nome = "PIX - Teste",
                 PermiteParcelamento = false,
                 GeraTroco = false,
-                Ativo = true
+                Ativo = true,
+                 Tipo = TipoFormaPagamento.Pix,
             },
             new FormaPagamento
             {
@@ -85,7 +89,8 @@ namespace Infrastructure.Seeds.Operacional.Financeiro
                 Nome = "Cartão de Crédito - Teste",
                 PermiteParcelamento = true,
                 GeraTroco = false,
-                Ativo = true
+                Ativo = true,
+                Tipo = TipoFormaPagamento.CartaoCredito,
             }
         };
 
