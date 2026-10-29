@@ -91,18 +91,20 @@ namespace Application.Operacional.Financeiro.Commands.Handlers
             await _repositorio.AdicionarAsync(caixa, cancellationToken);
 
             return new ResumoCaixaDto(
-                caixa.Id,
-                caixa.Status,
-                caixa.DataAbertura,
-                caixa.DataFechamento,
-                caixa.SaldoInicial,
-                0m,
-                0m,
-                0m,
-                0m,
-                caixa.SaldoInicial,
-                null,
-                null);
+                        caixa.Id,
+                        caixa.Status,
+                        caixa.DataAbertura,
+                        caixa.DataFechamento,
+                        caixa.SaldoInicial,
+                        0m,                  // TotalEntradas
+                        0m,                  // TotalEntradasEmDinheiro
+                        0m,                  // TotalSuprimentos
+                        0m,                  // TotalSaidas
+                        0m,                  // TotalSangrias
+                        caixa.SaldoInicial,  // SaldoEsperado
+                        null,                // SaldoContado
+                        null                 // DiferencaFechamento
+                    );
         }
 
         private void ValidarContexto()
