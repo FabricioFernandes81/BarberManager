@@ -79,6 +79,7 @@ namespace Application.Operacional.Financeiro.Commands.Handlers
                 .Where(m => m.TipoMovimento == TipoMovimentoCaixa.Entrada)
                 .Sum(m => m.Valor);
 
+
             var suprimentos = caixa.Movimentos
                 .Where(m => m.TipoMovimento == TipoMovimentoCaixa.Suprimento)
                 .Sum(m => m.Valor);

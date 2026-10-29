@@ -21,6 +21,10 @@ namespace Infrastructure.Configurations.Operacional
                 .HasMaxLength(80)
                 .IsRequired();
 
+            builder.Property(x => x.Tipo)
+              .HasConversion<int>()
+              .IsRequired();
+
             builder.HasIndex(x => x.EmpresaId);
 
             builder.HasIndex(x => x.Nome);

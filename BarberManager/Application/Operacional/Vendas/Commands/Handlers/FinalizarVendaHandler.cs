@@ -208,12 +208,20 @@ namespace Application.Operacional.Vendas.Commands.Handlers
                 cancellationToken);
 
             // 13. Criar o registro individual do recebimento.
+            /* var recebimento = new Recebimento
+             {
+                 ContaReceberId = contaReceber.Id,
+                // ContaReceber = contaReceber,
+                 FormaPagamentoId = formaPagamento.Id,
+                 FormaPagamento = formaPagamento,
+                 DataRecebimento = dataOperacao,
+                 Valor = valorVenda,
+                 Observacao = observacao
+             };*/
             var recebimento = new Recebimento
             {
                 ContaReceberId = contaReceber.Id,
-               // ContaReceber = contaReceber,
                 FormaPagamentoId = formaPagamento.Id,
-                FormaPagamento = formaPagamento,
                 DataRecebimento = dataOperacao,
                 Valor = valorVenda,
                 Observacao = observacao
@@ -224,18 +232,31 @@ namespace Application.Operacional.Vendas.Commands.Handlers
                 cancellationToken);
 
             // 14. Registrar a entrada no caixa.
+            /*   var movimento = new MovimentoCaixa
+               {
+                   CaixaId = caixa.Id,
+                   Caixa = caixa,
+                   TipoMovimento = TipoMovimentoCaixa.Entrada,
+                   FormaPagamentoId = formaPagamento.Id,
+                   FormaPagamento = formaPagamento,
+                   DataMovimento = dataOperacao,
+                   Valor = valorVenda,
+                   Historico = $"Recebimento da venda {venda.Id}",
+                   Documento = recebimento.Id.ToString()
+               };*/
             var movimento = new MovimentoCaixa
             {
                 CaixaId = caixa.Id,
                 Caixa = caixa,
                 TipoMovimento = TipoMovimentoCaixa.Entrada,
                 FormaPagamentoId = formaPagamento.Id,
-                FormaPagamento = formaPagamento,
                 DataMovimento = dataOperacao,
                 Valor = valorVenda,
                 Historico = $"Recebimento da venda {venda.Id}",
                 Documento = recebimento.Id.ToString()
             };
+
+
 
             await _repositorioRecebimento.AdicionarMovimentoCaixaAsync(
                 movimento,

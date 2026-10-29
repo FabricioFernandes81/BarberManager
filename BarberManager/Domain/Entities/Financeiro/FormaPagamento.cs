@@ -1,4 +1,5 @@
 ﻿using Domain.Entities.Common;
+using Domain.Entities.Common.Enuns;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,7 @@ namespace Domain.Entities.Financeiro
         public bool GeraTroco { get; set; }
 
         public bool Ativo { get; set; }
+        public TipoFormaPagamento Tipo { get; set; }
     }
 
 }
