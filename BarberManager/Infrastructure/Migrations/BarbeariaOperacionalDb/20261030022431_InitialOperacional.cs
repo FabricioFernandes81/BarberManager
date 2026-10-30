@@ -38,6 +38,23 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                 });
 
             migrationBuilder.CreateTable(
+                name: "CategoriasProdutos",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    EmpresaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Nome = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Descricao = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    Ativo = table.Column<bool>(type: "bit", nullable: false),
+                    DataCadastro = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DataAtualizacao = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_CategoriasProdutos", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CategoriasServicos",
                 columns: table => new
                 {
@@ -178,6 +195,23 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_HorariosFuncionamento", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Marcas",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    EmpresaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Nome = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Descricao = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    Ativo = table.Column<bool>(type: "bit", nullable: false),
+                    DataCadastro = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DataAtualizacao = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Marcas", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -368,6 +402,42 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                         name: "FK_Pagamento_FormaPagamento_FormaPagamentoId",
                         column: x => x.FormaPagamentoId,
                         principalTable: "FormaPagamento",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Produtos",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    EmpresaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CategoriaProdutoId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    MarcaId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Nome = table.Column<string>(type: "nvarchar(150)", maxLength: 150, nullable: false),
+                    Descricao = table.Column<string>(type: "nvarchar(1000)", maxLength: 1000, nullable: true),
+                    CodigoInterno = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    CodigoBarras = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: true),
+                    ValorVenda = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    Custo = table.Column<decimal>(type: "decimal(18,2)", precision: 18, scale: 2, nullable: false),
+                    ControlaEstoque = table.Column<bool>(type: "bit", nullable: false),
+                    Ativo = table.Column<bool>(type: "bit", nullable: false),
+                    DataCadastro = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DataAtualizacao = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Produtos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Produtos_CategoriasProdutos_CategoriaProdutoId",
+                        column: x => x.CategoriaProdutoId,
+                        principalTable: "CategoriasProdutos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Produtos_Marcas_MarcaId",
+                        column: x => x.MarcaId,
+                        principalTable: "Marcas",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -565,6 +635,60 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                         name: "FK_ProfissionalServicos_Servicos_ServicoId",
                         column: x => x.ServicoId,
                         principalTable: "Servicos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "EstoquesProdutos",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    EmpresaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProdutoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    QuantidadeAtual = table.Column<decimal>(type: "decimal(18,3)", precision: 18, scale: 3, nullable: false),
+                    EstoqueMinimo = table.Column<decimal>(type: "decimal(18,3)", precision: 18, scale: 3, nullable: false),
+                    DataAtualizacaoEstoque = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DataCadastro = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DataAtualizacao = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_EstoquesProdutos", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_EstoquesProdutos_Produtos_ProdutoId",
+                        column: x => x.ProdutoId,
+                        principalTable: "Produtos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "MovimentacoesEstoque",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    EmpresaId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    ProdutoId = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Tipo = table.Column<int>(type: "int", nullable: false),
+                    Origem = table.Column<int>(type: "int", nullable: false),
+                    Quantidade = table.Column<decimal>(type: "decimal(18,3)", precision: 18, scale: 3, nullable: false),
+                    SaldoAnterior = table.Column<decimal>(type: "decimal(18,3)", precision: 18, scale: 3, nullable: false),
+                    SaldoPosterior = table.Column<decimal>(type: "decimal(18,3)", precision: 18, scale: 3, nullable: false),
+                    DocumentoOrigemId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    UsuarioResponsavelId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    DataMovimento = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    Observacao = table.Column<string>(type: "nvarchar(500)", maxLength: 500, nullable: true),
+                    DataCadastro = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    DataAtualizacao = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_MovimentacoesEstoque", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_MovimentacoesEstoque_Produtos_ProdutoId",
+                        column: x => x.ProdutoId,
+                        principalTable: "Produtos",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                 });
@@ -783,13 +907,23 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                 });
 
             migrationBuilder.InsertData(
+                table: "CategoriasProdutos",
+                columns: new[] { "Id", "Ativo", "DataAtualizacao", "DataCadastro", "Descricao", "EmpresaId", "Nome" },
+                values: new object[,]
+                {
+                    { new Guid("a1000000-0000-0000-0000-000000000001"), true, null, new DateTime(2026, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Produtos para finalização e modelagem capilar.", new Guid("50000000-0000-0000-0000-000000000001"), "Pomadas e Finalizadores" },
+                    { new Guid("a1000000-0000-0000-0000-000000000002"), true, null, new DateTime(2026, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Produtos para limpeza e cuidados capilares.", new Guid("50000000-0000-0000-0000-000000000001"), "Shampoos e Higiene" },
+                    { new Guid("a1000000-0000-0000-0000-000000000003"), true, null, new DateTime(2026, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Acessórios utilizados em barbearias.", new Guid("50000000-0000-0000-0000-000000000001"), "Acessórios" }
+                });
+
+            migrationBuilder.InsertData(
                 table: "CategoriasServicos",
                 columns: new[] { "Id", "Ativo", "Cor", "DataAtualizacao", "DataCadastro", "Descricao", "EmpresaId", "Icone", "Nome", "Ordem" },
                 values: new object[,]
                 {
-                    { new Guid("22222222-2222-2222-2222-222222222222"), 1, "#FF5733", null, new DateTime(2026, 10, 29, 4, 20, 12, 764, DateTimeKind.Utc).AddTicks(7989), "Serviço de corte de cabelo", new Guid("50000000-0000-0000-0000-000000000001"), "content_cut", "Cabelo", 1 },
-                    { new Guid("33333333-3333-3333-3333-333333333333"), 1, "#33FF57", null, new DateTime(2026, 10, 29, 4, 20, 12, 764, DateTimeKind.Utc).AddTicks(9741), "Serviço de categoria 2", new Guid("50000000-0000-0000-0000-000000000001"), "icone-categoria2", "Mão e Pés", 2 },
-                    { new Guid("44444444-4444-4444-4444-444444444444"), 1, "#3357FF", null, new DateTime(2026, 10, 29, 4, 20, 12, 764, DateTimeKind.Utc).AddTicks(9744), "Serviço de categoria 3", new Guid("50000000-0000-0000-0000-000000000001"), "icone-categoria3", "Barba e Bigode", 3 }
+                    { new Guid("22222222-2222-2222-2222-222222222222"), 1, "#FF5733", null, new DateTime(2026, 10, 30, 2, 24, 30, 843, DateTimeKind.Utc).AddTicks(2386), "Serviço de corte de cabelo", new Guid("50000000-0000-0000-0000-000000000001"), "content_cut", "Cabelo", 1 },
+                    { new Guid("33333333-3333-3333-3333-333333333333"), 1, "#33FF57", null, new DateTime(2026, 10, 30, 2, 24, 30, 843, DateTimeKind.Utc).AddTicks(4980), "Serviço de categoria 2", new Guid("50000000-0000-0000-0000-000000000001"), "icone-categoria2", "Mão e Pés", 2 },
+                    { new Guid("44444444-4444-4444-4444-444444444444"), 1, "#3357FF", null, new DateTime(2026, 10, 30, 2, 24, 30, 843, DateTimeKind.Utc).AddTicks(4984), "Serviço de categoria 3", new Guid("50000000-0000-0000-0000-000000000001"), "icone-categoria3", "Barba e Bigode", 3 }
                 });
 
             migrationBuilder.InsertData(
@@ -797,12 +931,22 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                 columns: new[] { "Id", "Ativo", "DataAtualizacao", "DataCadastro", "DiaSemana", "EmpresaId", "HoraFim", "HoraInicio" },
                 values: new object[,]
                 {
-                    { new Guid("81000000-0000-0000-0000-000000000001"), true, null, new DateTime(2026, 10, 29, 4, 20, 12, 768, DateTimeKind.Utc).AddTicks(2952), 1, new Guid("50000000-0000-0000-0000-000000000001"), new TimeOnly(18, 0, 0), new TimeOnly(8, 0, 0) },
-                    { new Guid("81000000-0000-0000-0000-000000000002"), true, null, new DateTime(2026, 10, 29, 4, 20, 12, 768, DateTimeKind.Utc).AddTicks(3680), 2, new Guid("50000000-0000-0000-0000-000000000001"), new TimeOnly(18, 0, 0), new TimeOnly(8, 0, 0) },
-                    { new Guid("81000000-0000-0000-0000-000000000003"), true, null, new DateTime(2026, 10, 29, 4, 20, 12, 768, DateTimeKind.Utc).AddTicks(3682), 3, new Guid("50000000-0000-0000-0000-000000000001"), new TimeOnly(18, 0, 0), new TimeOnly(8, 0, 0) },
-                    { new Guid("81000000-0000-0000-0000-000000000004"), true, null, new DateTime(2026, 10, 29, 4, 20, 12, 768, DateTimeKind.Utc).AddTicks(3683), 4, new Guid("50000000-0000-0000-0000-000000000001"), new TimeOnly(18, 0, 0), new TimeOnly(8, 0, 0) },
-                    { new Guid("81000000-0000-0000-0000-000000000005"), true, null, new DateTime(2026, 10, 29, 4, 20, 12, 768, DateTimeKind.Utc).AddTicks(3684), 5, new Guid("50000000-0000-0000-0000-000000000001"), new TimeOnly(18, 0, 0), new TimeOnly(8, 0, 0) },
-                    { new Guid("81000000-0000-0000-0000-000000000006"), true, null, new DateTime(2026, 10, 29, 4, 20, 12, 768, DateTimeKind.Utc).AddTicks(3686), 6, new Guid("50000000-0000-0000-0000-000000000001"), new TimeOnly(13, 0, 0), new TimeOnly(8, 0, 0) }
+                    { new Guid("81000000-0000-0000-0000-000000000001"), true, null, new DateTime(2026, 10, 30, 2, 24, 30, 846, DateTimeKind.Utc).AddTicks(3497), 1, new Guid("50000000-0000-0000-0000-000000000001"), new TimeOnly(18, 0, 0), new TimeOnly(8, 0, 0) },
+                    { new Guid("81000000-0000-0000-0000-000000000002"), true, null, new DateTime(2026, 10, 30, 2, 24, 30, 846, DateTimeKind.Utc).AddTicks(4238), 2, new Guid("50000000-0000-0000-0000-000000000001"), new TimeOnly(18, 0, 0), new TimeOnly(8, 0, 0) },
+                    { new Guid("81000000-0000-0000-0000-000000000003"), true, null, new DateTime(2026, 10, 30, 2, 24, 30, 846, DateTimeKind.Utc).AddTicks(4240), 3, new Guid("50000000-0000-0000-0000-000000000001"), new TimeOnly(18, 0, 0), new TimeOnly(8, 0, 0) },
+                    { new Guid("81000000-0000-0000-0000-000000000004"), true, null, new DateTime(2026, 10, 30, 2, 24, 30, 846, DateTimeKind.Utc).AddTicks(4242), 4, new Guid("50000000-0000-0000-0000-000000000001"), new TimeOnly(18, 0, 0), new TimeOnly(8, 0, 0) },
+                    { new Guid("81000000-0000-0000-0000-000000000005"), true, null, new DateTime(2026, 10, 30, 2, 24, 30, 846, DateTimeKind.Utc).AddTicks(4243), 5, new Guid("50000000-0000-0000-0000-000000000001"), new TimeOnly(18, 0, 0), new TimeOnly(8, 0, 0) },
+                    { new Guid("81000000-0000-0000-0000-000000000006"), true, null, new DateTime(2026, 10, 30, 2, 24, 30, 846, DateTimeKind.Utc).AddTicks(4244), 6, new Guid("50000000-0000-0000-0000-000000000001"), new TimeOnly(13, 0, 0), new TimeOnly(8, 0, 0) }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Marcas",
+                columns: new[] { "Id", "Ativo", "DataAtualizacao", "DataCadastro", "Descricao", "EmpresaId", "Nome" },
+                values: new object[,]
+                {
+                    { new Guid("a2000000-0000-0000-0000-000000000001"), true, null, new DateTime(2026, 10, 30, 2, 24, 30, 847, DateTimeKind.Utc).AddTicks(5746), "Linha profissional para barbearias.", new Guid("50000000-0000-0000-0000-000000000001"), "Barber Pro" },
+                    { new Guid("a2000000-0000-0000-0000-000000000002"), true, null, new DateTime(2026, 10, 30, 2, 24, 30, 847, DateTimeKind.Utc).AddTicks(6810), "Produtos clássicos para cuidados pessoais.", new Guid("50000000-0000-0000-0000-000000000001"), "Classic Grooming" },
+                    { new Guid("a2000000-0000-0000-0000-000000000003"), true, null, new DateTime(2026, 10, 30, 2, 24, 30, 847, DateTimeKind.Utc).AddTicks(6812), "Linha premium de cuidados capilares.", new Guid("50000000-0000-0000-0000-000000000001"), "Premium Care" }
                 });
 
             migrationBuilder.InsertData(
@@ -821,17 +965,17 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                 columns: new[] { "Id", "AgendaOnline", "AvaliacaoMedia", "Biografia", "Cargo", "Celular", "Cpf", "DataAdmissao", "DataAtualizacao", "DataCadastro", "DataDemissao", "DataNascimento", "Destaque", "Email", "EmpresaId", "Especialidade", "ExibirAgendamentoOnline", "Facebook", "Foto", "Instagram", "IntervaloAtendimento", "Matricula", "Nome", "OrdemAgenda", "PermiteEncaixe", "RecebePagamentoDireto", "Rg", "Sexo", "Sobrenome", "Status", "Telefone", "TipoComissao", "ToleranciaEncerramentoMinutos", "TotalAvaliacoes", "TotalComissaoMes", "UsuarioId", "ValorTipoPagamento" },
                 values: new object[,]
                 {
-                    { new Guid("91000000-0000-0000-0000-000000000001"), true, 4.5m, null, "Barbeiro", "11999999999", "123 ", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2026, 10, 29, 4, 20, 12, 763, DateTimeKind.Utc).AddTicks(3190), null, new DateTime(1990, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "carlos.henrique@example.com", new Guid("50000000-0000-0000-0000-000000000001"), "Cortes de cabelo e barba", true, null, null, null, 30, "123456", "Carlos Henrique", 1, true, true, "22222222222", 1, "ffffffffffff", 1, "51515151515", 4, null, 0, 0m, new Guid("90000000-0000-0000-0000-000000000008"), 10.0m },
-                    { new Guid("91000000-0000-0000-0000-000000000002"), true, 4.5m, null, "Barbeiro", "11999999999", "123 ", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2026, 10, 29, 4, 20, 12, 763, DateTimeKind.Utc).AddTicks(9428), null, new DateTime(1990, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "alexandre.fernandes@example.com", new Guid("50000000-0000-0000-0000-000000000001"), "Cortes de cabelo e barba", true, null, null, null, 30, "123456", "Alexandre =", 1, true, true, "22222222222", 1, "Fernandes", 1, "51515151515", 4, null, 0, 0m, null, 10.0m },
-                    { new Guid("91000000-0000-0000-0000-000000000003"), true, 4.5m, null, "Administrador", "11999999999", "123 ", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2026, 10, 29, 4, 20, 12, 763, DateTimeKind.Utc).AddTicks(9437), null, new DateTime(1990, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "alexandre.fernandes@example.com", new Guid("50000000-0000-0000-0000-000000000001"), "Cortes de cabelo e barba", true, null, null, null, 30, "0000000", "Roberto Almeida", 1, true, true, "22222222222", 1, "Fernandes", 1, "51515151515", 0, null, 0, 0m, null, 10.0m },
-                    { new Guid("91000000-0000-0000-0000-000000000004"), true, 4.5m, null, "Recepcionista", "11999999999", "123 ", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2026, 10, 29, 4, 20, 12, 763, DateTimeKind.Utc).AddTicks(9456), null, new DateTime(1990, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "alexandre.fernandes@example.com", new Guid("50000000-0000-0000-0000-000000000001"), "Cortes de cabelo e barba", true, null, null, null, 30, "123456", "Bete Carvalho", 1, true, true, "22222222222", 1, "Faaaaaaaaa", 1, "51515151515", 0, null, 0, 0m, null, 10.0m },
-                    { new Guid("91000000-0000-0000-0000-000000000005"), true, 4.5m, null, "Caixa", "11999999999", "123 ", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2026, 10, 29, 4, 20, 12, 763, DateTimeKind.Utc).AddTicks(9460), null, new DateTime(1990, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "alexandre.fernandes@example.com", new Guid("50000000-0000-0000-0000-000000000001"), "Cortes de cabelo e barba", true, null, null, null, 30, "123456", "Alexandre11111111 = aaaaa", 1, true, true, "22222222222", 1, "Fernandes", 1, "51515151515", 4, null, 0, 0m, null, 10.0m },
-                    { new Guid("91000000-0000-0000-0000-000000000006"), true, 4.5m, null, "Estoquita", "11999999999", "123 ", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2026, 10, 29, 4, 20, 12, 763, DateTimeKind.Utc).AddTicks(9469), null, new DateTime(1990, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "alexandre.fernandes@example.com", new Guid("50000000-0000-0000-0000-000000000001"), "Cortes de cabelo e barba", true, null, null, null, 30, "123456", "Agenor Rodrigues", 1, true, true, "22222222222", 1, "Fernandes", 1, "51515151515", 0, null, 0, 0m, null, 10.0m },
-                    { new Guid("91000000-0000-0000-0000-000000000007"), true, 4.5m, null, "Financeiro", "11999999999", "123 ", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2026, 10, 29, 4, 20, 12, 763, DateTimeKind.Utc).AddTicks(9493), null, new DateTime(1990, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "alexandre.fernandes@example.com", new Guid("50000000-0000-0000-0000-000000000001"), "Cortes de cabelo e barba", true, null, null, null, 30, "123456", "Paulo Silva", 1, true, true, "22222222222", 1, "a", 1, "51515151515", 4, null, 0, 0m, null, 10.0m },
-                    { new Guid("91000000-0000-0000-0000-000000000008"), true, 4.5m, null, "Barbeiro", "11999999999", "123 ", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2026, 10, 29, 4, 20, 12, 763, DateTimeKind.Utc).AddTicks(9497), null, new DateTime(1990, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "alexandre.fernandes@example.com", new Guid("50000000-0000-0000-0000-000000000001"), "Cortes de cabelo e barba", true, null, null, null, 30, "123456", "Paula Mota", 1, true, true, "22222222222", 1, "Fernandes", 1, "51515151515", 4, null, 0, 0m, null, 10.0m },
-                    { new Guid("91000000-0000-0000-0000-000000000009"), true, 4.5m, null, "Barbeiro", "11999999999", "123 ", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2026, 10, 29, 4, 20, 12, 763, DateTimeKind.Utc).AddTicks(9502), null, new DateTime(1990, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "fabricio.fernandes@example.com", new Guid("50000000-0000-0000-0000-000000000002"), "Cortes de cabelo e barba", true, null, null, null, 30, "123456", "Fabricio Machado", 1, true, true, "22222222222", 1, "Fernandes", 1, "51515151515", 4, null, 0, 0m, null, 10.0m },
-                    { new Guid("91000000-0000-0000-0000-000000000010"), true, 4.5m, null, "Barbeiro", "11999999999", "123 ", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2026, 10, 29, 4, 20, 12, 763, DateTimeKind.Utc).AddTicks(9507), null, new DateTime(1990, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "alexandre.fernandes@example.com", new Guid("50000000-0000-0000-0000-000000000001"), "Cortes de cabelo e barba", true, null, null, null, 30, "123456", "Paula Mota", 1, true, true, "22222222222", 2, "Fernandes", 1, "51515151515", 4, null, 0, 0m, null, 10.0m },
-                    { new Guid("91000000-0000-0000-0000-000000000011"), true, 4.5m, null, "Barbeira", "11999999999", "123 ", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2026, 10, 29, 4, 20, 12, 763, DateTimeKind.Utc).AddTicks(9511), null, new DateTime(1990, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "rebeca.fernandes@example.com", new Guid("50000000-0000-0000-0000-000000000001"), "Cortes de cabelo e barba", true, null, null, null, 30, "123456", "Rebeca Fernandes", 1, true, true, "22222222222", 1, "Fernandes", 1, "51515151515", 4, null, 0, 0m, null, 10.0m }
+                    { new Guid("91000000-0000-0000-0000-000000000001"), true, 4.5m, null, "Barbeiro", "11999999999", "123 ", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2026, 10, 30, 2, 24, 30, 841, DateTimeKind.Utc).AddTicks(7386), null, new DateTime(1990, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "carlos.henrique@example.com", new Guid("50000000-0000-0000-0000-000000000001"), "Cortes de cabelo e barba", true, null, null, null, 30, "123456", "Carlos Henrique", 1, true, true, "22222222222", 1, "ffffffffffff", 1, "51515151515", 4, null, 0, 0m, new Guid("90000000-0000-0000-0000-000000000008"), 10.0m },
+                    { new Guid("91000000-0000-0000-0000-000000000002"), true, 4.5m, null, "Barbeiro", "11999999999", "123 ", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2026, 10, 30, 2, 24, 30, 842, DateTimeKind.Utc).AddTicks(3529), null, new DateTime(1990, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "alexandre.fernandes@example.com", new Guid("50000000-0000-0000-0000-000000000001"), "Cortes de cabelo e barba", true, null, null, null, 30, "123456", "Alexandre =", 1, true, true, "22222222222", 1, "Fernandes", 1, "51515151515", 4, null, 0, 0m, null, 10.0m },
+                    { new Guid("91000000-0000-0000-0000-000000000003"), true, 4.5m, null, "Administrador", "11999999999", "123 ", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2026, 10, 30, 2, 24, 30, 842, DateTimeKind.Utc).AddTicks(3537), null, new DateTime(1990, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "alexandre.fernandes@example.com", new Guid("50000000-0000-0000-0000-000000000001"), "Cortes de cabelo e barba", true, null, null, null, 30, "0000000", "Roberto Almeida", 1, true, true, "22222222222", 1, "Fernandes", 1, "51515151515", 0, null, 0, 0m, null, 10.0m },
+                    { new Guid("91000000-0000-0000-0000-000000000004"), true, 4.5m, null, "Recepcionista", "11999999999", "123 ", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2026, 10, 30, 2, 24, 30, 842, DateTimeKind.Utc).AddTicks(3562), null, new DateTime(1990, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "alexandre.fernandes@example.com", new Guid("50000000-0000-0000-0000-000000000001"), "Cortes de cabelo e barba", true, null, null, null, 30, "123456", "Bete Carvalho", 1, true, true, "22222222222", 1, "Faaaaaaaaa", 1, "51515151515", 0, null, 0, 0m, null, 10.0m },
+                    { new Guid("91000000-0000-0000-0000-000000000005"), true, 4.5m, null, "Caixa", "11999999999", "123 ", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2026, 10, 30, 2, 24, 30, 842, DateTimeKind.Utc).AddTicks(3566), null, new DateTime(1990, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "alexandre.fernandes@example.com", new Guid("50000000-0000-0000-0000-000000000001"), "Cortes de cabelo e barba", true, null, null, null, 30, "123456", "Alexandre11111111 = aaaaa", 1, true, true, "22222222222", 1, "Fernandes", 1, "51515151515", 4, null, 0, 0m, null, 10.0m },
+                    { new Guid("91000000-0000-0000-0000-000000000006"), true, 4.5m, null, "Estoquita", "11999999999", "123 ", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2026, 10, 30, 2, 24, 30, 842, DateTimeKind.Utc).AddTicks(3577), null, new DateTime(1990, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "alexandre.fernandes@example.com", new Guid("50000000-0000-0000-0000-000000000001"), "Cortes de cabelo e barba", true, null, null, null, 30, "123456", "Agenor Rodrigues", 1, true, true, "22222222222", 1, "Fernandes", 1, "51515151515", 0, null, 0, 0m, null, 10.0m },
+                    { new Guid("91000000-0000-0000-0000-000000000007"), true, 4.5m, null, "Financeiro", "11999999999", "123 ", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2026, 10, 30, 2, 24, 30, 842, DateTimeKind.Utc).AddTicks(3590), null, new DateTime(1990, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "alexandre.fernandes@example.com", new Guid("50000000-0000-0000-0000-000000000001"), "Cortes de cabelo e barba", true, null, null, null, 30, "123456", "Paulo Silva", 1, true, true, "22222222222", 1, "a", 1, "51515151515", 4, null, 0, 0m, null, 10.0m },
+                    { new Guid("91000000-0000-0000-0000-000000000008"), true, 4.5m, null, "Barbeiro", "11999999999", "123 ", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2026, 10, 30, 2, 24, 30, 842, DateTimeKind.Utc).AddTicks(3595), null, new DateTime(1990, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "alexandre.fernandes@example.com", new Guid("50000000-0000-0000-0000-000000000001"), "Cortes de cabelo e barba", true, null, null, null, 30, "123456", "Paula Mota", 1, true, true, "22222222222", 1, "Fernandes", 1, "51515151515", 4, null, 0, 0m, null, 10.0m },
+                    { new Guid("91000000-0000-0000-0000-000000000009"), true, 4.5m, null, "Barbeiro", "11999999999", "123 ", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2026, 10, 30, 2, 24, 30, 842, DateTimeKind.Utc).AddTicks(3599), null, new DateTime(1990, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "fabricio.fernandes@example.com", new Guid("50000000-0000-0000-0000-000000000002"), "Cortes de cabelo e barba", true, null, null, null, 30, "123456", "Fabricio Machado", 1, true, true, "22222222222", 1, "Fernandes", 1, "51515151515", 4, null, 0, 0m, null, 10.0m },
+                    { new Guid("91000000-0000-0000-0000-000000000010"), true, 4.5m, null, "Barbeiro", "11999999999", "123 ", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2026, 10, 30, 2, 24, 30, 842, DateTimeKind.Utc).AddTicks(3604), null, new DateTime(1990, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "alexandre.fernandes@example.com", new Guid("50000000-0000-0000-0000-000000000001"), "Cortes de cabelo e barba", true, null, null, null, 30, "123456", "Paula Mota", 1, true, true, "22222222222", 2, "Fernandes", 1, "51515151515", 4, null, 0, 0m, null, 10.0m },
+                    { new Guid("91000000-0000-0000-0000-000000000011"), true, 4.5m, null, "Barbeira", "11999999999", "123 ", new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), null, new DateTime(2026, 10, 30, 2, 24, 30, 842, DateTimeKind.Utc).AddTicks(3608), null, new DateTime(1990, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified), true, "rebeca.fernandes@example.com", new Guid("50000000-0000-0000-0000-000000000001"), "Cortes de cabelo e barba", true, null, null, null, 30, "123456", "Rebeca Fernandes", 1, true, true, "22222222222", 1, "Fernandes", 1, "51515151515", 4, null, 0, 0m, null, 10.0m }
                 });
 
             migrationBuilder.InsertData(
@@ -871,19 +1015,55 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                 });
 
             migrationBuilder.InsertData(
+                table: "Produtos",
+                columns: new[] { "Id", "Ativo", "CategoriaProdutoId", "CodigoBarras", "CodigoInterno", "ControlaEstoque", "Custo", "DataAtualizacao", "DataCadastro", "Descricao", "EmpresaId", "MarcaId", "Nome", "ValorVenda" },
+                values: new object[,]
+                {
+                    { new Guid("a3000000-0000-0000-0000-000000000001"), true, new Guid("a1000000-0000-0000-0000-000000000001"), "7891000000001", "PROD-001", true, 20.00m, null, new DateTime(2026, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Pomada modeladora com efeito matte.", new Guid("50000000-0000-0000-0000-000000000001"), new Guid("a2000000-0000-0000-0000-000000000001"), "Pomada Efeito Matte", 39.90m },
+                    { new Guid("a3000000-0000-0000-0000-000000000002"), true, new Guid("a1000000-0000-0000-0000-000000000001"), "7891000000002", "PROD-002", true, 17.50m, null, new DateTime(2026, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Pomada modeladora com efeito brilho.", new Guid("50000000-0000-0000-0000-000000000001"), new Guid("a2000000-0000-0000-0000-000000000002"), "Pomada Efeito Brilho", 34.90m },
+                    { new Guid("a3000000-0000-0000-0000-000000000003"), true, new Guid("a1000000-0000-0000-0000-000000000002"), "7891000000003", "PROD-003", true, 25.00m, null, new DateTime(2026, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Shampoo para uso profissional.", new Guid("50000000-0000-0000-0000-000000000001"), new Guid("a2000000-0000-0000-0000-000000000003"), "Shampoo Profissional", 49.90m },
+                    { new Guid("a3000000-0000-0000-0000-000000000004"), true, new Guid("a1000000-0000-0000-0000-000000000003"), "7891000000004", "PROD-004", true, 5.00m, null, new DateTime(2026, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Pente para uso profissional.", new Guid("50000000-0000-0000-0000-000000000001"), new Guid("a2000000-0000-0000-0000-000000000001"), "Pente Profissional", 12.90m },
+                    { new Guid("a3000000-0000-0000-0000-000000000005"), true, new Guid("a1000000-0000-0000-0000-000000000003"), "7891000000005", "PROD-005", true, 10.00m, null, new DateTime(2026, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), "Escova para cuidados com a barba.", new Guid("50000000-0000-0000-0000-000000000001"), new Guid("a2000000-0000-0000-0000-000000000002"), "Escova para Barba", 24.90m }
+                });
+
+            migrationBuilder.InsertData(
                 table: "Servicos",
                 columns: new[] { "Id", "Ativo", "CategoriaServicoId", "Custo", "DataAtualizacao", "DataCadastro", "Descricao", "DuracaoMinutos", "EmpresaId", "ExibirAplicativo", "IntervaloMinutos", "Nome", "Observacao", "PercentualComissao", "PermiteAgendamentoOnline", "TipoComissao", "Valor" },
                 values: new object[,]
                 {
-                    { new Guid("11111111-1111-1111-1111-111111111111"), 1, new Guid("22222222-2222-2222-2222-222222222222"), 1m, null, new DateTime(2026, 10, 29, 4, 20, 12, 765, DateTimeKind.Utc).AddTicks(5852), "Serviço de corte de cabelo", 30, new Guid("50000000-0000-0000-0000-000000000001"), true, 5, "Corte de Cabelo", null, 10m, true, 1, 60m },
-                    { new Guid("11111111-1111-1111-1111-111111111112"), 1, new Guid("22222222-2222-2222-2222-222222222222"), 1m, null, new DateTime(2026, 10, 29, 4, 20, 12, 765, DateTimeKind.Utc).AddTicks(8957), "Serviço de corte de cabelo", 60, new Guid("50000000-0000-0000-0000-000000000001"), true, 5, "Cabelo e Barba", null, 10m, true, 1, 60m },
-                    { new Guid("11111111-1111-1111-1111-111111111113"), 1, new Guid("22222222-2222-2222-2222-222222222222"), 1m, null, new DateTime(2026, 10, 29, 4, 20, 12, 765, DateTimeKind.Utc).AddTicks(8962), "Serviço de corte de cabelo", 30, new Guid("50000000-0000-0000-0000-000000000001"), true, 5, "Botox Capilar", null, 10m, true, 1, 60m },
-                    { new Guid("11111111-1111-1111-1111-111111111114"), 1, new Guid("22222222-2222-2222-2222-222222222222"), 1m, null, new DateTime(2026, 10, 29, 4, 20, 12, 765, DateTimeKind.Utc).AddTicks(8965), "Serviço de corte de cabelo", 30, new Guid("50000000-0000-0000-0000-000000000001"), true, 5, "Corte + Barba + Botox Capilar", null, 10m, true, 1, 60m },
-                    { new Guid("11111111-1111-1111-1111-111111111115"), 1, new Guid("44444444-4444-4444-4444-444444444444"), 1m, null, new DateTime(2026, 10, 29, 4, 20, 12, 765, DateTimeKind.Utc).AddTicks(8969), "Serviço de corte de cabelo", 30, new Guid("50000000-0000-0000-0000-000000000001"), true, 5, "Esmaltação - Francesinha", null, 10m, true, 1, 60m },
-                    { new Guid("11111111-1111-1111-1111-111111111116"), 1, new Guid("33333333-3333-3333-3333-333333333333"), 1m, null, new DateTime(2026, 10, 29, 4, 20, 12, 765, DateTimeKind.Utc).AddTicks(8991), "Serviço de corte de cabelo", 30, new Guid("50000000-0000-0000-0000-000000000001"), true, 5, "Esmaltação - Mãos", null, 10m, true, 1, 60m },
-                    { new Guid("11111111-1111-1111-1111-111111111117"), 2, new Guid("33333333-3333-3333-3333-333333333333"), 1m, null, new DateTime(2026, 10, 29, 4, 20, 12, 765, DateTimeKind.Utc).AddTicks(8994), "Serviço de corte de cabelo", 30, new Guid("50000000-0000-0000-0000-000000000001"), true, 5, "Esmaltação - Mãos", null, 10m, true, 1, 60m },
-                    { new Guid("11111111-1111-1111-1111-111111111118"), 1, new Guid("33333333-3333-3333-3333-333333333333"), 1m, null, new DateTime(2026, 10, 29, 4, 20, 12, 765, DateTimeKind.Utc).AddTicks(8998), "Serviço de corte de cabelo", 30, new Guid("50000000-0000-0000-0000-000000000001"), true, 5, "Esmaltação - Mãos", null, 10m, true, 1, 60m },
-                    { new Guid("11111111-1111-1111-1111-111111111119"), 2, new Guid("33333333-3333-3333-3333-333333333333"), 1m, null, new DateTime(2026, 10, 29, 4, 20, 12, 765, DateTimeKind.Utc).AddTicks(9027), "Serviço de corte de cabelo", 30, new Guid("50000000-0000-0000-0000-000000000001"), true, 5, "Esmaltação - Mãos", null, 10m, true, 1, 60m }
+                    { new Guid("11111111-1111-1111-1111-111111111111"), 1, new Guid("22222222-2222-2222-2222-222222222222"), 1m, null, new DateTime(2026, 10, 30, 2, 24, 30, 844, DateTimeKind.Utc).AddTicks(1619), "Serviço de corte de cabelo", 30, new Guid("50000000-0000-0000-0000-000000000001"), true, 5, "Corte de Cabelo", null, 10m, true, 1, 60m },
+                    { new Guid("11111111-1111-1111-1111-111111111112"), 1, new Guid("22222222-2222-2222-2222-222222222222"), 1m, null, new DateTime(2026, 10, 30, 2, 24, 30, 844, DateTimeKind.Utc).AddTicks(3426), "Serviço de corte de cabelo", 60, new Guid("50000000-0000-0000-0000-000000000001"), true, 5, "Cabelo e Barba", null, 10m, true, 1, 60m },
+                    { new Guid("11111111-1111-1111-1111-111111111113"), 1, new Guid("22222222-2222-2222-2222-222222222222"), 1m, null, new DateTime(2026, 10, 30, 2, 24, 30, 844, DateTimeKind.Utc).AddTicks(3430), "Serviço de corte de cabelo", 30, new Guid("50000000-0000-0000-0000-000000000001"), true, 5, "Botox Capilar", null, 10m, true, 1, 60m },
+                    { new Guid("11111111-1111-1111-1111-111111111114"), 1, new Guid("22222222-2222-2222-2222-222222222222"), 1m, null, new DateTime(2026, 10, 30, 2, 24, 30, 844, DateTimeKind.Utc).AddTicks(3433), "Serviço de corte de cabelo", 30, new Guid("50000000-0000-0000-0000-000000000001"), true, 5, "Corte + Barba + Botox Capilar", null, 10m, true, 1, 60m },
+                    { new Guid("11111111-1111-1111-1111-111111111115"), 1, new Guid("44444444-4444-4444-4444-444444444444"), 1m, null, new DateTime(2026, 10, 30, 2, 24, 30, 844, DateTimeKind.Utc).AddTicks(3435), "Serviço de corte de cabelo", 30, new Guid("50000000-0000-0000-0000-000000000001"), true, 5, "Esmaltação - Francesinha", null, 10m, true, 1, 60m },
+                    { new Guid("11111111-1111-1111-1111-111111111116"), 1, new Guid("33333333-3333-3333-3333-333333333333"), 1m, null, new DateTime(2026, 10, 30, 2, 24, 30, 844, DateTimeKind.Utc).AddTicks(3446), "Serviço de corte de cabelo", 30, new Guid("50000000-0000-0000-0000-000000000001"), true, 5, "Esmaltação - Mãos", null, 10m, true, 1, 60m },
+                    { new Guid("11111111-1111-1111-1111-111111111117"), 2, new Guid("33333333-3333-3333-3333-333333333333"), 1m, null, new DateTime(2026, 10, 30, 2, 24, 30, 844, DateTimeKind.Utc).AddTicks(3449), "Serviço de corte de cabelo", 30, new Guid("50000000-0000-0000-0000-000000000001"), true, 5, "Esmaltação - Mãos", null, 10m, true, 1, 60m },
+                    { new Guid("11111111-1111-1111-1111-111111111118"), 1, new Guid("33333333-3333-3333-3333-333333333333"), 1m, null, new DateTime(2026, 10, 30, 2, 24, 30, 844, DateTimeKind.Utc).AddTicks(3451), "Serviço de corte de cabelo", 30, new Guid("50000000-0000-0000-0000-000000000001"), true, 5, "Esmaltação - Mãos", null, 10m, true, 1, 60m },
+                    { new Guid("11111111-1111-1111-1111-111111111119"), 2, new Guid("33333333-3333-3333-3333-333333333333"), 1m, null, new DateTime(2026, 10, 30, 2, 24, 30, 844, DateTimeKind.Utc).AddTicks(3458), "Serviço de corte de cabelo", 30, new Guid("50000000-0000-0000-0000-000000000001"), true, 5, "Esmaltação - Mãos", null, 10m, true, 1, 60m }
+                });
+
+            migrationBuilder.InsertData(
+                table: "EstoquesProdutos",
+                columns: new[] { "Id", "DataAtualizacao", "DataAtualizacaoEstoque", "DataCadastro", "EmpresaId", "EstoqueMinimo", "ProdutoId", "QuantidadeAtual" },
+                values: new object[,]
+                {
+                    { new Guid("a4000000-0000-0000-0000-000000000001"), null, new DateTime(2026, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("50000000-0000-0000-0000-000000000001"), 3m, new Guid("a3000000-0000-0000-0000-000000000001"), 15m },
+                    { new Guid("a4000000-0000-0000-0000-000000000002"), null, new DateTime(2026, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("50000000-0000-0000-0000-000000000001"), 2m, new Guid("a3000000-0000-0000-0000-000000000002"), 10m },
+                    { new Guid("a4000000-0000-0000-0000-000000000003"), null, new DateTime(2026, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("50000000-0000-0000-0000-000000000001"), 2m, new Guid("a3000000-0000-0000-0000-000000000003"), 8m },
+                    { new Guid("a4000000-0000-0000-0000-000000000004"), null, new DateTime(2026, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("50000000-0000-0000-0000-000000000001"), 5m, new Guid("a3000000-0000-0000-0000-000000000004"), 20m },
+                    { new Guid("a4000000-0000-0000-0000-000000000005"), null, new DateTime(2026, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTime(2026, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new Guid("50000000-0000-0000-0000-000000000001"), 3m, new Guid("a3000000-0000-0000-0000-000000000005"), 12m }
+                });
+
+            migrationBuilder.InsertData(
+                table: "MovimentacoesEstoque",
+                columns: new[] { "Id", "DataAtualizacao", "DataCadastro", "DataMovimento", "DocumentoOrigemId", "EmpresaId", "Observacao", "Origem", "ProdutoId", "Quantidade", "SaldoAnterior", "SaldoPosterior", "Tipo", "UsuarioResponsavelId" },
+                values: new object[,]
+                {
+                    { new Guid("a5000000-0000-0000-0000-000000000001"), null, new DateTime(2026, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTimeOffset(new DateTime(2026, 10, 1, 12, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), null, new Guid("50000000-0000-0000-0000-000000000001"), "Estoque inicial para testes.", 1, new Guid("a3000000-0000-0000-0000-000000000001"), 15m, 0m, 15m, 1, null },
+                    { new Guid("a5000000-0000-0000-0000-000000000002"), null, new DateTime(2026, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTimeOffset(new DateTime(2026, 10, 1, 12, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), null, new Guid("50000000-0000-0000-0000-000000000001"), "Estoque inicial para testes.", 1, new Guid("a3000000-0000-0000-0000-000000000002"), 10m, 0m, 10m, 1, null },
+                    { new Guid("a5000000-0000-0000-0000-000000000003"), null, new DateTime(2026, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTimeOffset(new DateTime(2026, 10, 1, 12, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), null, new Guid("50000000-0000-0000-0000-000000000001"), "Estoque inicial para testes.", 1, new Guid("a3000000-0000-0000-0000-000000000003"), 8m, 0m, 8m, 1, null },
+                    { new Guid("a5000000-0000-0000-0000-000000000004"), null, new DateTime(2026, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTimeOffset(new DateTime(2026, 10, 1, 12, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), null, new Guid("50000000-0000-0000-0000-000000000001"), "Estoque inicial para testes.", 1, new Guid("a3000000-0000-0000-0000-000000000004"), 20m, 0m, 20m, 1, null },
+                    { new Guid("a5000000-0000-0000-0000-000000000005"), null, new DateTime(2026, 10, 1, 0, 0, 0, 0, DateTimeKind.Unspecified), new DateTimeOffset(new DateTime(2026, 10, 1, 12, 0, 0, 0, DateTimeKind.Unspecified), new TimeSpan(0, 0, 0, 0, 0)), null, new Guid("50000000-0000-0000-0000-000000000001"), "Estoque inicial para testes.", 1, new Guid("a3000000-0000-0000-0000-000000000005"), 12m, 0m, 12m, 1, null }
                 });
 
             migrationBuilder.InsertData(
@@ -891,14 +1071,14 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                 columns: new[] { "Id", "Ativo", "DataAtualizacao", "DataCadastro", "DataVinculo", "DuracaoPersonalizada", "EmpresaId", "ProfissionalId", "ServicoId", "ValorPersonalizado" },
                 values: new object[,]
                 {
-                    { new Guid("2d537da1-9e9a-4078-8efa-0383fca6647a"), 1, null, new DateTime(2026, 10, 29, 4, 20, 12, 766, DateTimeKind.Utc).AddTicks(8579), new DateTime(2026, 10, 29, 4, 20, 12, 766, DateTimeKind.Utc).AddTicks(8567), 35, new Guid("50000000-0000-0000-0000-000000000001"), new Guid("91000000-0000-0000-0000-000000000001"), new Guid("11111111-1111-1111-1111-111111111112"), 70m },
-                    { new Guid("4a8502ac-1145-4816-8ac8-c55fd13c8706"), 3, null, new DateTime(2026, 10, 29, 4, 20, 12, 766, DateTimeKind.Utc).AddTicks(8608), new DateTime(2026, 10, 29, 4, 20, 12, 766, DateTimeKind.Utc).AddTicks(8607), 45, new Guid("50000000-0000-0000-0000-000000000001"), new Guid("91000000-0000-0000-0000-000000000003"), new Guid("11111111-1111-1111-1111-111111111115"), 90m },
-                    { new Guid("51937c50-8a08-40be-b103-d572c25453ae"), 3, null, new DateTime(2026, 10, 29, 4, 20, 12, 766, DateTimeKind.Utc).AddTicks(8594), new DateTime(2026, 10, 29, 4, 20, 12, 766, DateTimeKind.Utc).AddTicks(8583), 40, new Guid("50000000-0000-0000-0000-000000000001"), new Guid("91000000-0000-0000-0000-000000000001"), new Guid("11111111-1111-1111-1111-111111111113"), 80m },
-                    { new Guid("5b87d363-6ac9-446a-9c58-5898bd3453fe"), 3, null, new DateTime(2026, 10, 29, 4, 20, 12, 766, DateTimeKind.Utc).AddTicks(8613), new DateTime(2026, 10, 29, 4, 20, 12, 766, DateTimeKind.Utc).AddTicks(8610), 45, new Guid("50000000-0000-0000-0000-000000000001"), new Guid("91000000-0000-0000-0000-000000000003"), new Guid("11111111-1111-1111-1111-111111111116"), 90m },
-                    { new Guid("63645d4f-26bd-46a5-86c5-e992692b88b7"), 3, null, new DateTime(2026, 10, 29, 4, 20, 12, 766, DateTimeKind.Utc).AddTicks(8597), new DateTime(2026, 10, 29, 4, 20, 12, 766, DateTimeKind.Utc).AddTicks(8596), 45, new Guid("50000000-0000-0000-0000-000000000001"), new Guid("91000000-0000-0000-0000-000000000002"), new Guid("11111111-1111-1111-1111-111111111114"), 90m },
-                    { new Guid("81945285-5b64-401d-a16c-5d7e8fc9a7a1"), 3, null, new DateTime(2026, 10, 29, 4, 20, 12, 766, DateTimeKind.Utc).AddTicks(8600), new DateTime(2026, 10, 29, 4, 20, 12, 766, DateTimeKind.Utc).AddTicks(8599), 45, new Guid("50000000-0000-0000-0000-000000000001"), new Guid("91000000-0000-0000-0000-000000000002"), new Guid("11111111-1111-1111-1111-111111111115"), 90m },
-                    { new Guid("b6d2ee5d-4074-4b34-b118-39a1660af0c5"), 1, null, new DateTime(2026, 10, 29, 4, 20, 12, 766, DateTimeKind.Utc).AddTicks(4868), new DateTime(2026, 10, 29, 4, 20, 12, 766, DateTimeKind.Utc).AddTicks(4851), 25, new Guid("50000000-0000-0000-0000-000000000001"), new Guid("91000000-0000-0000-0000-000000000001"), new Guid("11111111-1111-1111-1111-111111111111"), 50m },
-                    { new Guid("d858e5ea-71c1-4b38-abc2-9b8eba90c168"), 3, null, new DateTime(2026, 10, 29, 4, 20, 12, 766, DateTimeKind.Utc).AddTicks(8616), new DateTime(2026, 10, 29, 4, 20, 12, 766, DateTimeKind.Utc).AddTicks(8616), 10, new Guid("50000000-0000-0000-0000-000000000001"), new Guid("91000000-0000-0000-0000-000000000011"), new Guid("11111111-1111-1111-1111-111111111111"), 50m }
+                    { new Guid("104a2c8b-b186-488b-8ac7-bb5d4152d86a"), 3, null, new DateTime(2026, 10, 30, 2, 24, 30, 844, DateTimeKind.Utc).AddTicks(9705), new DateTime(2026, 10, 30, 2, 24, 30, 844, DateTimeKind.Utc).AddTicks(9704), 45, new Guid("50000000-0000-0000-0000-000000000001"), new Guid("91000000-0000-0000-0000-000000000002"), new Guid("11111111-1111-1111-1111-111111111115"), 90m },
+                    { new Guid("1f363e93-9b1c-43c8-861e-45fe93b1c012"), 3, null, new DateTime(2026, 10, 30, 2, 24, 30, 844, DateTimeKind.Utc).AddTicks(9716), new DateTime(2026, 10, 30, 2, 24, 30, 844, DateTimeKind.Utc).AddTicks(9715), 10, new Guid("50000000-0000-0000-0000-000000000001"), new Guid("91000000-0000-0000-0000-000000000011"), new Guid("11111111-1111-1111-1111-111111111111"), 50m },
+                    { new Guid("36653457-1282-45b3-bbd0-91e41e3e878f"), 3, null, new DateTime(2026, 10, 30, 2, 24, 30, 844, DateTimeKind.Utc).AddTicks(9697), new DateTime(2026, 10, 30, 2, 24, 30, 844, DateTimeKind.Utc).AddTicks(9696), 45, new Guid("50000000-0000-0000-0000-000000000001"), new Guid("91000000-0000-0000-0000-000000000002"), new Guid("11111111-1111-1111-1111-111111111114"), 90m },
+                    { new Guid("3692d913-26a6-4753-899a-20b42cfc3d49"), 3, null, new DateTime(2026, 10, 30, 2, 24, 30, 844, DateTimeKind.Utc).AddTicks(9694), new DateTime(2026, 10, 30, 2, 24, 30, 844, DateTimeKind.Utc).AddTicks(9694), 40, new Guid("50000000-0000-0000-0000-000000000001"), new Guid("91000000-0000-0000-0000-000000000001"), new Guid("11111111-1111-1111-1111-111111111113"), 80m },
+                    { new Guid("7f99ce2e-7e71-46f0-8e8b-fd961720edc7"), 3, null, new DateTime(2026, 10, 30, 2, 24, 30, 844, DateTimeKind.Utc).AddTicks(9713), new DateTime(2026, 10, 30, 2, 24, 30, 844, DateTimeKind.Utc).AddTicks(9712), 45, new Guid("50000000-0000-0000-0000-000000000001"), new Guid("91000000-0000-0000-0000-000000000003"), new Guid("11111111-1111-1111-1111-111111111116"), 90m },
+                    { new Guid("9b3dbd84-fef1-485a-8584-f321df5362ab"), 1, null, new DateTime(2026, 10, 30, 2, 24, 30, 844, DateTimeKind.Utc).AddTicks(9691), new DateTime(2026, 10, 30, 2, 24, 30, 844, DateTimeKind.Utc).AddTicks(9686), 35, new Guid("50000000-0000-0000-0000-000000000001"), new Guid("91000000-0000-0000-0000-000000000001"), new Guid("11111111-1111-1111-1111-111111111112"), 70m },
+                    { new Guid("ab85d792-4d0e-45d3-8793-ae227932ff43"), 3, null, new DateTime(2026, 10, 30, 2, 24, 30, 844, DateTimeKind.Utc).AddTicks(9710), new DateTime(2026, 10, 30, 2, 24, 30, 844, DateTimeKind.Utc).AddTicks(9710), 45, new Guid("50000000-0000-0000-0000-000000000001"), new Guid("91000000-0000-0000-0000-000000000003"), new Guid("11111111-1111-1111-1111-111111111115"), 90m },
+                    { new Guid("c08eff5d-c095-485f-9743-0dfceb582632"), 1, null, new DateTime(2026, 10, 30, 2, 24, 30, 844, DateTimeKind.Utc).AddTicks(8267), new DateTime(2026, 10, 30, 2, 24, 30, 844, DateTimeKind.Utc).AddTicks(8261), 25, new Guid("50000000-0000-0000-0000-000000000001"), new Guid("91000000-0000-0000-0000-000000000001"), new Guid("11111111-1111-1111-1111-111111111111"), 50m }
                 });
 
             migrationBuilder.CreateIndex(
@@ -1012,6 +1192,12 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                 column: "UsuarioId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_CategoriasProdutos_EmpresaId_Nome",
+                table: "CategoriasProdutos",
+                columns: new[] { "EmpresaId", "Nome" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_CategoriasServicos_EmpresaId_Nome",
                 table: "CategoriasServicos",
                 columns: new[] { "EmpresaId", "Nome" });
@@ -1098,6 +1284,17 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                 filter: "[VendaId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_EstoquesProdutos_EmpresaId_QuantidadeAtual",
+                table: "EstoquesProdutos",
+                columns: new[] { "EmpresaId", "QuantidadeAtual" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_EstoquesProdutos_ProdutoId",
+                table: "EstoquesProdutos",
+                column: "ProdutoId",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Feriados_EmpresaId_Data",
                 table: "Feriados",
                 columns: new[] { "EmpresaId", "Data" });
@@ -1121,6 +1318,27 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                 name: "IX_HorariosProfissionais_ProfissionalId_DiaSemana",
                 table: "HorariosProfissionais",
                 columns: new[] { "ProfissionalId", "DiaSemana" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Marcas_EmpresaId_Nome",
+                table: "Marcas",
+                columns: new[] { "EmpresaId", "Nome" },
+                unique: true);
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MovimentacoesEstoque_Empresa_Produto_Data",
+                table: "MovimentacoesEstoque",
+                columns: new[] { "EmpresaId", "ProdutoId", "DataMovimento" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MovimentacoesEstoque_Origem_Documento",
+                table: "MovimentacoesEstoque",
+                columns: new[] { "EmpresaId", "Origem", "DocumentoOrigemId" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_MovimentacoesEstoque_ProdutoId",
+                table: "MovimentacoesEstoque",
+                column: "ProdutoId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_MovimentoCaixa_CaixaId",
@@ -1172,6 +1390,35 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                 name: "IX_PlanosAssinatura_EmpresaId_Nome",
                 table: "PlanosAssinatura",
                 columns: new[] { "EmpresaId", "Nome" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Produtos_CategoriaProdutoId",
+                table: "Produtos",
+                column: "CategoriaProdutoId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Produtos_EmpresaId_CodigoBarras",
+                table: "Produtos",
+                columns: new[] { "EmpresaId", "CodigoBarras" },
+                unique: true,
+                filter: "[CodigoBarras] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Produtos_EmpresaId_CodigoInterno",
+                table: "Produtos",
+                columns: new[] { "EmpresaId", "CodigoInterno" },
+                unique: true,
+                filter: "[CodigoInterno] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Produtos_EmpresaId_Nome",
+                table: "Produtos",
+                columns: new[] { "EmpresaId", "Nome" });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Produtos_MarcaId",
+                table: "Produtos",
+                column: "MarcaId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Profissionais_Cpf",
@@ -1308,6 +1555,9 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                 name: "ConfigurarcaoAssasCliente");
 
             migrationBuilder.DropTable(
+                name: "EstoquesProdutos");
+
+            migrationBuilder.DropTable(
                 name: "Feriados");
 
             migrationBuilder.DropTable(
@@ -1315,6 +1565,9 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
 
             migrationBuilder.DropTable(
                 name: "HorariosProfissionais");
+
+            migrationBuilder.DropTable(
+                name: "MovimentacoesEstoque");
 
             migrationBuilder.DropTable(
                 name: "MovimentoCaixa");
@@ -1338,6 +1591,9 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                 name: "VendaItens");
 
             migrationBuilder.DropTable(
+                name: "Produtos");
+
+            migrationBuilder.DropTable(
                 name: "Caixa");
 
             migrationBuilder.DropTable(
@@ -1354,6 +1610,12 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
 
             migrationBuilder.DropTable(
                 name: "BeneficiariosAssinatura");
+
+            migrationBuilder.DropTable(
+                name: "CategoriasProdutos");
+
+            migrationBuilder.DropTable(
+                name: "Marcas");
 
             migrationBuilder.DropTable(
                 name: "CategoriasServicos");

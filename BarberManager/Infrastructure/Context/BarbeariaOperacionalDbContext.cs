@@ -1,14 +1,20 @@
 ﻿using Domain.Entities.Agendamentos;
 using Domain.Entities.Assinaturas;
 using Domain.Entities.Clientes;
+using Domain.Entities.Estoque;
 using Domain.Entities.Financeiro;
+using Domain.Entities.Produtos;
 using Domain.Entities.Profissionais;
 using Domain.Entities.Servicos;
 using Domain.Entities.Vendas;
 using Infrastructure.Configurations.Operacional;
+using Infrastructure.Configurations.Operacional.Estoque;
+using Infrastructure.Configurations.Operacional.Produtos;
 using Infrastructure.Configurations.Operacional.Vendas;
 using Infrastructure.Configurations.Saas;
 using Infrastructure.Seeds.Operacional;
+using Infrastructure.Seeds.Operacional.Estoque;
+using Infrastructure.Seeds.Operacional.Produtos;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
@@ -80,6 +86,21 @@ namespace Infrastructure.Context
 
         public DbSet<VendaItem> VendaItens => Set<VendaItem>();
 
+        public DbSet<CategoriaProduto> CategoriasProdutos =>
+    Set<CategoriaProduto>();
+
+        public DbSet<Marca> Marcas =>
+            Set<Marca>();
+
+        public DbSet<Produto> Produtos =>
+            Set<Produto>();
+
+        public DbSet<EstoqueProduto> EstoquesProdutos =>
+            Set<EstoqueProduto>();
+
+        public DbSet<MovimentacaoEstoque> MovimentacoesEstoque =>
+            Set<MovimentacaoEstoque>();
+
         public DbSet<ConfiguracaoAgendaEmpresa> ConfiguracoesAgendaEmpresa
     => Set<ConfiguracaoAgendaEmpresa>();
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -118,6 +139,23 @@ namespace Infrastructure.Context
 
             modelBuilder.ApplyConfiguration(new ConfiguracaoAssasClientConfiguration());
 
+
+            modelBuilder.ApplyConfiguration(
+    new CategoriaProdutoConfiguration());
+
+            modelBuilder.ApplyConfiguration(
+                new MarcaConfiguration());
+
+            modelBuilder.ApplyConfiguration(
+                new ProdutoConfiguration());
+
+            modelBuilder.ApplyConfiguration(
+                new EstoqueProdutoConfiguration());
+
+            modelBuilder.ApplyConfiguration(
+                new MovimentacaoEstoqueConfiguration());
+
+
             modelBuilder.ApplyConfiguration(
                 new ClienteEmpresaConfiguration());
 
@@ -128,6 +166,11 @@ namespace Infrastructure.Context
 
             SeedHorariosFuncionamento.InicializarSeed(modelBuilder);
             SeedHorariosProfissionais.InicializarSeed(modelBuilder);
+
+            SeedCategoriasProdutos.InicializarSeed(modelBuilder);
+            SeedMarcas.InicializarSeed(modelBuilder);
+            SeedProdutos.InicializarSeed(modelBuilder);
+            SeedEstoqueProdutos.InicializarSeed(modelBuilder);
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

@@ -6,6 +6,7 @@ using Application.Interfaces.Clientes;
 using Application.Interfaces.Empresas;
 using Application.Interfaces.Empresas.Pagamentos;
 using Application.Interfaces.Financeiro;
+using Application.Interfaces.Produtos;
 using Application.Interfaces.Profissionais;
 using Application.Interfaces.Servicos;
 using Application.Interfaces.Vendas;
@@ -19,6 +20,7 @@ using Infrastructure.Repositories;
 using Infrastructure.Repositories.Clientes;
 using Infrastructure.Repositories.Financeiro;
 using Infrastructure.Repositories.Interfaces;
+using Infrastructure.Repositories.Produtos;
 using Infrastructure.Repositories.Servicos;
 using Infrastructure.Repositories.Vendas;
 using Infrastructure.Seeds.Operacional;
@@ -113,6 +115,8 @@ namespace Infrastructure
             services.AddScoped<IRepositorioCaixa, RepositorioCaixa>();
             services.AddScoped<IRepositorioVenda, RepositorioVenda>();
             services.AddScoped<IRepositorioServico, RepositorioServico>();
+            services.AddScoped<IRepositorioProdutos, RepositorioProdutos>();
+
 
             return services;
         }
