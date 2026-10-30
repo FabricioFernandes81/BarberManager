@@ -1,209 +1,242 @@
 ﻿using Application.Common.Exceptions;
 using Application.Common.Middlewares.Handler;
+using Application.Common.Security;
 using Application.Common.Tenancy;
 using Application.Interfaces.Produtos;
+using Application.Operacional.Produtos.DTOs;
+using Domain.Entities.Common.Enuns;
+using Domain.Entities.Estoque;
 using Domain.Entities.Produtos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Application.Operacional.Produtos.Commands.Handlers
 {
-    public class CriarProdutoHandler : ICommandHandler<CriarProdutoCommand, Guid>
+    public class CriarProdutoHandler
+        : ICommandHandler<CriarProdutoCommand, CriarProdutoDto>
     {
         private readonly IRepositorioProdutos _repositorioProdutos;
         private readonly ITenantContext _tenantContext;
+        private readonly IUsuarioLogado _usuarioLogado;
 
-        public CriarProdutoHandler( IRepositorioProdutos repositorioProdutos,
-       ITenantContext tenantContext)
+        public CriarProdutoHandler(
+            IRepositorioProdutos repositorioProdutos,
+            ITenantContext tenantContext,
+            IUsuarioLogado usuarioLogado)
         {
             _repositorioProdutos = repositorioProdutos;
             _tenantContext = tenantContext;
+            _usuarioLogado = usuarioLogado;
         }
-        public async Task<Guid> Handle(CriarProdutoCommand command, CancellationToken cancellationToken)
-        {
-          
 
+        public async Task<CriarProdutoDto> Handle(
+            CriarProdutoCommand command,
+            CancellationToken cancellationToken)
+        {
+            var erros = new List<string>();
+
+            // 1. Validar a empresa autenticada.
             if (!_tenantContext.IsAvailable ||
                 _tenantContext.EmpresaId == Guid.Empty)
             {
-                throw new CustomValidationException(
-                    new[]
-                    {
-                    "Não foi possível identificar a empresa do usuário autenticado."
-                    });
+                throw new UnauthorizedAccessException(
+                    "Não foi possível identificar a empresa do usuário autenticado.");
+            }
+
+            // 2. Validar o usuário responsável.
+            if (!_usuarioLogado.IsAuthenticated ||
+                _usuarioLogado.UsuarioId == Guid.Empty)
+            {
+                throw new UnauthorizedAccessException(
+                    "Não foi possível identificar o usuário autenticado.");
             }
 
             var empresaId = _tenantContext.EmpresaId;
+            var usuarioId = _usuarioLogado.UsuarioId;
 
-            // =====================================================
-            // 2. VALIDAR DADOS OBRIGATÓRIOS
-            // =====================================================
+            // 3. Normalizar os dados.
+            var nome = command.Nome?.Trim() ?? string.Empty;
+            var descricao = command.Descricao?.Trim();
+            var codigoInterno = string.IsNullOrWhiteSpace(
+                command.CodigoInterno)
+                    ? null
+                    : command.CodigoInterno.Trim();
 
-            if (string.IsNullOrWhiteSpace(command.Produto.Nome))
+            var codigoBarras = string.IsNullOrWhiteSpace(
+                command.CodigoBarras)
+                    ? null
+                    : command.CodigoBarras.Trim();
+
+            // 4. Validar campos obrigatórios e limites.
+            if (string.IsNullOrWhiteSpace(nome))
+                erros.Add("O nome do produto é obrigatório.");
+            else if (nome.Length > 150)
+                erros.Add("O nome do produto deve ter no máximo 150 caracteres.");
+
+            if (descricao?.Length > 100)
+                erros.Add("A descrição deve ter no máximo 100 caracteres.");
+
+            if (codigoInterno?.Length > 50)
+                erros.Add("O código interno deve ter no máximo 50 caracteres.");
+
+            if (codigoBarras?.Length > 50)
+                erros.Add("O código de barras deve ter no máximo 50 caracteres.");
+
+            if (command.ValorVenda < 0)
+                erros.Add("O valor de venda não pode ser negativo.");
+
+            if (command.Custo < 0)
+                erros.Add("O custo do produto não pode ser negativo.");
+
+            if (command.QuantidadeEstoqueInicial < 0)
+                erros.Add("A quantidade inicial do estoque não pode ser negativa.");
+
+            if (command.EstoqueMinimo < 0)
+                erros.Add("O estoque mínimo não pode ser negativo.");
+
+            if (command.CategoriaProdutoId == Guid.Empty)
+                erros.Add("A categoria informada é inválida.");
+
+            if (command.MarcaId == Guid.Empty)
+                erros.Add("A marca informada é inválida.");
+
+            if (!command.ControlaEstoque &&
+                (command.QuantidadeEstoqueInicial > 0 ||
+                 command.EstoqueMinimo > 0))
             {
-                throw new CustomValidationException(
-                    new[]
-                    {
-                    "O nome do produto é obrigatório."
-                    });
+                erros.Add(
+                    "A quantidade inicial e o estoque mínimo só podem ser " +
+                    "informados para produtos que controlam estoque.");
             }
 
-            if (command.Produto.ValorVenda < 0)
-            {
-                throw new CustomValidationException(
-                    new[]
-                    {
-                    "O valor de venda não pode ser negativo."
-                    });
-            }
+            if (erros.Count > 0)
+                throw new CustomValidationException(erros);
 
-            if (command.Produto.Custo < 0)
-            {
-                throw new CustomValidationException(
-                    new[]
-                    {
-                    "O custo do produto não pode ser negativo."
-                    });
-            }
+            cancellationToken.ThrowIfCancellationRequested();
 
-            // =====================================================
-            // 3. VALIDAR CATEGORIA
-            // =====================================================
-
+            // 5. Validar categoria e marca dentro da empresa.
             if (command.CategoriaProdutoId.HasValue)
             {
-                var categoriaExiste = await _context
-                    .Set<CategoriaProduto>()
-                    .AsNoTracking()
-                    .AnyAsync(
-                        categoria =>
-                            categoria.Id == command.CategoriaProdutoId.Value &&
-                            categoria.EmpresaId == empresaId &&
-                            categoria.Ativo,
+                var categoriaValida =
+                    await _repositorioProdutos.CategoriaPertenceEmpresaAsync(
+                        empresaId,
+                        command.CategoriaProdutoId.Value,
                         cancellationToken);
 
-                if (!categoriaExiste)
+                if (!categoriaValida)
                 {
-                    throw new CustomValidationException(
-                        new[]
-                        {
-                        "A categoria informada não existe, está inativa ou não pertence à empresa."
-                        });
+                    erros.Add(
+                        "A categoria informada não existe, está inativa " +
+                        "ou não pertence à empresa.");
                 }
             }
-
-            // =====================================================
-            // 4. VALIDAR MARCA
-            // =====================================================
 
             if (command.MarcaId.HasValue)
             {
-                var marcaExiste = await _context
-                    .Set<Marca>()
-                    .AsNoTracking()
-                    .AnyAsync(
-                        marca =>
-                            marca.Id == command.MarcaId.Value &&
-                            marca.EmpresaId == empresaId &&
-                            marca.Ativo,
+                var marcaValida =
+                    await _repositorioProdutos.MarcaPertenceEmpresaAsync(
+                        empresaId,
+                        command.MarcaId.Value,
                         cancellationToken);
 
-                if (!marcaExiste)
+                if (!marcaValida)
                 {
-                    throw new CustomValidationException(
-                        new[]
-                        {
-                        "A marca informada não existe, está inativa ou não pertence à empresa."
-                        });
+                    erros.Add(
+                        "A marca informada não existe, está inativa " +
+                        "ou não pertence à empresa.");
                 }
             }
 
-            // =====================================================
-            // 5. VALIDAR CÓDIGO INTERNO
-            // =====================================================
-
-            if (!string.IsNullOrWhiteSpace(command.CodigoInterno))
+            // 6. Validar unicidade dos códigos dentro da empresa.
+            if (codigoInterno is not null &&
+                await _repositorioProdutos.CodigoInternoExisteAsync(
+                    empresaId,
+                    codigoInterno,
+                    cancellationToken))
             {
-                var codigoInterno = command.CodigoInterno.Trim();
-
-                var codigoExiste = await _context
-                    .Set<Produto>()
-                    .AsNoTracking()
-                    .AnyAsync(
-                        produto =>
-                            produto.EmpresaId == empresaId &&
-                            produto.CodigoInterno == codigoInterno,
-                        cancellationToken);
-
-                if (codigoExiste)
-                {
-                    throw new CustomValidationException(
-                        new[]
-                        {
-                        "Já existe um produto cadastrado com esse código interno."
-                        });
-                }
+                erros.Add(
+                    "Já existe um produto cadastrado com esse código interno.");
             }
 
-            // =====================================================
-            // 6. VALIDAR CÓDIGO DE BARRAS
-            // =====================================================
-
-            if (!string.IsNullOrWhiteSpace(command.CodigoBarras))
+            if (codigoBarras is not null &&
+                await _repositorioProdutos.CodigoBarrasExisteAsync(
+                    empresaId,
+                    codigoBarras,
+                    cancellationToken))
             {
-                var codigoBarras = command.CodigoBarras.Trim();
-
-                var codigoExiste = await _context
-                    .Set<Produto>()
-                    .AsNoTracking()
-                    .AnyAsync(
-                        produto =>
-                            produto.EmpresaId == empresaId &&
-                            produto.CodigoBarras == codigoBarras,
-                        cancellationToken);
-
-                if (codigoExiste)
-                {
-                    throw new CustomValidationException(
-                        new[]
-                        {
-                        "Já existe um produto cadastrado com esse código de barras."
-                        });
-                }
+                erros.Add(
+                    "Já existe um produto cadastrado com esse código de barras.");
             }
 
-            // =====================================================
-            // 7. CRIAR ENTIDADE DE DOMÍNIO
-            // =====================================================
+            if (erros.Count > 0)
+                throw new CustomValidationException(erros);
 
+            // 7. Criar a entidade de domínio.
             var produto = new Produto(
                 empresaId: empresaId,
-                categoriaProdutoId: command.CategoriaProdutoId,
-                marcaId: command.MarcaId,
-                nome: command.Nome.Trim(),
-                descricao: command.Descricao,
-                codigoInterno: command.CodigoInterno?.Trim(),
-                codigoBarras: command.CodigoBarras?.Trim(),
+                nome: nome,
                 valorVenda: command.ValorVenda,
                 custo: command.Custo,
-                controlaEstoque: command.ControlaEstoque
-                );
+                controlaEstoque: command.ControlaEstoque,
+                categoriaProdutoId: command.CategoriaProdutoId,
+                marcaId: command.MarcaId,
+                descricao: descricao,
+                codigoInterno: codigoInterno,
+                codigoBarras: codigoBarras);
 
-          
-                await _repositorioProdutos.Adicionar(
-                    produto,
-                    cancellationToken);
+            EstoqueProduto? estoque = null;
+            MovimentacaoEstoque? movimentacao = null;
 
-          
-                // =================================================
-                // 9. RETORNAR IDENTIFICADOR DO PRODUTO
-                // =================================================
+            // 8. Criar estoque e movimentação quando aplicável.
+            if (command.ControlaEstoque)
+            {
+                estoque = new EstoqueProduto(
+                    empresaId: empresaId,
+                    produtoId: produto.Id,
+                    estoqueMinimo: command.EstoqueMinimo);
 
-                return produto.Id;
-           
+                if (command.QuantidadeEstoqueInicial > 0)
+                {
+                    var saldoAnterior = estoque.RegistrarEntrada(
+                        command.QuantidadeEstoqueInicial);
+
+                    var saldoPosterior = estoque.QuantidadeAtual;
+
+                    movimentacao = new MovimentacaoEstoque(
+                        empresaId: empresaId,
+                        produtoId: produto.Id,
+                        tipo: TipoMovimentacaoEstoque.Entrada,
+                        origem: OrigemMovimentacaoEstoque.CadastroInicial,
+                        quantidade: command.QuantidadeEstoqueInicial,
+                        saldoAnterior: saldoAnterior,
+                        saldoPosterior: saldoPosterior,
+                        usuarioResponsavelId: usuarioId,
+                        observacao:
+                            "Estoque inicial registrado no cadastro do produto.");
+                }
+            }
+
+            // 9. Registrar as entidades no contexto da mesma unidade de trabalho.
+            await _repositorioProdutos.AdicionarComEstoqueInicialAsync(
+                produto,
+                estoque,
+                movimentacao,
+                cancellationToken);
+
+            // 10. Retornar os dados do produto criado.
+            return new CriarProdutoDto(
+                Id: produto.Id,
+                Nome: produto.Nome,
+                CodigoInterno: produto.CodigoInterno,
+                CodigoBarras: produto.CodigoBarras,
+                CategoriaProdutoId: produto.CategoriaProdutoId,
+                MarcaId: produto.MarcaId,
+                ValorVenda: produto.ValorVenda,
+                Custo: produto.Custo,
+                ControlaEstoque: produto.ControlaEstoque,
+                QuantidadeEstoqueInicial:
+                    estoque?.QuantidadeAtual ?? 0,
+                EstoqueMinimo:
+                    estoque?.EstoqueMinimo ?? 0,
+                Ativo: produto.Ativo);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces.Produtos;
+using Domain.Entities.Estoque;
 using Domain.Entities.Produtos;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
@@ -154,6 +155,31 @@ namespace Infrastructure.Repositories.Produtos
         {
         
            await _context.Produtos.AddAsync(produto);
+        }
+
+        public async Task AdicionarComEstoqueInicialAsync(
+    Produto produto,
+    EstoqueProduto? estoque,
+    MovimentacaoEstoque? movimentacao,
+    CancellationToken cancellationToken)
+        {
+            await _context.Produtos.AddAsync(
+                produto,
+                cancellationToken);
+
+            if (estoque is not null)
+            {
+                await _context.EstoquesProdutos.AddAsync(
+                    estoque,
+                    cancellationToken);
+            }
+
+            if (movimentacao is not null)
+            {
+                await _context.MovimentacoesEstoque.AddAsync(
+                    movimentacao,
+                    cancellationToken);
+            }
         }
     }
 }

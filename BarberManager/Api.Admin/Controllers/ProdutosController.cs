@@ -1,4 +1,5 @@
 ﻿using Application.Dispatcher;
+using Application.Operacional.Produtos.Commands;
 using Application.Operacional.Produtos.DTOs;
 using Application.Operacional.Produtos.Queries;
 using Microsoft.AspNetCore.Authorization;
@@ -70,6 +71,28 @@ namespace Api.Admin.Controllers
                     cancellationToken);
 
             return Ok(resultado);
+        }
+
+        [HttpPost]
+        [ProducesResponseType(
+    typeof(CriarProdutoDto),
+    StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<CriarProdutoDto>> Criar(
+    [FromBody] CriarProdutoCommand command,
+    CancellationToken cancellationToken)
+        {
+            var resultado = await _dispatcher.Command<
+                CriarProdutoCommand,
+                CriarProdutoDto>(
+                    command,
+                    cancellationToken);
+
+            return CreatedAtAction(
+                nameof(ObterPorId),
+                new { id = resultado.Id },
+                resultado);
         }
     }
 }

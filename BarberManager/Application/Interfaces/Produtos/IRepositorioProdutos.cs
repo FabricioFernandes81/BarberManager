@@ -1,4 +1,5 @@
-﻿using Domain.Entities.Produtos;
+﻿using Domain.Entities.Estoque;
+using Domain.Entities.Produtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,6 +40,7 @@ namespace Application.Interfaces.Produtos
             CancellationToken cancellationToken);
 
        Task Adicionar(Produto produto);
+        Task AdicionarComEstoqueInicialAsync(Produto produto, EstoqueProduto? estoque, MovimentacaoEstoque? movimentacao, CancellationToken cancellationToken);
     }
 }
 

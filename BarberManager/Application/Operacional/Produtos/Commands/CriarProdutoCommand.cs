@@ -14,7 +14,7 @@ namespace Application.Operacional.Produtos.Commands
 
         public string? Descricao { get; set; }
 
-        public string Codigo { get; set; } = string.Empty;
+        public string? CodigoInterno { get; set; }
 
         public string? CodigoBarras { get; set; }
 
@@ -22,17 +22,15 @@ namespace Application.Operacional.Produtos.Commands
 
         public Guid? MarcaId { get; set; }
 
-        public decimal Custo { get; set; }
-
         public decimal ValorVenda { get; set; }
 
+        public decimal Custo { get; set; }
+
+        public bool ControlaEstoque { get; set; }
+
+        public decimal QuantidadeEstoqueInicial { get; set; }
+
         public decimal EstoqueMinimo { get; set; }
-
-        public string UnidadeMedida { get; set; } = "UN";
-
-        public bool Ativo { get; set; } = true;
-
-        public string? Observacao { get; set; }
 
         public TransactionContext TransactionContext =>
             TransactionContext.Operacional;
