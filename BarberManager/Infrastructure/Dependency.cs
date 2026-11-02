@@ -3,6 +3,7 @@ using Application.Common.Outbox;
 using Application.Interfaces;
 using Application.Interfaces.Agendamentos;
 using Application.Interfaces.Clientes;
+using Application.Interfaces.Compras;
 using Application.Interfaces.Empresas;
 using Application.Interfaces.Empresas.Pagamentos;
 using Application.Interfaces.Financeiro;
@@ -18,6 +19,7 @@ using Infrastructure.Payments;
 using Infrastructure.Payments.Asaas;
 using Infrastructure.Repositories;
 using Infrastructure.Repositories.Clientes;
+using Infrastructure.Repositories.Compras;
 using Infrastructure.Repositories.Financeiro;
 using Infrastructure.Repositories.Interfaces;
 using Infrastructure.Repositories.Produtos;
@@ -116,6 +118,8 @@ namespace Infrastructure
             services.AddScoped<IRepositorioVenda, RepositorioVenda>();
             services.AddScoped<IRepositorioServico, RepositorioServico>();
             services.AddScoped<IRepositorioProdutos, RepositorioProdutos>();
+
+            services.AddScoped<IRepositorioFornecedor, RepositorioFornecedor>();
 
 
             return services;

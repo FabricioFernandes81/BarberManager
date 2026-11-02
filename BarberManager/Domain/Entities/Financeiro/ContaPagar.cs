@@ -1,5 +1,6 @@
 ﻿using Domain.Entities.Common;
 using Domain.Entities.Common.Enuns;
+using Domain.Entities.Compras;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,9 +13,9 @@ namespace Domain.Entities.Financeiro
     {
         public Guid EmpresaId { get; set; }
 
-      //  public Guid FornecedorId { get; set; }
+        public Guid FornecedorId { get; set; }
 
-      //  public Fornecedor Fornecedor { get; set; } = null!;
+        public Fornecedor Fornecedor { get; set; } = null!;
 
         public DateTime DataEmissao { get; set; }
 
@@ -27,6 +28,14 @@ namespace Domain.Entities.Financeiro
         public StatusContas Status { get; set; }
 
         public string Descricao { get; set; } = string.Empty;
+
+        public Guid? CompraId { get; set; }
+        public Compra? Compra { get; set; }
+
+        public int NumeroParcela { get; set; }
+
+        public int TotalParcelas { get; set; }
+
 
         public ICollection<Pagamento> Pagamentos { get; set; }
             = new List<Pagamento>();

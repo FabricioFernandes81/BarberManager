@@ -1,6 +1,7 @@
 ﻿using Domain.Entities.Agendamentos;
 using Domain.Entities.Assinaturas;
 using Domain.Entities.Clientes;
+using Domain.Entities.Compras;
 using Domain.Entities.Estoque;
 using Domain.Entities.Financeiro;
 using Domain.Entities.Produtos;
@@ -8,6 +9,7 @@ using Domain.Entities.Profissionais;
 using Domain.Entities.Servicos;
 using Domain.Entities.Vendas;
 using Infrastructure.Configurations.Operacional;
+using Infrastructure.Configurations.Operacional.Compras;
 using Infrastructure.Configurations.Operacional.Estoque;
 using Infrastructure.Configurations.Operacional.Produtos;
 using Infrastructure.Configurations.Operacional.Vendas;
@@ -100,9 +102,18 @@ namespace Infrastructure.Context
 
         public DbSet<MovimentacaoEstoque> MovimentacoesEstoque =>
             Set<MovimentacaoEstoque>();
+        
+        public DbSet<Fornecedor> Fornecedores => Set<Fornecedor>();
+
+        public DbSet<Compra> Compras => Set<Compra>();
+
+        public DbSet<CompraItem> CompraItens => Set<CompraItem>();
+
 
         public DbSet<ConfiguracaoAgendaEmpresa> ConfiguracoesAgendaEmpresa
     => Set<ConfiguracaoAgendaEmpresa>();
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -138,7 +149,9 @@ namespace Infrastructure.Context
             modelBuilder.ApplyConfiguration(new VendaItemConfiguration());
 
             modelBuilder.ApplyConfiguration(new ConfiguracaoAssasClientConfiguration());
-
+            
+           
+            modelBuilder.ApplyConfiguration(new FornecedorConfiguration());
 
             modelBuilder.ApplyConfiguration(
     new CategoriaProdutoConfiguration());
@@ -158,6 +171,12 @@ namespace Infrastructure.Context
 
             modelBuilder.ApplyConfiguration(
                 new ClienteEmpresaConfiguration());
+
+            modelBuilder.ApplyConfiguration(new CompraConfiguration());
+            
+            modelBuilder.ApplyConfiguration(new CompraItemConfiguration());
+
+
 
             SeedProfissionais.SeedProfissial(modelBuilder);
             SeedModuloServicos.SeedIniciarServico(modelBuilder);

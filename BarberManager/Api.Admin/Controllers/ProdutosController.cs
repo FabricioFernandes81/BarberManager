@@ -1,4 +1,6 @@
 ﻿using Application.Dispatcher;
+using Application.Operacional.Compras.Commands;
+using Application.Operacional.Compras.DTOs;
 using Application.Operacional.Produtos.Commands;
 using Application.Operacional.Produtos.DTOs;
 using Application.Operacional.Produtos.Queries;
@@ -166,5 +168,7 @@ namespace Api.Admin.Controllers
 
             return Ok(resultado);
         }
+
+      
     }
 }

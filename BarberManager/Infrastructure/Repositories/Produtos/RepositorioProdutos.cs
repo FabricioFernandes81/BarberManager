@@ -192,13 +192,13 @@ namespace Infrastructure.Repositories.Produtos
         public async Task<Produto> ObterPorIdParaAtualizacaoAsync(Guid empresaId, Guid produtoId, CancellationToken cancellationToken)
         {
             return await _context.Produtos
-                    .Include(p => p.CategoriaProduto)
-                    .Include(p => p.Marca)
-                    .Include(p => p.Estoque)
-                    .SingleOrDefaultAsync(
-                        p => p.Id == produtoId &&
-                             p.EmpresaId == empresaId,
-                        cancellationToken);
+                       .Include(p => p.CategoriaProduto)
+                       .Include(p => p.Marca)
+                       .Include(p => p.Estoque)
+                       .SingleOrDefaultAsync(
+                           p => p.Id == produtoId &&
+                                p.EmpresaId == empresaId,
+                           cancellationToken);
         }
 
         public async Task<bool> CodigoInternoExisteAsync(Guid empresaId, string codigoInterno, CancellationToken cancellationToken, Guid? ignorarProdutoId = null)
