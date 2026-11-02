@@ -3,10 +3,13 @@ using Application.Common.Middlewares.Handler;
 using Application.Common.Security;
 using Application.Common.Tenancy;
 using Application.Interfaces.Financeiro;
+using Application.Interfaces.Produtos;
 using Application.Interfaces.Vendas;
 using Application.Operacional.Vendas.DTOs;
 using Domain.Entities.Common.Enuns;
+using Domain.Entities.Estoque;
 using Domain.Entities.Financeiro;
+using Domain.Entities.Vendas;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,19 +26,21 @@ namespace Application.Operacional.Vendas.Commands.Handlers
         private readonly IRepositorioCaixa _repositorioCaixa;
         private readonly ITenantContext _tenantContext;
         private readonly IUsuarioLogado _usuarioLogado;
+        private readonly IRepositorioProdutos _repositorioProdutos;
 
         public FinalizarVendaHandler(
             IRepositorioVenda repositorioVenda,
             IRepositorioRecebimento repositorioRecebimento,
             IRepositorioCaixa repositorioCaixa,
             ITenantContext tenantContext,
-            IUsuarioLogado usuarioLogado)
+            IUsuarioLogado usuarioLogado, IRepositorioProdutos repositorioProdutos)
         {
             _repositorioVenda = repositorioVenda;
             _repositorioRecebimento = repositorioRecebimento;
             _repositorioCaixa = repositorioCaixa;
             _tenantContext = tenantContext;
             _usuarioLogado = usuarioLogado;
+            _repositorioProdutos = repositorioProdutos;
         }
 
         public async Task<FinalizarVendaDto> Handle(
@@ -237,6 +242,10 @@ if (command.Pagamentos
                     "Verifique o financeiro antes de tentar finalizá-la novamente.");
             }
 
+            //Validar e baixar o estoque dos produtos da venda
+
+            await BaixarEstoqueProdutosAsync(venda, empresaId, usuarioId, cancellationToken);
+
             // 11. Definir os valores exclusivamente no servidor.
             var dataFinalizacao = DateTimeOffset.UtcNow;
             var dataOperacao = dataFinalizacao.UtcDateTime;
@@ -330,6 +339,91 @@ if (command.Pagamentos
                 Subtotal: venda.Subtotal,
                 Desconto: venda.Desconto,
                 ValorTotal: venda.ValorTotal);
+        }
+        private async Task BaixarEstoqueProdutosAsync(
+            Venda venda,
+            Guid empresaId, Guid usuarioId, CancellationToken cancellationToken)
+        {
+            var itensProduto = venda.Itens
+                .Where(item => item.TipoItem == TipoItemVenda.Produto)
+                .GroupBy(item => item.ItemId)
+                .Select(grupo => new
+                {
+                    ProdutoId = grupo.Key,
+                    Quantidade = grupo.Sum(item => item.Quantidade)
+                }).ToList();
+
+            foreach(var item in itensProduto)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+                var produto = await _repositorioProdutos.ObterParaMovimentacaoEstoqueAsync(
+                    empresaId, item.ProdutoId, cancellationToken);
+
+                if (produto is null)
+                {
+                    throw Erro(
+                        $"O produto {item.ProdutoId} não foi encontrado para esta empresa.");
+                }
+
+                if (!produto.Ativo)
+                {
+                    throw Erro(
+                        $"O produto '{produto.Nome}' está inativo e não pode " +
+                        "ser utilizado na finalização da venda.");
+                }
+                if (!produto.ControlaEstoque)
+                {
+                    continue;
+                }
+                var estoque = produto.Estoque;
+
+                if (estoque is null)
+                {
+                    throw Erro(
+                        $"O produto '{produto.Nome}' controla estoque, " +
+                        "mas não possui um registro de estoque cadastrado.");
+                }
+
+                decimal saldoAnterior;
+
+                try
+                {
+                    // O método de domínio valida a quantidade e o saldo.
+                    saldoAnterior = estoque.RegistrarSaida(item.Quantidade);
+                }
+                catch (ArgumentOutOfRangeException ex)
+                {
+                    throw Erro(
+                        $"Quantidade inválida para o produto " +
+                        $"'{produto.Nome}': {ex.Message}");
+                }
+                catch (InvalidOperationException ex)
+                {
+                    throw Erro(
+                        $"Não foi possível baixar o estoque do produto " +
+                        $"'{produto.Nome}': {ex.Message}");
+                }
+
+                var saldoPosterior = estoque.QuantidadeAtual;
+
+                var movimentacao = new MovimentacaoEstoque(
+                    empresaId: empresaId,
+                    produtoId: produto.Id,
+                    tipo: TipoMovimentacaoEstoque.Saida,
+                    origem: OrigemMovimentacaoEstoque.Venda,
+                    quantidade: item.Quantidade,
+                    saldoAnterior: saldoAnterior,
+                    saldoPosterior: saldoPosterior,
+                    usuarioResponsavelId: usuarioId,
+                    documentoOrigemId: venda.Id,
+                    observacao: $"Baixa automática da venda {venda.Id}.");
+
+                await _repositorioProdutos.AdicionarMovimentacaoEstoqueAsync(
+                    movimentacao,
+                    cancellationToken);
+
+            }
+
         }
 
         private static CustomValidationException Erro(

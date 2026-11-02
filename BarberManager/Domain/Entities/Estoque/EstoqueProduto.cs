@@ -19,6 +19,8 @@ namespace Domain.Entities.Estoque
 
         public DateTime DataAtualizacaoEstoque { get; private set; }
 
+        public byte[]? RowVersion { get; private set; } = Array.Empty<byte>();
+
         public EstoqueProduto()
         {
         }

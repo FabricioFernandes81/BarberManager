@@ -1,4 +1,5 @@
 ﻿using Application.Common;
+using Application.Common.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 
@@ -36,35 +37,48 @@ public sealed class EfUnitOfWork<TContext> : IUnitOfWork
             throw new InvalidOperationException(
                 "Não existe uma transação ativa.");
         }
-      /*  try
+        /*  try
+          {
+              await _context.SaveChangesAsync(cancellationToken);
+          }
+          catch (DbUpdateConcurrencyException ex)
+          {
+              foreach (var entry in ex.Entries)
+              {
+                  Console.WriteLine(
+                      $"Entidade: {entry.Metadata.ClrType.Name}");
+
+                  Console.WriteLine(
+                      $"Estado: {entry.State}");
+
+                  foreach (var property in entry.Properties
+                               .Where(p => p.Metadata.IsPrimaryKey()))
+                  {
+                      Console.WriteLine(
+                          $"Chave {property.Metadata.Name}: {property.CurrentValue}");
+                  }
+              }
+
+              throw;
+          }*/
+
+
+        //  await _context.SaveChangesAsync(cancellationToken);
+
+        //   await _transaction.CommitAsync(cancellationToken);
+        try
         {
             await _context.SaveChangesAsync(cancellationToken);
         }
         catch (DbUpdateConcurrencyException ex)
         {
-            foreach (var entry in ex.Entries)
-            {
-                Console.WriteLine(
-                    $"Entidade: {entry.Metadata.ClrType.Name}");
+            throw new ConcurrencyConflictException(
+                "O estoque foi alterado por outra operação. " +
+                "Atualize os dados e tente finalizar a venda novamente.",
+                ex);
+        }
 
-                Console.WriteLine(
-                    $"Estado: {entry.State}");
-
-                foreach (var property in entry.Properties
-                             .Where(p => p.Metadata.IsPrimaryKey()))
-                {
-                    Console.WriteLine(
-                        $"Chave {property.Metadata.Name}: {property.CurrentValue}");
-                }
-            }
-
-            throw;
-        }*/
-
-        
-      await _context.SaveChangesAsync(cancellationToken);
-
-       await _transaction.CommitAsync(cancellationToken);
+        await _transaction.CommitAsync(cancellationToken);
     }
 
     public async Task RollbackTransactionAsync(

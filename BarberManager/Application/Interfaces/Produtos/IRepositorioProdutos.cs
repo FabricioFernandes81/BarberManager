@@ -39,8 +39,31 @@ namespace Application.Interfaces.Produtos
             string codigoBarras,
             CancellationToken cancellationToken);
 
-       Task Adicionar(Produto produto);
+        Task Adicionar(Produto produto);
+
+        Task AtualizarAsync(Produto produto);
+        
         Task AdicionarComEstoqueInicialAsync(Produto produto, EstoqueProduto? estoque, MovimentacaoEstoque? movimentacao, CancellationToken cancellationToken);
+        Task<Produto> ObterPorIdParaAtualizacaoAsync(Guid empresaId, Guid produtoId, CancellationToken cancellationToken);
+
+        Task<bool> CodigoInternoExisteAsync(Guid empresaId,
+        string codigoInterno,CancellationToken cancellationToken,
+        Guid? ignorarProdutoId = null);
+
+        Task<bool> CodigoBarrasExisteAsync(
+            Guid empresaId,string codigoBarras,
+            CancellationToken cancellationToken,
+            Guid? ignorarProdutoId = null);
+
+        Task<Produto?> ObterParaMovimentacaoEstoqueAsync(
+             Guid empresaId, Guid produtoId, CancellationToken cancellationToken);
+
+        Task AdicionarMovimentacaoEstoqueAsync(
+            MovimentacaoEstoque movimentacao, CancellationToken cancellationToken);
+
+
+       
+
     }
 }
 

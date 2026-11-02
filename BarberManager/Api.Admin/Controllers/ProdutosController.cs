@@ -94,5 +94,77 @@ namespace Api.Admin.Controllers
                 new { id = resultado.Id },
                 resultado);
         }
+
+        [HttpPut("{id:guid}")]
+        [ProducesResponseType(
+    typeof(ProdutoDetalheDto),
+    StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<ProdutoDetalheDto>> Atualizar(
+    [FromRoute] Guid id,[FromBody] AtualizarProdutoCommand command,
+    CancellationToken cancellationToken)
+        {
+            var comando = command with
+            {
+                ProdutoId = id
+            };
+
+            var resultado = await _dispatcher.Command<
+                AtualizarProdutoCommand,
+                ProdutoDetalheDto>(
+                    comando,
+                    cancellationToken);
+
+            return Ok(resultado);
+        }
+        [HttpPatch("{id:guid}/ativar")]
+        [ProducesResponseType(
+    typeof(ProdutoDetalheDto),
+    StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<ProdutoDetalheDto>> Ativar(
+    [FromRoute] Guid id,
+    CancellationToken cancellationToken)
+        {
+            var command = new AlterarStatusProdutoCommand(
+                ProdutoId: id,
+                Ativo: true);
+
+            var resultado = await _dispatcher.Command<
+                AlterarStatusProdutoCommand,
+                ProdutoDetalheDto>(
+                    command,
+                    cancellationToken);
+
+            return Ok(resultado);
+        }
+
+        [HttpPatch("{id:guid}/desativar")]
+        [ProducesResponseType(
+            typeof(ProdutoDetalheDto),
+            StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<ProdutoDetalheDto>> Desativar(
+            [FromRoute] Guid id,
+            CancellationToken cancellationToken)
+        {
+            var command = new AlterarStatusProdutoCommand(
+                ProdutoId: id,
+                Ativo: false);
+
+            var resultado = await _dispatcher.Command<
+                AlterarStatusProdutoCommand,
+                ProdutoDetalheDto>(
+                    command,
+                    cancellationToken);
+
+            return Ok(resultado);
+        }
     }
 }

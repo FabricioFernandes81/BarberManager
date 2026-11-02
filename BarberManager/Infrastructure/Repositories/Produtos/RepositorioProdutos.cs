@@ -181,5 +181,64 @@ namespace Infrastructure.Repositories.Produtos
                     cancellationToken);
             }
         }
+
+        public Task AtualizarAsync(Produto produto)
+        {
+        //    _context.Produtos.Update(produto);
+           
+           return Task.CompletedTask;
+        }
+
+        public async Task<Produto> ObterPorIdParaAtualizacaoAsync(Guid empresaId, Guid produtoId, CancellationToken cancellationToken)
+        {
+            return await _context.Produtos
+                    .Include(p => p.CategoriaProduto)
+                    .Include(p => p.Marca)
+                    .Include(p => p.Estoque)
+                    .SingleOrDefaultAsync(
+                        p => p.Id == produtoId &&
+                             p.EmpresaId == empresaId,
+                        cancellationToken);
+        }
+
+        public async Task<bool> CodigoInternoExisteAsync(Guid empresaId, string codigoInterno, CancellationToken cancellationToken, Guid? ignorarProdutoId = null)
+        {
+            return await _context.Produtos
+        .AsNoTracking()
+        .AnyAsync(
+            p => p.EmpresaId == empresaId &&
+                 p.CodigoInterno == codigoInterno &&
+                 (!ignorarProdutoId.HasValue ||
+                  p.Id != ignorarProdutoId.Value),cancellationToken);
+        }
+
+        public async Task<bool> CodigoBarrasExisteAsync(Guid empresaId, string codigoBarras, CancellationToken cancellationToken, Guid? ignorarProdutoId = null)
+        {
+            return await _context.Produtos
+        .AsNoTracking()
+        .AnyAsync(
+            p => p.EmpresaId == empresaId &&
+                 p.CodigoBarras == codigoBarras &&
+                 (!ignorarProdutoId.HasValue ||
+                  p.Id != ignorarProdutoId.Value),
+            cancellationToken);
+        }
+
+        public async Task<Produto?> ObterParaMovimentacaoEstoqueAsync(Guid empresaId, Guid produtoId, CancellationToken cancellationToken)
+        {
+            return await _context.Produtos
+        .Include(p => p.Estoque)
+        .SingleOrDefaultAsync(
+            p => p.Id == produtoId
+                 && p.EmpresaId == empresaId,
+            cancellationToken);
+        }
+
+        public async Task AdicionarMovimentacaoEstoqueAsync(MovimentacaoEstoque movimentacao, CancellationToken cancellationToken)
+        {
+            await _context.MovimentacoesEstoque.AddAsync(
+        movimentacao,
+        cancellationToken);
+        }
     }
 }

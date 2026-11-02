@@ -38,6 +38,28 @@ namespace Application.Common.Exceptions
                 var responseBody = JsonSerializer.Serialize(new { Message = "Erro na operação", Errors = ex.Errors });
                 await context.Response.WriteAsync(responseBody);
             }
+            catch (ConcurrencyConflictException ex)
+            {
+                _logger.LogWarning(
+                    ex,
+                    "Conflito de concorrência durante a operação.");
+
+                context.Response.StatusCode =
+                    StatusCodes.Status409Conflict;
+
+                context.Response.ContentType = "application/json";
+
+                var responseBody = JsonSerializer.Serialize(new
+                {
+                    Message = "Conflito de concorrência",
+                    Errors = new[]
+                    {
+            ex.Message
+        }
+                });
+
+                await context.Response.WriteAsync(responseBody);
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erro inesperado na API.");

@@ -35,6 +35,11 @@ namespace Infrastructure.Configurations.Operacional.Estoque
             builder.Property(e => e.DataAtualizacaoEstoque)
                 .IsRequired();
 
+
+
+            builder.Property(e => e.RowVersion)
+    .IsRowVersion();
+
             // Garante um único registro de estoque por produto.
             builder.HasIndex(e => e.ProdutoId)
                 .IsUnique()
