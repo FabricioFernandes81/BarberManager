@@ -87,6 +87,8 @@ namespace Infrastructure.Configurations.Operacional.Compras
                 c.EmpresaId,
                 c.Status
             });
+
+          
         }
     }
 }

@@ -41,6 +41,16 @@ namespace Infrastructure.Configurations.Operacional
             builder.HasIndex(x => x.Status);
 
             builder.HasIndex(x => x.DataVencimento);
+
+            builder.HasOne(x => x.Fornecedor)
+                  .WithMany()
+                  .HasForeignKey(x => x.FornecedorId)
+                  .OnDelete(DeleteBehavior.Restrict);
+
+            builder.HasOne(x => x.Compra)
+                .WithMany()
+                .HasForeignKey(x => x.CompraId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 
