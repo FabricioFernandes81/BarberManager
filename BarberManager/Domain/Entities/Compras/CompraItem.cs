@@ -1,10 +1,6 @@
-﻿using Domain.Entities.Common;
+﻿
+using Domain.Entities.Common;
 using Domain.Entities.Produtos;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.Entities.Compras
 {
@@ -61,10 +57,22 @@ namespace Domain.Entities.Compras
                     "A descrição do produto é obrigatória.",
                     nameof(descricaoProduto));
 
+            descricaoProduto = descricaoProduto.Trim();
+
+            if (descricaoProduto.Length > 200)
+                throw new ArgumentException(
+                    "A descrição do produto deve possuir no máximo 200 caracteres.",
+                    nameof(descricaoProduto));
+
             if (quantidade <= 0)
                 throw new ArgumentOutOfRangeException(
                     nameof(quantidade),
                     "A quantidade deve ser maior que zero.");
+
+            if (quantidade != decimal.Round(quantidade, 3))
+                throw new ArgumentException(
+                    "A quantidade deve possuir no máximo três casas decimais.",
+                    nameof(quantidade));
 
             if (valorUnitario <= 0)
                 throw new ArgumentOutOfRangeException(
@@ -76,26 +84,34 @@ namespace Domain.Entities.Compras
                     nameof(desconto),
                     "O desconto não pode ser negativo.");
 
-            CompraId = compraId;
-            ProdutoId = produtoId;
+            var valorUnitarioArredondado = Arredondar(valorUnitario);
+            var descontoArredondado = Arredondar(desconto);
 
-            DescricaoProduto = descricaoProduto.Trim();
-
-            Quantidade = quantidade;
-            QuantidadeRecebida = 0;
-
-            ValorUnitario = Arredondar(valorUnitario);
-            Desconto = Arredondar(desconto);
+            if (valorUnitarioArredondado <= 0)
+                throw new ArgumentOutOfRangeException(
+                    nameof(valorUnitario),
+                    "O valor unitário deve ser maior que zero após o arredondamento.");
 
             var subtotal = Arredondar(
-                Quantidade * ValorUnitario);
+                quantidade * valorUnitarioArredondado);
 
-            if (Desconto > subtotal)
+            if (descontoArredondado > subtotal)
                 throw new ArgumentOutOfRangeException(
                     nameof(desconto),
                     "O desconto não pode superar o subtotal do item.");
 
-            ValorTotal = Arredondar(subtotal - Desconto);
+            CompraId = compraId;
+            ProdutoId = produtoId;
+            DescricaoProduto = descricaoProduto;
+
+            Quantidade = quantidade;
+            QuantidadeRecebida = 0;
+
+            ValorUnitario = valorUnitarioArredondado;
+            Desconto = descontoArredondado;
+
+            ValorTotal = Arredondar(
+                subtotal - descontoArredondado);
         }
 
         private static decimal Arredondar(decimal valor)

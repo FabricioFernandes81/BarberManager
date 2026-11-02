@@ -1,10 +1,6 @@
-﻿using Domain.Entities.Common;
+﻿
+using Domain.Entities.Common;
 using Domain.Entities.Common.Enuns;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Domain.Entities.Compras
 {
@@ -115,32 +111,41 @@ namespace Domain.Entities.Compras
                     "O produto já foi adicionado à compra.");
 
             Itens.Add(item);
-
-            RecalcularTotais();
         }
 
         public void RecalcularTotais()
         {
-            Subtotal = Arredondar(
+            if (Itens.Count == 0)
+                throw new InvalidOperationException(
+                    "A compra deve possuir pelo menos um item.");
+
+            var subtotal = Arredondar(
                 Itens.Sum(i => i.Quantidade * i.ValorUnitario));
 
             var descontosItens = Arredondar(
                 Itens.Sum(i => i.Desconto));
 
-            if (Desconto > Subtotal - descontosItens)
+            var valorDisponivelParaDesconto =
+                subtotal - descontosItens;
+
+            if (Desconto > valorDisponivelParaDesconto)
                 throw new InvalidOperationException(
                     "O desconto da compra não pode superar o valor dos itens.");
 
-            ValorTotal = Arredondar(
-                Subtotal
+            var valorTotal = Arredondar(
+                subtotal
                 - descontosItens
                 - Desconto
                 + Frete
                 + OutrasDespesas);
 
-            if (ValorTotal <= 0)
+            if (valorTotal <= 0)
                 throw new InvalidOperationException(
                     "O valor total da compra deve ser maior que zero.");
+
+            // Atualiza somente depois que todas as validações passam.
+            Subtotal = subtotal;
+            ValorTotal = valorTotal;
         }
 
         private static void ValidarValorNaoNegativo(
