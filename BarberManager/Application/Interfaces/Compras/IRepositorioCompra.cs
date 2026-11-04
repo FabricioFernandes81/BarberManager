@@ -14,5 +14,19 @@ namespace Application.Interfaces.Compras
             Compra compra,
             IReadOnlyCollection<ContaPagar> contasPagar,
             CancellationToken cancellationToken);
+
+        Task<Compra?> ObterParaRecebimentoAsync(
+          Guid empresaId,
+          Guid compraId,
+          CancellationToken cancellationToken);
+
+        Task<RecebimentoCompra?> ObterPorChaveIdempotenciaAsync(
+            Guid empresaId,
+            string chaveIdempotencia,
+            CancellationToken cancellationToken);
+
+        Task AdicionarRecebimentoAsync(
+            RecebimentoCompra recebimento,
+            CancellationToken cancellationToken);
     }
 }

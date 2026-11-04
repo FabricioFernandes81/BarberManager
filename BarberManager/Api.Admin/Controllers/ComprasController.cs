@@ -39,5 +39,37 @@ namespace Api.Admin.Controllers
                 $"/api/Compras/{resultado.Id}",
                 resultado);
         }
+
+
+        [HttpPost("{compraId:guid}/recebimentos")]
+        [ProducesResponseType(
+    typeof(RegistrarRecebimentoCompraDto),
+    StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<RegistrarRecebimentoCompraDto>> RegistrarRecebimento(
+    [FromRoute] Guid compraId,
+    [FromHeader(Name = "Idempotency-Key")] string chaveIdempotencia,
+    [FromBody] RegistrarRecebimentoCompraRequest request,
+    CancellationToken cancellationToken)
+        {
+            var command = new RegistrarRecebimentoCompraCommand
+            {
+                CompraId = compraId,
+                ChaveIdempotencia = chaveIdempotencia,
+                Observacao = request.Observacao,
+                Itens = request.Itens?.ToList() ?? new List<RegistrarRecebimentoCompraItemDto>()
+            };
+
+            var resultado = await _dispatcher.Command<
+                RegistrarRecebimentoCompraCommand,
+                RegistrarRecebimentoCompraDto>(
+                    command,
+                    cancellationToken);
+
+            return Created(
+                $"/api/Compras/{compraId}/recebimentos/{resultado.Id}",
+                resultado);
+        }
     }
 }
