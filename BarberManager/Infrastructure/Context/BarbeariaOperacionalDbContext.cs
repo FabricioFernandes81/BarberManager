@@ -109,7 +109,11 @@ namespace Infrastructure.Context
 
         public DbSet<CompraItem> CompraItens => Set<CompraItem>();
 
+        public DbSet<RecebimentoCompra> RecebimentosCompras =>
+    Set<RecebimentoCompra>();
 
+        public DbSet<RecebimentoCompraItem> RecebimentosComprasItens =>
+            Set<RecebimentoCompraItem>();
         public DbSet<ConfiguracaoAgendaEmpresa> ConfiguracoesAgendaEmpresa
     => Set<ConfiguracaoAgendaEmpresa>();
 
@@ -176,7 +180,11 @@ namespace Infrastructure.Context
             
             modelBuilder.ApplyConfiguration(new CompraItemConfiguration());
 
+            modelBuilder.ApplyConfiguration(
+    new RecebimentoCompraConfiguration());
 
+            modelBuilder.ApplyConfiguration(
+                new RecebimentoCompraItemConfiguration());
 
             SeedProfissionais.SeedProfissial(modelBuilder);
             SeedModuloServicos.SeedIniciarServico(modelBuilder);
@@ -189,6 +197,11 @@ namespace Infrastructure.Context
             SeedCategoriasProdutos.InicializarSeed(modelBuilder);
             SeedMarcas.InicializarSeed(modelBuilder);
             SeedProdutos.InicializarSeed(modelBuilder);
+
+            // Novos seeds do módulo Compras
+            SeedFornecedores.InicializarSeed(modelBuilder);
+            SeedCompras.InicializarSeed(modelBuilder);
+
             SeedEstoqueProdutos.InicializarSeed(modelBuilder);
         }
 

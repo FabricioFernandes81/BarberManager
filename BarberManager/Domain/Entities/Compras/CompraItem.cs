@@ -121,5 +121,28 @@ namespace Domain.Entities.Compras
                 2,
                 MidpointRounding.AwayFromZero);
         }
+
+
+        public void RegistrarRecebimento(decimal quantidade)
+        {
+            if (quantidade <= 0)
+                throw new ArgumentOutOfRangeException(
+                    nameof(quantidade),
+                    "A quantidade recebida deve ser maior que zero.");
+
+            if (quantidade != decimal.Round(quantidade, 3))
+                throw new ArgumentException(
+                    "A quantidade deve possuir no máximo três casas decimais.",
+                    nameof(quantidade));
+
+            if (quantidade > QuantidadePendente)
+                throw new InvalidOperationException(
+                    "A quantidade recebida não pode superar a quantidade pendente.");
+
+            QuantidadeRecebida += quantidade;
+
+            DataAtualizacao = DateTime.UtcNow;
+        }
+
     }
 }

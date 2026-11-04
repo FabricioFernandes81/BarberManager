@@ -37,6 +37,8 @@ namespace Domain.Entities.Compras
         public ICollection<CompraItem> Itens { get; private set; }
             = new List<CompraItem>();
 
+        public ICollection<RecebimentoCompra> Recebimentos { get; private set; }
+            = new List<RecebimentoCompra>();
         protected Compra()
         {
         }
@@ -172,5 +174,33 @@ namespace Domain.Entities.Compras
                 ? null
                 : valor.Trim();
         }
+
+
+        public void AtualizarStatusRecebimento()
+        {
+            if (Status == StatusCompra.Cancelada)
+                throw new InvalidOperationException(
+                    "Uma compra cancelada não pode ter seu recebimento atualizado.");
+
+            if (Itens.Count == 0)
+                throw new InvalidOperationException(
+                    "A compra não possui itens.");
+
+            var possuiRecebimento = Itens.Any(
+                item => item.QuantidadeRecebida > 0);
+
+            var possuiPendencia = Itens.Any(
+                item => item.QuantidadePendente > 0);
+
+            if (!possuiRecebimento)
+                Status = StatusCompra.Pendente;
+            else if (possuiPendencia)
+                Status = StatusCompra.ParcialmenteRecebida;
+            else
+                Status = StatusCompra.Recebida;
+
+            DataAtualizacao = DateTime.UtcNow;
+        }
+
     }
 }

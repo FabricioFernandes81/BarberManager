@@ -120,7 +120,7 @@ namespace Infrastructure
             services.AddScoped<IRepositorioProdutos, RepositorioProdutos>();
 
             services.AddScoped<IRepositorioFornecedor, RepositorioFornecedor>();
-
+            services.AddScoped<IRepositorioCompra, RepositorioCompra>();
 
             return services;
         }
