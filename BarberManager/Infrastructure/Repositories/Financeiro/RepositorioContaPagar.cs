@@ -209,5 +209,18 @@ namespace Infrastructure.Repositories.Financeiro
         """,
                 cancellationToken);
         }
+
+        public async Task<Pagamento?> ObterPagamentoPorChaveAsync(
+    Guid empresaId,
+    string chaveIdempotencia,
+    CancellationToken cancellationToken)
+        {
+            return await _context.Pagamentos
+                .AsNoTracking()
+                .SingleOrDefaultAsync(
+                    p => p.EmpresaId == empresaId &&
+                         p.ChaveIdempotencia == chaveIdempotencia,
+                    cancellationToken);
+        }
     }
 }

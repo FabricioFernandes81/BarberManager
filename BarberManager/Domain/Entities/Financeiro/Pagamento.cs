@@ -1,4 +1,5 @@
 ﻿using Domain.Entities.Common;
+using Domain.Entities.Common.Enuns;
 
 namespace Domain.Entities.Financeiro
 {
@@ -22,5 +23,11 @@ namespace Domain.Entities.Financeiro
         public decimal Valor { get; set; }
 
         public string? Observacao { get; set; }
+
+        public decimal ValorPagoAposPagamento { get; set; }
+
+        public decimal SaldoRestanteAposPagamento { get; set; }
+
+        public StatusContas StatusContaAposPagamento { get; set; }
     }
 }

@@ -36,6 +36,17 @@ namespace Infrastructure.Configurations.Operacional
 
             builder.HasIndex(x => x.DataPagamento);
 
+            builder.Property(x => x.ValorPagoAposPagamento)
+    .HasPrecision(18, 2)
+    .IsRequired();
+
+            builder.Property(x => x.SaldoRestanteAposPagamento)
+                .HasPrecision(18, 2)
+                .IsRequired();
+
+            builder.Property(x => x.StatusContaAposPagamento)
+                .HasConversion<int>()
+                .IsRequired();
             builder.HasIndex(x => new
             {
                 x.EmpresaId,

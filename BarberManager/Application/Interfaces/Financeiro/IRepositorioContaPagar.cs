@@ -44,5 +44,10 @@ namespace Application.Interfaces.Financeiro
     Guid empresaId,
     Guid contaPagarId,
     CancellationToken cancellationToken);
+
+        Task<Pagamento?> ObterPagamentoPorChaveAsync(
+    Guid empresaId,
+    string chaveIdempotencia,
+    CancellationToken cancellationToken);
     }
 }
