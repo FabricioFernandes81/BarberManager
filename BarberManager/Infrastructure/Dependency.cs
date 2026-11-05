@@ -130,7 +130,9 @@ namespace Infrastructure
                 IProtecaoCredenciaisAsaas,
                 ProtecaoCredenciaisAsaas>();
 
-
+            services.AddScoped<
+    IRepositorioConfiguracaoAssasClient,
+    RepositorioConfiguracaoAssasClient>();
             return services;
         }
     }

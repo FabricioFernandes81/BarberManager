@@ -117,6 +117,7 @@ namespace Infrastructure.Context
         public DbSet<ConfiguracaoAgendaEmpresa> ConfiguracoesAgendaEmpresa
     => Set<ConfiguracaoAgendaEmpresa>();
 
+        public DbSet<ConfiguracaoAssasClient> ConfiguracoesAssasClient => Set<ConfiguracaoAssasClient>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -185,6 +186,9 @@ namespace Infrastructure.Context
 
             modelBuilder.ApplyConfiguration(
                 new RecebimentoCompraItemConfiguration());
+
+            modelBuilder.ApplyConfiguration(new ConfiguracaoAssasClientConfiguration());
+
 
             SeedProfissionais.SeedProfissial(modelBuilder);
             SeedModuloServicos.SeedIniciarServico(modelBuilder);
