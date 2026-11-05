@@ -179,5 +179,35 @@ namespace Infrastructure.Repositories.Financeiro
                 pagamento,
                 cancellationToken);
         }
+
+        public async Task BloquearContaParaPagamentoAsync(
+    Guid empresaId,
+    Guid contaPagarId,
+    CancellationToken cancellationToken)
+        {
+            if (empresaId == Guid.Empty || contaPagarId == Guid.Empty)
+                throw new ArgumentException(
+                    "Empresa e conta a pagar devem ser informadas.");
+
+            var recurso =
+                $"BarberManager:ContaPagar:{empresaId:N}:{contaPagarId:N}";
+
+            await _context.Database.ExecuteSqlInterpolatedAsync(
+                $"""
+        DECLARE @resultado INT;
+
+        EXEC @resultado = sys.sp_getapplock
+            @Resource = {recurso},
+            @LockMode = 'Exclusive',
+            @LockOwner = 'Transaction',
+            @LockTimeout = 10000;
+
+        IF @resultado < 0
+        BEGIN
+            THROW 51000, 'Não foi possível bloquear a conta a pagar.', 1;
+        END;
+        """,
+                cancellationToken);
+        }
     }
 }

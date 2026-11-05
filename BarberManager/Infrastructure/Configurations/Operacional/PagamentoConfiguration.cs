@@ -1,11 +1,6 @@
 ﻿using Domain.Entities.Financeiro;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Infrastructure.Configurations.Operacional
 {
@@ -16,6 +11,13 @@ namespace Infrastructure.Configurations.Operacional
             builder.ToTable("Pagamento");
 
             builder.HasKey(x => x.Id);
+
+            builder.Property(x => x.EmpresaId)
+                .IsRequired();
+
+            builder.Property(x => x.ChaveIdempotencia)
+                .HasMaxLength(100)
+                .IsRequired();
 
             builder.Property(x => x.Valor)
                 .HasColumnType("decimal(18,2)");
@@ -33,7 +35,15 @@ namespace Infrastructure.Configurations.Operacional
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder.HasIndex(x => x.DataPagamento);
+
+            builder.HasIndex(x => new
+            {
+                x.EmpresaId,
+                x.ChaveIdempotencia
+            })
+                .IsUnique()
+                .HasDatabaseName(
+                    "UX_Pagamento_EmpresaId_ChaveIdempotencia");
         }
     }
-
 }

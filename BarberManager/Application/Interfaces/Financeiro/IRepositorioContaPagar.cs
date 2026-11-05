@@ -39,5 +39,10 @@ namespace Application.Interfaces.Financeiro
         Task AdicionarPagamentoAsync(
             Pagamento pagamento,
             CancellationToken cancellationToken);
+
+        Task BloquearContaParaPagamentoAsync(
+    Guid empresaId,
+    Guid contaPagarId,
+    CancellationToken cancellationToken);
     }
 }
