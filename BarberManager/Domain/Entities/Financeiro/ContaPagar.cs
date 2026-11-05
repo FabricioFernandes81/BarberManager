@@ -41,6 +41,68 @@ namespace Domain.Entities.Financeiro
             = new List<Pagamento>();
 
 
+        public void RegistrarPagamento(
+            decimal valor,
+            DateTime dataPagamento)
+        {
+            if (valor <= 0)
+            {
+                throw new InvalidOperationException(
+                    "O valor do pagamento deve ser maior que zero.");
+            }
+
+            if (valor != decimal.Round(valor, 2))
+            {
+                throw new InvalidOperationException(
+                    "O valor do pagamento deve possuir no máximo duas casas decimais.");
+            }
+
+            if (Status is StatusContas.Cancelada or StatusContas.Recebida)
+            {
+                throw new InvalidOperationException(
+                    "Não é possível pagar uma conta cancelada ou já liquidada.");
+            }
+
+            if (Valor <= 0 || ValorPago < 0 || ValorPago > Valor)
+            {
+                throw new InvalidOperationException(
+                    "A conta possui valores financeiros inconsistentes.");
+            }
+
+            var saldoRestante = Valor - ValorPago;
+
+            if (valor > saldoRestante)
+            {
+                throw new InvalidOperationException(
+                    "O valor informado ultrapassa o saldo pendente da conta.");
+            }
+
+            ValorPago = decimal.Round(
+                ValorPago + valor,
+                2,
+                MidpointRounding.AwayFromZero);
+
+            if (ValorPago == Valor)
+            {
+                Status = StatusContas.Recebida;
+            }
+            else if (DataVencimento.Date < dataPagamento.Date)
+            {
+                Status = StatusContas.Vencida;
+            }
+            else
+            {
+                Status = StatusContas.Parcial;
+            }
+
+            DataAtualizacao = DateTime.UtcNow;
+        }
+
+        public decimal ObterSaldoRestante()
+        {
+            return Math.Max(Valor - ValorPago, 0);
+        }
+
         public void Cancelar()
         {
             if (Status == StatusContas.Cancelada)
@@ -66,6 +128,9 @@ namespace Domain.Entities.Financeiro
             Status = StatusContas.Cancelada;
             DataAtualizacao = DateTime.UtcNow;
         }
+
+
+
     }
 
 }

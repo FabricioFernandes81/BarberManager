@@ -122,6 +122,9 @@ namespace Infrastructure
             services.AddScoped<IRepositorioFornecedor, RepositorioFornecedor>();
             services.AddScoped<IRepositorioCompra, RepositorioCompra>();
 
+            services.AddScoped< IRepositorioContaPagar, RepositorioContaPagar>();
+
+
             return services;
         }
     }

@@ -48,5 +48,10 @@ namespace Application.Interfaces.Financeiro
             Guid empresaId,
             Guid usuarioId,
             CancellationToken cancellationToken);
+        Task AdicionarMovimentoAsync(
+    MovimentoCaixa movimento,
+    CancellationToken cancellationToken);
     }
+
+
 }

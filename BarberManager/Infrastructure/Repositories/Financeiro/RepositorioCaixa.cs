@@ -175,5 +175,12 @@ namespace Infrastructure.Repositories.Financeiro
         """,
                 cancellationToken);
         }
+
+        public async Task AdicionarMovimentoAsync(MovimentoCaixa movimento, CancellationToken cancellationToken)
+        {
+            await _context.MovimentoCaixas.AddAsync(
+      movimento,
+      cancellationToken);
+        }
     }
 }
