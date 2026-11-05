@@ -124,6 +124,12 @@ namespace Infrastructure
 
             services.AddScoped< IRepositorioContaPagar, RepositorioContaPagar>();
 
+            services.AddDataProtection();
+
+            services.AddScoped<
+                IProtecaoCredenciaisAsaas,
+                ProtecaoCredenciaisAsaas>();
+
 
             return services;
         }

@@ -1,9 +1,5 @@
-﻿using Domain.Entities.Common;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+using Domain.Entities.Common;
 
 namespace Domain.Entities.Financeiro
 {
@@ -11,9 +7,25 @@ namespace Domain.Entities.Financeiro
     {
         public Guid EmpresaId { get; set; }
 
-        public string ApiToken { get; set; }
+        // Credenciais armazenadas criptografadas.
+        public string ApiTokenProtegido { get; set; } = string.Empty;
 
-        public string WebhooksToken { get; set; }
+        public string WebhooksTokenProtegido { get; set; } = string.Empty;
 
+        // Ambiente utilizado pela empresa.
+        public AmbienteAsaas Ambiente { get; set; }
+            = AmbienteAsaas.Sandbox;
+
+        // Indica se a integração está habilitada.
+        public bool Ativo { get; set; }
+
+        // Última validação bem-sucedida das credenciais.
+        public DateTime? DataUltimaValidacao { get; set; }
+    }
+
+    public enum AmbienteAsaas
+    {
+        Sandbox = 1,
+        Producao = 2
     }
 }
