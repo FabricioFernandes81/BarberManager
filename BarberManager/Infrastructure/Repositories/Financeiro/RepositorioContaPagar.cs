@@ -181,30 +181,54 @@ namespace Infrastructure.Repositories.Financeiro
         }
 
         public async Task BloquearContaParaPagamentoAsync(
-    Guid empresaId,
-    Guid contaPagarId,
-    CancellationToken cancellationToken)
+        Guid empresaId,
+        Guid contaPagarId,
+        string chaveIdempotencia,
+        CancellationToken cancellationToken)
         {
-            if (empresaId == Guid.Empty || contaPagarId == Guid.Empty)
+            if (empresaId == Guid.Empty ||
+                contaPagarId == Guid.Empty ||
+                string.IsNullOrWhiteSpace(chaveIdempotencia))
+            {
                 throw new ArgumentException(
-                    "Empresa e conta a pagar devem ser informadas.");
+                    "Empresa, conta e chave de idempotência devem ser informadas.");
+            }
 
-            var recurso =
+            var recursoChave =
+                $"BarberManager:Pagamento:{empresaId:N}:{chaveIdempotencia}";
+
+            var recursoConta =
                 $"BarberManager:ContaPagar:{empresaId:N}:{contaPagarId:N}";
 
             await _context.Database.ExecuteSqlInterpolatedAsync(
                 $"""
-        DECLARE @resultado INT;
+        DECLARE @resultadoChave INT;
+        DECLARE @resultadoConta INT;
 
-        EXEC @resultado = sys.sp_getapplock
-            @Resource = {recurso},
+        EXEC @resultadoChave = sys.sp_getapplock
+            @Resource = {recursoChave},
             @LockMode = 'Exclusive',
             @LockOwner = 'Transaction',
             @LockTimeout = 10000;
 
-        IF @resultado < 0
+        IF @resultadoChave < 0
         BEGIN
-            THROW 51000, 'Não foi possível bloquear a conta a pagar.', 1;
+            THROW 51000,
+                'Não foi possível bloquear a chave do pagamento.',
+                1;
+        END;
+
+        EXEC @resultadoConta = sys.sp_getapplock
+            @Resource = {recursoConta},
+            @LockMode = 'Exclusive',
+            @LockOwner = 'Transaction',
+            @LockTimeout = 10000;
+
+        IF @resultadoConta < 0
+        BEGIN
+            THROW 51001,
+                'Não foi possível bloquear a conta a pagar.',
+                1;
         END;
         """,
                 cancellationToken);

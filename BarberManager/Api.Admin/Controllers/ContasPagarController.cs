@@ -63,15 +63,16 @@ namespace Api.Admin.Controllers
 
         [HttpPost("{contaPagarId:guid}/pagamentos")]
         [ProducesResponseType(
-    typeof(RegistrarPagamentoDto),
-    StatusCodes.Status200OK)]
+       typeof(RegistrarPagamentoDto),
+       StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status401Unauthorized)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<ActionResult<RegistrarPagamentoDto>> RegistrarPagamento(
-    [FromRoute] Guid contaPagarId,
-    [FromBody] RegistrarPagamentoCommand command,
-    CancellationToken cancellationToken)
+       [FromRoute] Guid contaPagarId,
+       [FromHeader(Name = "Idempotency-Key")] string? chaveIdempotencia,
+       [FromBody] RegistrarPagamentoCommand command,
+       CancellationToken cancellationToken)
         {
             if (contaPagarId == Guid.Empty)
             {
@@ -81,9 +82,28 @@ namespace Api.Admin.Controllers
                 });
             }
 
+            if (string.IsNullOrWhiteSpace(chaveIdempotencia))
+            {
+                return BadRequest(new
+                {
+                    mensagem = "O cabeçalho Idempotency-Key é obrigatório."
+                });
+            }
+
+            chaveIdempotencia = chaveIdempotencia.Trim();
+
+            if (chaveIdempotencia.Length > 100)
+            {
+                return BadRequest(new
+                {
+                    mensagem = "A chave de idempotência não pode ultrapassar 100 caracteres."
+                });
+            }
+
             var comando = command with
             {
-                ContaPagarId = contaPagarId
+                ContaPagarId = contaPagarId,
+                ChaveIdempotencia = chaveIdempotencia
             };
 
             var resultado = await _dispatcher.Command<

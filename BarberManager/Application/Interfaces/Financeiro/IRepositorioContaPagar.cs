@@ -40,14 +40,21 @@ namespace Application.Interfaces.Financeiro
             Pagamento pagamento,
             CancellationToken cancellationToken);
 
+        /*  Task BloquearContaParaPagamentoAsync(
+      Guid empresaId,
+      Guid contaPagarId,
+      CancellationToken cancellationToken);*/
         Task BloquearContaParaPagamentoAsync(
-    Guid empresaId,
-    Guid contaPagarId,
-    CancellationToken cancellationToken);
+      Guid empresaId,
+      Guid contaPagarId,
+      string chaveIdempotencia,
+      CancellationToken cancellationToken);
 
         Task<Pagamento?> ObterPagamentoPorChaveAsync(
     Guid empresaId,
     string chaveIdempotencia,
     CancellationToken cancellationToken);
+
+   
     }
 }

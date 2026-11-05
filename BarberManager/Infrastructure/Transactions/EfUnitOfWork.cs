@@ -73,8 +73,8 @@ public sealed class EfUnitOfWork<TContext> : IUnitOfWork
         catch (DbUpdateConcurrencyException ex)
         {
             throw new ConcurrencyConflictException(
-                "O estoque foi alterado por outra operação. " +
-                "Atualize os dados e tente finalizar a venda novamente.",
+                "O registro foi alterado por outra operação. " +
+                "Atualize os dados e tente novamente.",
                 ex);
         }
 

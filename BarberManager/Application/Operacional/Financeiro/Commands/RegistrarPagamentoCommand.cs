@@ -6,7 +6,8 @@ public sealed record RegistrarPagamentoCommand(
     Guid ContaPagarId,
     Guid FormaPagamentoId,
     decimal Valor,
-    string? Observacao
+    string? Observacao,
+    string ChaveIdempotencia
 ) : ITransactionalCommand
 {
     public TransactionContext TransactionContext =>
