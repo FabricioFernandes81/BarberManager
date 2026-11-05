@@ -1,5 +1,6 @@
 ﻿
 using Domain.Entities.Common;
+using Domain.Entities.Common.Enuns;
 
 namespace Domain.Entities.Compras
 {
@@ -29,7 +30,11 @@ namespace Domain.Entities.Compras
         protected RecebimentoCompra()
         {
         }
-
+        public StatusCompra StatusCompraAposRecebimento
+        {
+            get;
+            private set;
+        }
         public RecebimentoCompra(
             Guid empresaId,
             Guid compraId,
@@ -103,6 +108,11 @@ namespace Domain.Entities.Compras
             if (Itens.Count == 0)
                 throw new InvalidOperationException(
                     "O recebimento deve possuir pelo menos um item.");
+        }
+
+        public void RegistrarStatusAposRecebimento(StatusCompra status)
+        {
+            StatusCompraAposRecebimento = status;
         }
     }
 }

@@ -75,6 +75,10 @@ namespace Infrastructure.Configurations.Operacional.Compras
 
             builder.HasIndex(c => c.EmpresaId);
 
+            builder.Property(c => c.RowVersion)
+    .IsRowVersion();
+
+
             builder.HasIndex(c => new
             {
                 c.EmpresaId,

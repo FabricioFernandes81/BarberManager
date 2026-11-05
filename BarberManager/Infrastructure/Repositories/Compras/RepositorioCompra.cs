@@ -62,12 +62,18 @@ namespace Infrastructure.Repositories.Compras
                 CancellationToken cancellationToken)
         {
             return await _context.RecebimentosCompras
-                .AsNoTracking()
-                .Include(r => r.Itens)
-                .SingleOrDefaultAsync(
-                    r => r.EmpresaId == empresaId &&
-                         r.ChaveIdempotencia == chaveIdempotencia,
-                    cancellationToken);
+         .FromSqlInterpolated($@"
+            SELECT *
+            FROM dbo.RecebimentosCompras WITH (
+                UPDLOCK,
+                HOLDLOCK,
+                INDEX(UX_RecebimentosCompras_Empresa_ChaveIdempotencia)
+            )
+            WHERE EmpresaId = {empresaId}
+              AND ChaveIdempotencia = {chaveIdempotencia}")
+         .AsNoTracking()
+         .Include(r => r.Itens)
+         .SingleOrDefaultAsync(cancellationToken);
         }
 
         public async Task AdicionarRecebimentoAsync(

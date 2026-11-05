@@ -18,7 +18,17 @@ namespace Domain.Entities.Compras
         public Guid ProdutoId { get; private set; }
 
         public decimal QuantidadeRecebida { get; private set; }
+        public decimal QuantidadeAcumuladaAposRecebimento
+        {
+            get;
+            private set;
+        }
 
+        public decimal QuantidadePendenteAposRecebimento
+        {
+            get;
+            private set;
+        }
         protected RecebimentoCompraItem()
         {
         }
@@ -27,7 +37,9 @@ namespace Domain.Entities.Compras
             Guid recebimentoCompraId,
             Guid compraItemId,
             Guid produtoId,
-            decimal quantidadeRecebida)
+            decimal quantidadeRecebida,
+            decimal quantidadeAcumuladaAposRecebimento,
+decimal quantidadePendenteAposRecebimento)
         {
             if (recebimentoCompraId == Guid.Empty)
                 throw new ArgumentException(
@@ -57,10 +69,30 @@ namespace Domain.Entities.Compras
                     nameof(quantidadeRecebida));
             }
 
+            if (quantidadeAcumuladaAposRecebimento < quantidadeRecebida)
+            {
+                throw new ArgumentException(
+                    "A quantidade acumulada não pode ser menor que a quantidade recebida.",
+                    nameof(quantidadeAcumuladaAposRecebimento));
+            }
+
+            if (quantidadePendenteAposRecebimento < 0)
+            {
+                throw new ArgumentOutOfRangeException(
+                    nameof(quantidadePendenteAposRecebimento),
+                    "A quantidade pendente não pode ser negativa.");
+            }
+
             RecebimentoCompraId = recebimentoCompraId;
             CompraItemId = compraItemId;
             ProdutoId = produtoId;
             QuantidadeRecebida = quantidadeRecebida;
+
+            QuantidadeAcumuladaAposRecebimento =
+    quantidadeAcumuladaAposRecebimento;
+
+            QuantidadePendenteAposRecebimento =
+                quantidadePendenteAposRecebimento;
         }
 
 

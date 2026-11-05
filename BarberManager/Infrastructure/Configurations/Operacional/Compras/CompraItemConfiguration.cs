@@ -58,6 +58,10 @@ namespace Infrastructure.Configurations.Operacional.Compras
                 .HasForeignKey(i => i.ProdutoId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            builder.Property(c => c.RowVersion)
+    .IsRowVersion();
+
+
             builder.HasIndex(i => i.CompraId);
 
             builder.HasIndex(i => i.ProdutoId);

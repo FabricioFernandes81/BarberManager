@@ -293,6 +293,7 @@ namespace Application.Operacional.Compras.Commands.Handlers
 
                 // Atualizar acumulado recebido na compra.
                 itemCompra.RegistrarRecebimento(quantidade);
+             
 
                 // Movimentar estoque somente quando aplicável.
                 if (produto.ControlaEstoque)
@@ -326,10 +327,14 @@ namespace Application.Operacional.Compras.Commands.Handlers
 
                 // Registrar o histórico do item recebido.
                 var recebimentoItem = new RecebimentoCompraItem(
-                    recebimentoCompraId: recebimento.Id,
-                    compraItemId: itemCompra.Id,
-                    produtoId: itemCompra.ProdutoId,
-                    quantidadeRecebida: quantidade);
+                         recebimentoCompraId: recebimento.Id,
+                         compraItemId: itemCompra.Id,
+                         produtoId: itemCompra.ProdutoId,
+                         quantidadeRecebida: quantidade,
+                         quantidadeAcumuladaAposRecebimento:
+                             itemCompra.QuantidadeRecebida,
+                         quantidadePendenteAposRecebimento:
+                             itemCompra.QuantidadePendente);
 
                 recebimento.AdicionarItem(recebimentoItem);
             }
@@ -338,6 +343,10 @@ namespace Application.Operacional.Compras.Commands.Handlers
 
             // 12. Atualizar status da compra.
             compra.AtualizarStatusRecebimento();
+
+            // Registrar o snapshot do status após este recebimento.
+            recebimento.RegistrarStatusAposRecebimento(
+                compra.Status);
 
             // 13. Adicionar recebimento ao contexto transacional.
             await _repositorioCompra.AdicionarRecebimentoAsync(
@@ -377,33 +386,26 @@ namespace Application.Operacional.Compras.Commands.Handlers
         }
 
         private static RegistrarRecebimentoCompraDto CriarResposta(
-            RecebimentoCompra recebimento,
-            Compra compra)
+    RecebimentoCompra recebimento,
+    Compra compra)
         {
-            var itensCompra = compra.Itens.ToDictionary(i => i.Id);
-
             var itensResultado = recebimento.Itens
                 .Select(item =>
-                {
-                    var itemCompra =
-                        itensCompra[item.CompraItemId];
-
-                    return new RegistrarRecebimentoCompraItemResultadoDto(
+                    new RegistrarRecebimentoCompraItemResultadoDto(
                         CompraItemId: item.CompraItemId,
                         ProdutoId: item.ProdutoId,
                         QuantidadeRecebida: item.QuantidadeRecebida,
                         QuantidadeAcumulada:
-                            itemCompra.QuantidadeRecebida,
+                            item.QuantidadeAcumuladaAposRecebimento,
                         QuantidadePendente:
-                            itemCompra.QuantidadePendente);
-                })
+                            item.QuantidadePendenteAposRecebimento))
                 .ToList();
 
             return new RegistrarRecebimentoCompraDto(
                 Id: recebimento.Id,
                 CompraId: recebimento.CompraId,
                 DataRecebimento: recebimento.DataRecebimento,
-                StatusCompra: compra.Status,
+                StatusCompra: recebimento.StatusCompraAposRecebimento,
                 Itens: itensResultado);
         }
     }

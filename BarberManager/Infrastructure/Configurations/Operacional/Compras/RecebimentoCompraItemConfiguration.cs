@@ -43,6 +43,17 @@ namespace Infrastructure.Configurations.Operacional.Compras
                 .HasForeignKey(i => i.ProdutoId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+
+            builder.Property(i => i.QuantidadeAcumuladaAposRecebimento)
+    .HasPrecision(18, 3)
+    .IsRequired();
+
+            builder.Property(i => i.QuantidadePendenteAposRecebimento)
+                .HasPrecision(18, 3)
+                .IsRequired();
+
+
+
             builder.HasIndex(i => new
             {
                 i.RecebimentoCompraId,

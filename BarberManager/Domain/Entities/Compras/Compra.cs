@@ -36,6 +36,7 @@ namespace Domain.Entities.Compras
 
         public ICollection<CompraItem> Itens { get; private set; }
             = new List<CompraItem>();
+        public byte[]? RowVersion { get; private set; }
 
         public ICollection<RecebimentoCompra> Recebimentos { get; private set; }
             = new List<RecebimentoCompra>();

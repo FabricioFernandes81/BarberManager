@@ -30,6 +30,9 @@ namespace Domain.Entities.Compras
         public decimal QuantidadePendente =>
             Quantidade - QuantidadeRecebida;
 
+        public byte[]? RowVersion { get; private set; }
+
+
         protected CompraItem()
         {
         }

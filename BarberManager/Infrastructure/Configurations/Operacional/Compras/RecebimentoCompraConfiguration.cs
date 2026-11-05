@@ -53,6 +53,11 @@ namespace Infrastructure.Configurations.Operacional.Compras
             .HasDatabaseName(
                 "UX_RecebimentosCompras_Empresa_ChaveIdempotencia");
 
+            builder.Property(r => r.StatusCompraAposRecebimento)
+    .HasConversion<int>()
+    .IsRequired();
+
+
             builder.HasIndex(r => new
             {
                 r.EmpresaId,

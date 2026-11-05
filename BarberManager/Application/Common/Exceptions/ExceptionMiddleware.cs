@@ -60,6 +60,25 @@ namespace Application.Common.Exceptions
 
                 await context.Response.WriteAsync(responseBody);
             }
+            catch (IdempotencyConflictException ex)
+            {
+                _logger.LogWarning(
+                    ex,
+                    "Conflito de chave de idempotência.");
+
+                context.Response.StatusCode =
+                    StatusCodes.Status409Conflict;
+
+                context.Response.ContentType = "application/json";
+
+                var responseBody = JsonSerializer.Serialize(new
+                {
+                    Message = "Conflito de idempotência",
+                    Errors = new[] { ex.Message }
+                });
+
+                await context.Response.WriteAsync(responseBody);
+            }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erro inesperado na API.");
