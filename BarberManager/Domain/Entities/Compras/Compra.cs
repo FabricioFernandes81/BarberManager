@@ -202,5 +202,26 @@ namespace Domain.Entities.Compras
             DataAtualizacao = DateTime.UtcNow;
         }
 
+        public void Cancelar()
+        {
+            if (Status == StatusCompra.Cancelada)
+                throw new InvalidOperationException(
+                    "Esta compra já está cancelada.");
+
+            if (Status != StatusCompra.Pendente)
+                throw new InvalidOperationException(
+                    "Somente compras pendentes e sem recebimento podem ser canceladas.");
+
+            if (Recebimentos.Any())
+                throw new InvalidOperationException(
+                    "Não é possível cancelar uma compra que possui histórico de recebimento.");
+
+            if (Itens.Any(item => item.QuantidadeRecebida > 0))
+                throw new InvalidOperationException(
+                    "Não é possível cancelar uma compra que possui itens recebidos.");
+
+            Status = StatusCompra.Cancelada;
+            DataAtualizacao = DateTime.UtcNow;
+        }
     }
 }

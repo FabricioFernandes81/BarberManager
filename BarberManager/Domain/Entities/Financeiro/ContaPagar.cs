@@ -39,6 +39,33 @@ namespace Domain.Entities.Financeiro
 
         public ICollection<Pagamento> Pagamentos { get; set; }
             = new List<Pagamento>();
+
+
+        public void Cancelar()
+        {
+            if (Status == StatusContas.Cancelada)
+                throw new InvalidOperationException(
+                    "Esta conta a pagar já está cancelada.");
+
+            if (Status == StatusContas.Parcial ||
+                Status == StatusContas.Recebida ||
+                ValorPago > 0 ||
+                Pagamentos.Any())
+            {
+                throw new InvalidOperationException(
+                    "Não é possível cancelar uma conta a pagar que possui pagamentos registrados.");
+            }
+
+            if (Status != StatusContas.Aberta &&
+                Status != StatusContas.Vencida)
+            {
+                throw new InvalidOperationException(
+                    "A situação atual da conta a pagar não permite o cancelamento.");
+            }
+
+            Status = StatusContas.Cancelada;
+            DataAtualizacao = DateTime.UtcNow;
+        }
     }
 
 }

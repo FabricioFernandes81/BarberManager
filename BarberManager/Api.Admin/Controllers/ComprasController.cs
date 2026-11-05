@@ -1,6 +1,7 @@
 ﻿using Application.Dispatcher;
 using Application.Operacional.Compras.Commands;
 using Application.Operacional.Compras.DTOs;
+using Application.Operacional.Compras.Queries;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -70,6 +71,84 @@ namespace Api.Admin.Controllers
             return Created(
                 $"/api/Compras/{compraId}/recebimentos/{resultado.Id}",
                 resultado);
+        }
+
+        [HttpPatch("{compraId:guid}/cancelar")]
+        [ProducesResponseType(
+    typeof(CompraCanceladaDto),
+    StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<CompraCanceladaDto>> Cancelar(
+    [FromRoute] Guid compraId,
+    CancellationToken cancellationToken)
+        {
+            var command = new CancelarCompraCommand(compraId);
+
+            var resultado = await _dispatcher.Command<
+                CancelarCompraCommand,
+                CompraCanceladaDto>(
+                    command,
+                    cancellationToken);
+
+            return Ok(resultado);
+        }
+
+        [HttpGet]
+        [ProducesResponseType(
+    typeof(ListarComprasDto),
+    StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<ListarComprasDto>> Listar(
+    [FromQuery] int pageNumber = 1,
+    [FromQuery] int pageSize = 10,
+    [FromQuery] string? searchTerm = null,
+    [FromQuery] DateTime? inicio = null,
+    [FromQuery] DateTime? fim = null,
+    [FromQuery] Guid? fornecedorId = null,
+    [FromQuery] Domain.Entities.Common.Enuns.StatusCompra? status = null,
+    CancellationToken cancellationToken = default)
+        {
+            var query = new ListarComprasQuery(
+                pageNumber,
+                pageSize,
+                searchTerm,
+                inicio,
+                fim,
+                fornecedorId,
+                status);
+
+            var resultado = await _dispatcher.Query<
+                ListarComprasQuery,
+                ListarComprasDto>(
+                    query,
+                    cancellationToken);
+
+            return Ok(resultado);
+        }
+
+        [HttpGet("{compraId:guid}")]
+        [ProducesResponseType(
+    typeof(CompraDetalheDto),
+    StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<CompraDetalheDto>> ObterPorId(
+    [FromRoute] Guid compraId,
+    CancellationToken cancellationToken)
+        {
+            var query = new ObterCompraPorIdQuery(compraId);
+
+            var resultado = await _dispatcher.Query<
+                ObterCompraPorIdQuery,
+                CompraDetalheDto>(
+                    query,
+                    cancellationToken);
+
+            return Ok(resultado);
         }
     }
 }

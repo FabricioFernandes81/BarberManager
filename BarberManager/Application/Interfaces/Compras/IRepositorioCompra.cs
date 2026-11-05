@@ -1,4 +1,5 @@
-﻿using Domain.Entities.Compras;
+﻿using Domain.Entities.Common.Enuns;
+using Domain.Entities.Compras;
 using Domain.Entities.Financeiro;
 using System;
 using System.Collections.Generic;
@@ -28,5 +29,40 @@ namespace Application.Interfaces.Compras
         Task AdicionarRecebimentoAsync(
             RecebimentoCompra recebimento,
             CancellationToken cancellationToken);
+
+        Task<Compra?> ObterParaCancelamentoAsync(
+    Guid empresaId,
+    Guid compraId,
+    CancellationToken cancellationToken);
+
+        Task<IReadOnlyCollection<ContaPagar>>
+            ObterContasPagarParaCancelamentoAsync(
+                Guid empresaId,
+                Guid compraId,
+                CancellationToken cancellationToken);
+
+
+        Task<(
+    IReadOnlyList<Compra> Itens,
+    int TotalRegistros
+)> ListarAsync(
+    Guid empresaId,
+    int pageNumber,
+    int pageSize,
+    string? searchTerm,
+    DateTime? inicio,
+    DateTime? fim,
+    Guid? fornecedorId,
+    StatusCompra? status,
+    CancellationToken cancellationToken);
+
+
+        Task<(
+    Compra? Compra,
+    IReadOnlyList<ContaPagar> ContasPagar
+)> ObterDetalheAsync(
+    Guid empresaId,
+    Guid compraId,
+    CancellationToken cancellationToken);
     }
 }
