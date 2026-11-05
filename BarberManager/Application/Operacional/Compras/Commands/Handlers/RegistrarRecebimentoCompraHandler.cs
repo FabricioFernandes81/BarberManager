@@ -164,8 +164,7 @@ namespace Application.Operacional.Compras.Commands.Handlers
                 }
 
                 return CriarResposta(
-                    recebimentoExistente,
-                    compraAnterior);
+                    recebimentoExistente);
             }
 
             // 7. Obter compra rastreada com seus itens.
@@ -354,7 +353,7 @@ namespace Application.Operacional.Compras.Commands.Handlers
                 cancellationToken);
 
             // 14. Retornar resultado.
-            return CriarResposta(recebimento, compra);
+            return CriarResposta(recebimento);
         }
 
         private static bool CompararItens(
@@ -386,8 +385,7 @@ namespace Application.Operacional.Compras.Commands.Handlers
         }
 
         private static RegistrarRecebimentoCompraDto CriarResposta(
-    RecebimentoCompra recebimento,
-    Compra compra)
+       RecebimentoCompra recebimento)
         {
             var itensResultado = recebimento.Itens
                 .Select(item =>
