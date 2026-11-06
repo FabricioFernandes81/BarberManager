@@ -1,26 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace Application.Operacional.Vendas.DTOs
 {
     public sealed record FinalizarVendaRequest(
- [Required]
-[MinLength(1)]
-IReadOnlyCollection<PagamentoVendaRequest> Pagamentos,
- string? Observacao
- );
+        IReadOnlyCollection<PagamentoVendaRequest>? Pagamentos,
+        string? Observacao
+    );
 
     public sealed record PagamentoVendaRequest(
         [Required]
-    Guid FormaPagamentoId,
+        Guid FormaPagamentoId,
 
         [Required]
-    [ValorPagamentoValido]
-    decimal Valor
+        [ValorPagamentoValido]
+        decimal Valor
     );
 
     public sealed class ValorPagamentoValidoAttribute : ValidationAttribute

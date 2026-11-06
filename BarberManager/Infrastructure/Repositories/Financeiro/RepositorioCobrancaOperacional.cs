@@ -53,5 +53,17 @@ namespace Infrastructure.Repositories.Financeiro
             // Não chamar SaveChangesAsync.
             // A UnitOfWork controla a persistência.
         }
+
+        public async Task<CobrancaOperacional?> ObterPorIdAsync(
+            Guid empresaId,
+            Guid cobrancaId,
+            CancellationToken cancellationToken)
+        {
+            return await _context.Set<CobrancaOperacional>()
+                .FirstOrDefaultAsync(
+                    x => x.Id == cobrancaId
+                      && x.EmpresaId == empresaId,
+                    cancellationToken);
+        }
     }
 }

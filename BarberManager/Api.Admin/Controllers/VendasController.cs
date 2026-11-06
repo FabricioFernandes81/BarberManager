@@ -86,26 +86,27 @@ namespace Api.Admin.Controllers
                 });
             }
 
-            if (request.Pagamentos is null ||
-                request.Pagamentos.Count == 0)
-            {
-                return BadRequest(new
-                {
-                    mensagem = "Informe pelo menos uma forma de pagamento."
-                });
-            }
+            /*  if (request.Pagamentos is null ||
+                  request.Pagamentos.Count == 0)
+              {
+                  return BadRequest(new
+                  {
+                      mensagem = "Informe pelo menos uma forma de pagamento."
+                  });
+              }*/
 
             var command = new FinalizarVendaCommand(
-                VendaId: vendaId,
+                        VendaId: vendaId,
 
-                Pagamentos: request.Pagamentos
-                    .Select(p => new PagamentoVendaCommand(
-                        p.FormaPagamentoId,
-                        p.Valor))
-                    .ToArray(),
+                        Pagamentos: request.Pagamentos?
+                            .Select(p => new PagamentoVendaCommand(
+                                p.FormaPagamentoId,
+                                p.Valor))
+                            .ToArray()
+                            ?? Array.Empty<PagamentoVendaCommand>(),
 
-                Observacao: request.Observacao
-            );
+                        Observacao: request.Observacao
+                    );
 
             var resultado = await _dispatcher.Command<
                 FinalizarVendaCommand,

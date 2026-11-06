@@ -18,5 +18,10 @@ namespace Application.Interfaces.Financeiro
         Task AdicionarAsync(
             CobrancaOperacional cobranca,
             CancellationToken cancellationToken);
+
+        Task<CobrancaOperacional?> ObterPorIdAsync(
+       Guid empresaId,
+       Guid cobrancaId,
+       CancellationToken cancellationToken);
     }
 }

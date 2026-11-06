@@ -1,4 +1,5 @@
-﻿using Application.Common.Exceptions;
+﻿```csharp
+using Application.Common.Exceptions;
 using Application.Common.Middlewares.Handler;
 using Application.Common.Security;
 using Application.Common.Tenancy;
@@ -13,13 +14,13 @@ using Domain.Entities.Vendas;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace Application.Operacional.Vendas.Commands.Handlers
 {
     public sealed class FinalizarVendaHandler
-         : ICommandHandler<FinalizarVendaCommand, FinalizarVendaDto>
+        : ICommandHandler<FinalizarVendaCommand, FinalizarVendaDto>
     {
         private readonly IRepositorioVenda _repositorioVenda;
         private readonly IRepositorioRecebimento _repositorioRecebimento;
@@ -33,7 +34,8 @@ namespace Application.Operacional.Vendas.Commands.Handlers
             IRepositorioRecebimento repositorioRecebimento,
             IRepositorioCaixa repositorioCaixa,
             ITenantContext tenantContext,
-            IUsuarioLogado usuarioLogado, IRepositorioProdutos repositorioProdutos)
+            IUsuarioLogado usuarioLogado,
+            IRepositorioProdutos repositorioProdutos)
         {
             _repositorioVenda = repositorioVenda;
             _repositorioRecebimento = repositorioRecebimento;
@@ -74,49 +76,47 @@ namespace Application.Operacional.Vendas.Commands.Handlers
                     "O identificador do usuário autenticado é inválido.");
             }
 
-            // 3. Validar os identificadores recebidos.
+            // 3. Validar o identificador da venda.
             if (command.VendaId == Guid.Empty)
             {
                 throw Erro(
                     "O identificador da venda é obrigatório.");
             }
 
-           if (command.Pagamentos is null ||
-    command.Pagamentos.Count == 0)
-{
-    throw Erro(
-        "Informe pelo menos uma forma de pagamento.");
-}
+            // 4. Normalizar e validar os pagamentos.
+            // A ausência de pagamentos é permitida.
+            var pagamentos = command.Pagamentos
+                ?? Array.Empty<PagamentoVendaCommand>();
 
-if (command.Pagamentos.Any(
-    p => p.FormaPagamentoId == Guid.Empty))
-{
-    throw Erro(
-        "Todas as formas de pagamento devem possuir identificadores válidos.");
-}
+            if (pagamentos.Any(
+                p => p.FormaPagamentoId == Guid.Empty))
+            {
+                throw Erro(
+                    "Todas as formas de pagamento devem possuir identificadores válidos.");
+            }
 
-if (command.Pagamentos.Any(p => p.Valor <= 0))
-{
-    throw Erro(
-        "O valor de cada pagamento deve ser maior que zero.");
-}
+            if (pagamentos.Any(p => p.Valor <= 0))
+            {
+                throw Erro(
+                    "O valor de cada pagamento deve ser maior que zero.");
+            }
 
-if (command.Pagamentos.Any(
-    p => p.Valor != decimal.Round(p.Valor, 2)))
-{
-    throw Erro(
-        "Os valores dos pagamentos devem possuir no máximo duas casas decimais.");
-}
+            if (pagamentos.Any(
+                p => p.Valor != decimal.Round(p.Valor, 2)))
+            {
+                throw Erro(
+                    "Os valores dos pagamentos devem possuir no máximo duas casas decimais.");
+            }
 
-if (command.Pagamentos
-    .GroupBy(p => p.FormaPagamentoId)
-    .Any(g => g.Count() > 1))
-{
-    throw Erro(
-        "Informe cada forma de pagamento apenas uma vez.");
-}
+            if (pagamentos
+                .GroupBy(p => p.FormaPagamentoId)
+                .Any(g => g.Count() > 1))
+            {
+                throw Erro(
+                    "Informe cada forma de pagamento apenas uma vez.");
+            }
 
-            // 4. Carregar a venda rastreada pelo EF Core.
+            // 5. Carregar a venda rastreada pelo EF Core.
             var venda = await _repositorioVenda.ObterParaAtualizacaoAsync(
                 empresaId,
                 command.VendaId,
@@ -128,7 +128,7 @@ if (command.Pagamentos
                     "Venda não encontrada para a empresa informada.");
             }
 
-            // 5. Impedir a finalização repetida.
+            // 6. Impedir a finalização repetida.
             if (venda.Status != StatusVenda.Aberta)
             {
                 throw Erro(
@@ -147,7 +147,7 @@ if (command.Pagamentos
                     "Não é possível finalizar uma venda com valor total zero ou negativo.");
             }
 
-            // 6. Validar a observação.
+            // 7. Validar a observação.
             var observacao = command.Observacao?.Trim();
 
             if (observacao is { Length: > 500 })
@@ -156,32 +156,34 @@ if (command.Pagamentos
                     "A observação não pode ultrapassar 500 caracteres.");
             }
 
-            // 7. Bloquear operações concorrentes no caixa.
-            // O TransactionMiddleware deve ter iniciado a transação
-            // antes de executar este handler.
-            await _repositorioCaixa.BloquearOperacaoCaixaAsync(
-                empresaId,
-                usuarioId,
-                cancellationToken);
+            // 8. O caixa só é necessário quando houver pagamento presencial.
+            Caixa? caixa = null;
 
-            // 8. Localizar o caixa aberto do usuário.
-            var caixa = await _repositorioRecebimento.ObterCaixaAbertoAsync(
-                empresaId,
-                usuarioId,
-                cancellationToken);
-
-            if (caixa is null)
+            if (pagamentos.Count > 0)
             {
-                throw Erro(
-                    "Não existe um caixa aberto para este usuário nesta empresa. " +
-                    "Abra o caixa antes de finalizar a venda.");
+                await _repositorioCaixa.BloquearOperacaoCaixaAsync(
+                    empresaId,
+                    usuarioId,
+                    cancellationToken);
+
+                caixa = await _repositorioRecebimento.ObterCaixaAbertoAsync(
+                    empresaId,
+                    usuarioId,
+                    cancellationToken);
+
+                if (caixa is null)
+                {
+                    throw Erro(
+                        "Não existe um caixa aberto para este usuário nesta empresa. " +
+                        "Abra o caixa antes de registrar o recebimento presencial.");
+                }
             }
 
-            // 9. Validar a forma de pagamento.
+            // 9. Validar os valores da venda e os pagamentos.
             var valorVenda = decimal.Round(
-    venda.ValorTotal,
-    2,
-    MidpointRounding.AwayFromZero);
+                venda.ValorTotal,
+                2,
+                MidpointRounding.AwayFromZero);
 
             if (valorVenda <= 0)
             {
@@ -189,43 +191,45 @@ if (command.Pagamentos
                     "O valor total da venda deve ser maior que zero.");
             }
 
-            // 2. Somar os pagamentos informados.
-            var totalPagamentos = decimal.Round(
-                command.Pagamentos.Sum(p => p.Valor),
-                2,
-                MidpointRounding.AwayFromZero);
-
-            // 3. Exigir quitação integral.
-            if (totalPagamentos != valorVenda)
-            {
-                throw Erro(
-                    $"A soma dos pagamentos ({totalPagamentos:N2}) " +
-                    $"deve ser igual ao total da venda ({valorVenda:N2}).");
-            }
-
-            // 4. Validar todas as formas de pagamento.
             var formasPagamento = new Dictionary<Guid, FormaPagamento>();
 
-            foreach (var pagamento in command.Pagamentos)
+            // A quitação integral e a validação das formas de pagamento
+            // são exigidas somente quando há pagamento presencial.
+            if (pagamentos.Count > 0)
             {
-                cancellationToken.ThrowIfCancellationRequested();
+                var totalPagamentos = decimal.Round(
+                    pagamentos.Sum(p => p.Valor),
+                    2,
+                    MidpointRounding.AwayFromZero);
 
-                var formaPagamento =
-                    await _repositorioRecebimento.ObterFormaPagamentoAtivaAsync(
-                        empresaId,
-                        pagamento.FormaPagamentoId,
-                        cancellationToken);
-
-                if (formaPagamento is null)
+                if (totalPagamentos != valorVenda)
                 {
                     throw Erro(
-                        $"A forma de pagamento {pagamento.FormaPagamentoId} " +
-                        "não existe, está inativa ou não pertence à empresa.");
+                        $"A soma dos pagamentos ({totalPagamentos:N2}) " +
+                        $"deve ser igual ao total da venda ({valorVenda:N2}).");
                 }
 
-                formasPagamento.Add(
-                    pagamento.FormaPagamentoId,
-                    formaPagamento);
+                foreach (var pagamento in pagamentos)
+                {
+                    cancellationToken.ThrowIfCancellationRequested();
+
+                    var formaPagamento =
+                        await _repositorioRecebimento.ObterFormaPagamentoAtivaAsync(
+                            empresaId,
+                            pagamento.FormaPagamentoId,
+                            cancellationToken);
+
+                    if (formaPagamento is null)
+                    {
+                        throw Erro(
+                            $"A forma de pagamento {pagamento.FormaPagamentoId} " +
+                            "não existe, está inativa ou não pertence à empresa.");
+                    }
+
+                    formasPagamento.Add(
+                        pagamento.FormaPagamentoId,
+                        formaPagamento);
+                }
             }
 
             // 10. Impedir duplicidade de conta financeira.
@@ -242,15 +246,18 @@ if (command.Pagamentos
                     "Verifique o financeiro antes de tentar finalizá-la novamente.");
             }
 
-            //Validar e baixar o estoque dos produtos da venda
+            // 11. Validar e baixar o estoque dos produtos da venda.
+            await BaixarEstoqueProdutosAsync(
+                venda,
+                empresaId,
+                usuarioId,
+                cancellationToken);
 
-            await BaixarEstoqueProdutosAsync(venda, empresaId, usuarioId, cancellationToken);
-
-            // 11. Definir os valores exclusivamente no servidor.
+            // 12. Definir os valores exclusivamente no servidor.
             var dataFinalizacao = DateTimeOffset.UtcNow;
             var dataOperacao = dataFinalizacao.UtcDateTime;
 
-            // Criar uma única conta a receber para a venda.
+            // 13. Criar uma única conta a receber para a venda.
             var contaReceber = new ContaReceber(
                 empresaId: empresaId,
                 clienteId: venda.ClienteId,
@@ -261,24 +268,29 @@ if (command.Pagamentos
 
             contaReceber.VincularVenda(venda.Id);
 
-            // A conta será quitada integralmente pelos pagamentos informados.
-            try
+            // 14. Registrar recebimento somente quando houver
+            // pagamento presencial.
+            if (pagamentos.Count > 0)
             {
-                contaReceber.RegistrarRecebimento(
-                    valorVenda,
-                    dataOperacao);
-            }
-            catch (InvalidOperationException ex)
-            {
-                throw Erro(ex.Message);
+                try
+                {
+                    contaReceber.RegistrarRecebimento(
+                        valorVenda,
+                        dataOperacao);
+                }
+                catch (InvalidOperationException ex)
+                {
+                    throw Erro(ex.Message);
+                }
             }
 
             await _repositorioRecebimento.AdicionarContaAsync(
                 contaReceber,
                 cancellationToken);
 
-            // Criar um recebimento e um movimento de caixa por forma de pagamento.
-            foreach (var pagamento in command.Pagamentos)
+            // 15. Criar recebimentos e movimentos de caixa
+            // somente para pagamentos presenciais.
+            foreach (var pagamento in pagamentos)
             {
                 cancellationToken.ThrowIfCancellationRequested();
 
@@ -291,7 +303,6 @@ if (command.Pagamentos
                     ContaReceber = contaReceber,
 
                     FormaPagamentoId = formaPagamento.Id,
-                 //   FormaPagamento = formaPagamento,
 
                     DataRecebimento = dataOperacao,
                     Valor = pagamento.Valor,
@@ -304,13 +315,12 @@ if (command.Pagamentos
 
                 var movimento = new MovimentoCaixa
                 {
-                    CaixaId = caixa.Id,
+                    CaixaId = caixa!.Id,
                     Caixa = caixa,
 
                     TipoMovimento = TipoMovimentoCaixa.Entrada,
 
                     FormaPagamentoId = formaPagamento.Id,
-                //    FormaPagamento = formaPagamento,
 
                     DataMovimento = dataOperacao,
                     Valor = pagamento.Valor,
@@ -325,7 +335,8 @@ if (command.Pagamentos
                     cancellationToken);
             }
 
-            // Finalizar a venda depois de preparar todos os registros financeiros.
+            // 16. Finalizar a venda depois de preparar
+            // todos os registros financeiros.
             venda.Finalizar(dataFinalizacao);
 
             // Não chamar SaveChangesAsync.
@@ -340,9 +351,12 @@ if (command.Pagamentos
                 Desconto: venda.Desconto,
                 ValorTotal: venda.ValorTotal);
         }
+
         private async Task BaixarEstoqueProdutosAsync(
             Venda venda,
-            Guid empresaId, Guid usuarioId, CancellationToken cancellationToken)
+            Guid empresaId,
+            Guid usuarioId,
+            CancellationToken cancellationToken)
         {
             var itensProduto = venda.Itens
                 .Where(item => item.TipoItem == TipoItemVenda.Produto)
@@ -351,13 +365,18 @@ if (command.Pagamentos
                 {
                     ProdutoId = grupo.Key,
                     Quantidade = grupo.Sum(item => item.Quantidade)
-                }).ToList();
+                })
+                .ToList();
 
-            foreach(var item in itensProduto)
+            foreach (var item in itensProduto)
             {
                 cancellationToken.ThrowIfCancellationRequested();
-                var produto = await _repositorioProdutos.ObterParaMovimentacaoEstoqueAsync(
-                    empresaId, item.ProdutoId, cancellationToken);
+
+                var produto =
+                    await _repositorioProdutos.ObterParaMovimentacaoEstoqueAsync(
+                        empresaId,
+                        item.ProdutoId,
+                        cancellationToken);
 
                 if (produto is null)
                 {
@@ -371,10 +390,12 @@ if (command.Pagamentos
                         $"O produto '{produto.Nome}' está inativo e não pode " +
                         "ser utilizado na finalização da venda.");
                 }
+
                 if (!produto.ControlaEstoque)
                 {
                     continue;
                 }
+
                 var estoque = produto.Estoque;
 
                 if (estoque is null)
@@ -421,9 +442,7 @@ if (command.Pagamentos
                 await _repositorioProdutos.AdicionarMovimentacaoEstoqueAsync(
                     movimentacao,
                     cancellationToken);
-
             }
-
         }
 
         private static CustomValidationException Erro(
@@ -434,3 +453,4 @@ if (command.Pagamentos
         }
     }
 }
+```
