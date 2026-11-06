@@ -11,6 +11,7 @@ using Application.Interfaces.Produtos;
 using Application.Interfaces.Profissionais;
 using Application.Interfaces.Servicos;
 using Application.Interfaces.Vendas;
+using Application.Operacional.Financeiro.Interfaces;
 using Application.Operacional.Financeiro.Services;
 using Application.Saas.Empresas;
 using Application.Saas.Pagamentos.Services;
@@ -94,6 +95,8 @@ namespace Infrastructure
                     client.Timeout = TimeSpan.FromSeconds(70);
                 });
 
+
+
             services.AddHttpClient<
                         IAsaasOperacionalClient,
                         AsaasOperacionalClient>(
@@ -101,6 +104,13 @@ namespace Infrastructure
                         {
                             client.Timeout = TimeSpan.FromSeconds(20);
                         });
+
+            services.AddHttpClient<
+    IAsaasOperacionalGateway,
+    AsaasOperacionalGateway>(client =>
+    {
+        client.Timeout = TimeSpan.FromSeconds(70);
+    });
 
             services.AddScoped<
                             IAsaasWebhookService, AsaasWebhookService>();

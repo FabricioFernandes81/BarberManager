@@ -16,4 +16,10 @@ public interface IAsaasOperacionalGateway
         AmbienteAsaas ambiente,
         string pagamentoGatewayId,
         CancellationToken cancellationToken);
+
+    Task<ClienteAsaasOperacionalResultadoDto> CriarClienteAsync(
+   string apiToken,
+   AmbienteAsaas ambiente,
+   CriarClienteAsaasOperacionalDto cliente,
+   CancellationToken cancellationToken);
 }
