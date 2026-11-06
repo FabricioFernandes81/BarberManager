@@ -69,8 +69,8 @@ namespace Application.Common.Security
                     "ProfissionalId", contexto.ProfissionalId.Value.ToString()));
             }
 
-            //  claims.AddRange(
-            //      roles.Select(role => new Claim(ClaimTypes.Role, role)));
+              claims.AddRange(
+                  roles.Select(role => new Claim(ClaimTypes.Role, role)));
             claims.AddRange(
                  contexto.Permissoes
                         .Distinct(StringComparer.Ordinal)

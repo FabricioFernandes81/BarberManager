@@ -5,6 +5,7 @@ using Application.Common.Security;
 using Application.Interfaces;
 using Application.Interfaces.Empresas.Pagamentos;
 using Application.Interfaces.Financeiro;
+using Application.Operacional.Financeiro.Services;
 using Application.Saas.Pagamentos.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
@@ -49,8 +50,10 @@ public static class Dependency
         services.AddScoped<IUrlService, UrlService>();
         services.AddScoped<IPagamentoService, PagamentoService>();
 
+        services.AddScoped<
+    IConfiguracaoAsaasService,
+    ConfiguracaoAsaasService>();
 
-        
         return services;
     }
 

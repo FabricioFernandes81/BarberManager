@@ -82,8 +82,7 @@ namespace Infrastructure.Context
         public DbSet<ContaReceber> ContasReceber => Set<ContaReceber>();
         public DbSet<Pagamento> Pagamentos => Set<Pagamento>();
 
-        public DbSet<ConfiguracaoAssasClient> ConfiguracaoAssasClients => Set<ConfiguracaoAssasClient>();
-
+        
         public DbSet<Venda> Vendas => Set<Venda>();
 
         public DbSet<VendaItem> VendaItens => Set<VendaItem>();
@@ -119,6 +118,8 @@ namespace Infrastructure.Context
 
         public DbSet<ConfiguracaoAssasClient> ConfiguracoesAssasClient => Set<ConfiguracaoAssasClient>();
 
+        public DbSet<EventoWebhookAsaas> EventosWebhookAsaas => Set<EventoWebhookAsaas>();
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -153,7 +154,7 @@ namespace Infrastructure.Context
             modelBuilder.ApplyConfiguration(new VendaConfiguration());
             modelBuilder.ApplyConfiguration(new VendaItemConfiguration());
 
-            modelBuilder.ApplyConfiguration(new ConfiguracaoAssasClientConfiguration());
+            
             
            
             modelBuilder.ApplyConfiguration(new FornecedorConfiguration());
@@ -188,7 +189,8 @@ namespace Infrastructure.Context
                 new RecebimentoCompraItemConfiguration());
 
             modelBuilder.ApplyConfiguration(new ConfiguracaoAssasClientConfiguration());
-
+            modelBuilder.ApplyConfiguration(
+    new EventoWebhookAsaasConfiguration());
 
             SeedProfissionais.SeedProfissial(modelBuilder);
             SeedModuloServicos.SeedIniciarServico(modelBuilder);
