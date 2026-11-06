@@ -150,6 +150,10 @@ namespace Infrastructure
             services.AddScoped<
     IRepositorioEventoWebhookAsaas,
     RepositorioEventoWebhookAsaas>();
+
+            services.AddScoped<
+    IRepositorioCobrancaOperacional,
+    RepositorioCobrancaOperacional>();
             return services;
         }
     }
