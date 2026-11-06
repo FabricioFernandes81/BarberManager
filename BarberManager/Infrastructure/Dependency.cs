@@ -135,25 +135,22 @@ namespace Infrastructure
 
             services.AddDataProtection();
 
-            services.AddScoped<
-                IProtecaoCredenciaisAsaas,
-                ProtecaoCredenciaisAsaas>();
+            services.AddScoped< IProtecaoCredenciaisAsaas, ProtecaoCredenciaisAsaas>();
 
-            services.AddScoped<
-    IRepositorioConfiguracaoAssasClient,
-    RepositorioConfiguracaoAssasClient>();
+            services.AddScoped<IRepositorioConfiguracaoAssasClient,RepositorioConfiguracaoAssasClient>();
 
-            services.AddScoped<
-    IValidadorCredencialAsaas,
-    ValidadorCredencialAsaas>();
+            services.AddScoped<IValidadorCredencialAsaas, ValidadorCredencialAsaas>();
 
-            services.AddScoped<
-    IRepositorioEventoWebhookAsaas,
-    RepositorioEventoWebhookAsaas>();
+            services.AddScoped<IRepositorioEventoWebhookAsaas, RepositorioEventoWebhookAsaas>();
 
-            services.AddScoped<
-    IRepositorioCobrancaOperacional,
-    RepositorioCobrancaOperacional>();
+            services.AddScoped<IRepositorioCobrancaOperacional, RepositorioCobrancaOperacional>();
+
+            services.AddScoped< IRepositorioClienteAsaasOperacional,RepositorioClienteAsaasOperacional>();
+            
+            
+            
+            
+            
             return services;
         }
     }

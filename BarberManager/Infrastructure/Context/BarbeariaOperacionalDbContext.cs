@@ -121,6 +121,11 @@ namespace Infrastructure.Context
         public DbSet<EventoWebhookAsaas> EventosWebhookAsaas => Set<EventoWebhookAsaas>();
         public DbSet<CobrancaOperacional> CobrancasOperacionais
     => Set<CobrancaOperacional>();
+
+        public DbSet<ClienteAsaasOperacional> ClientesAsaasOperacionais
+    => Set<ClienteAsaasOperacional>();
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -196,7 +201,8 @@ namespace Infrastructure.Context
             modelBuilder.ApplyConfiguration(
           new CobrancaOperacionalConfiguration());
 
-
+            modelBuilder.ApplyConfiguration(
+    new ClienteAsaasOperacionalConfiguration());
 
 
             SeedProfissionais.SeedProfissial(modelBuilder);
