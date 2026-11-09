@@ -158,7 +158,9 @@ namespace Infrastructure
             services.AddScoped< IRepositorioClienteAsaasOperacional,RepositorioClienteAsaasOperacional>();
             services.AddScoped<IConsultaUsuarioIdentity,ConsultaUsuarioIdentity>();
 
-
+            services.AddScoped<
+    IClienteAsaasOperacionalService,
+    ClienteAsaasOperacionalService>();
 
 
             return services;

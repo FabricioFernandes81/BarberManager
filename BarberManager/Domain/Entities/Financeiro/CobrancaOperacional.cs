@@ -98,6 +98,7 @@ namespace Domain.Entities.Financeiro
         Confirmada = 2,
         Cancelada = 3,
         Expirada = 4,
-        Falha = 5
+        Falha = 5,
+        EmProcessamento = 6
     }
 }
