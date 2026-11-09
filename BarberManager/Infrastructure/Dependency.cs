@@ -156,11 +156,11 @@ namespace Infrastructure
             services.AddScoped<IRepositorioCobrancaOperacional, RepositorioCobrancaOperacional>();
 
             services.AddScoped< IRepositorioClienteAsaasOperacional,RepositorioClienteAsaasOperacional>();
-            
-            
-            
-            
-            
+            services.AddScoped<IConsultaUsuarioIdentity,ConsultaUsuarioIdentity>();
+
+
+
+
             return services;
         }
     }
