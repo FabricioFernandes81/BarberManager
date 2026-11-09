@@ -59,6 +59,19 @@ namespace Infrastructure.Repositories.Clientes
 
         }
 
+        public async Task<Cliente?> ObterPorUsuarioEEmpresaAsync(Guid usuarioId, Guid empresaId, CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.Clientes
+          .AsNoTracking()
+          .SingleOrDefaultAsync(
+              x => x.UsuarioId == usuarioId
+                  && x.Ativo
+                  && x.Empresas.Any(e =>
+                      e.EmpresaId == empresaId &&
+                      e.Ativo),
+              cancellationToken);
+        }
+
         public async Task<Cliente?> ObterPorUsuarioIdAsync(Guid usuarioId, CancellationToken cancellationToken = default)
         {
             return await _dbContext.Clientes

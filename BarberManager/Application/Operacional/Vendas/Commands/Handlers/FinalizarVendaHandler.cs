@@ -1,4 +1,4 @@
-﻿```csharp
+﻿
 using Application.Common.Exceptions;
 using Application.Common.Middlewares.Handler;
 using Application.Common.Security;
@@ -453,4 +453,3 @@ namespace Application.Operacional.Vendas.Commands.Handlers
         }
     }
 }
-```
