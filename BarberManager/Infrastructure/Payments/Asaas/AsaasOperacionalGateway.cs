@@ -326,6 +326,108 @@ public sealed class AsaasOperacionalGateway : IAsaasOperacionalGateway
             null,
             statusCode);
     }
+    public async Task<IReadOnlyList<CobrancaOperacionalResultadoDto>>
+    ListarCobrancasPorReferenciaAsync(
+        string apiToken,
+        AmbienteAsaas ambiente,
+        string externalReference,
+        CancellationToken cancellationToken)
+    {
+        ValidarToken(apiToken);
+
+        if (string.IsNullOrWhiteSpace(externalReference))
+        {
+            throw new ArgumentException(
+                "A referência externa é obrigatória.",
+                nameof(externalReference));
+        }
+
+        const int limite = 100;
+
+        var offset = 0;
+
+        var cobrancas = new List<CobrancaOperacionalResultadoDto>();
+
+        var referencia = Uri.EscapeDataString(
+            externalReference.Trim());
+
+        bool hasMore;
+
+        do
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+
+            var endpoint =
+                $"payments?externalReference={referencia}" +
+                $"&offset={offset}&limit={limite}";
+
+            using var request = CriarRequest(
+                HttpMethod.Get,
+                ambiente,
+                endpoint,
+                apiToken);
+
+            using var response = await _httpClient.SendAsync(
+                request,
+                HttpCompletionOption.ResponseHeadersRead,
+                cancellationToken);
+
+            await GarantirSucessoAsync(
+                response,
+                cancellationToken);
+
+            var resultado = await response.Content
+                .ReadFromJsonAsync<ListarCobrancasResponse>(
+                    JsonOptions,
+                    cancellationToken)
+                ?? throw new InvalidOperationException(
+                    "O Asaas não retornou os dados da consulta de cobranças.");
+
+            if (resultado.Data is null)
+            {
+                throw new InvalidOperationException(
+                    "O Asaas retornou uma lista de cobranças inválida.");
+            }
+
+            if (resultado.Data.Count == 0 && resultado.HasMore)
+            {
+                throw new InvalidOperationException(
+                    "O Asaas informou que existem outras páginas, " +
+                    "mas não retornou registros.");
+            }
+
+            foreach (var pagamento in resultado.Data)
+            {
+                if (string.IsNullOrWhiteSpace(pagamento.Id))
+                {
+                    throw new InvalidOperationException(
+                        "O Asaas retornou uma cobrança sem identificador.");
+                }
+
+                cobrancas.Add(
+                    new CobrancaOperacionalResultadoDto(
+                        pagamento.Id,
+                        pagamento.Status,
+                        pagamento.BillingType,
+                        pagamento.Value,
+                        pagamento.InvoiceUrl,
+                        pagamento.ExternalReference,
+                        pagamento.Customer));
+            }
+
+            offset += resultado.Data.Count;
+
+            hasMore = resultado.HasMore;
+
+        } while (hasMore);
+
+        return cobrancas;
+    }
+
+    public Task<IReadOnlyList<CobrancaOperacionalResultadoDto>> BuscarCobrancasPorReferenciaAsync(string apiToken, AmbienteAsaas ambiente, string externalReference, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
 
     private sealed class ClienteResponse
     {
@@ -343,6 +445,8 @@ public sealed class AsaasOperacionalGateway : IAsaasOperacionalGateway
         public decimal Value { get; set; }
         public string? InvoiceUrl { get; set; }
         public string? ExternalReference { get; set; }
+
+        public string? Customer { get; set; }
     }
 
     private sealed class PixResponse
@@ -350,5 +454,14 @@ public sealed class AsaasOperacionalGateway : IAsaasOperacionalGateway
         public string? EncodedImage { get; set; }
         public string? Payload { get; set; }
         public string? ExpirationDate { get; set; }
+    }
+
+    private sealed class ListarCobrancasResponse
+    {
+        public List<PagamentoResponse> Data { get; set; } = [];
+
+        public int TotalCount { get; set; }
+
+        public bool HasMore { get; set; }
     }
 }

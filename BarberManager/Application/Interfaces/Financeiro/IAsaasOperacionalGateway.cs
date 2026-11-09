@@ -5,6 +5,15 @@ namespace Application.Operacional.Financeiro.Interfaces;
 
 public interface IAsaasOperacionalGateway
 {
+
+    Task<IReadOnlyList<CobrancaOperacionalResultadoDto>>
+    ListarCobrancasPorReferenciaAsync(
+        string apiToken,
+        AmbienteAsaas ambiente,
+        string externalReference,
+        CancellationToken cancellationToken);
+
+
     Task<CobrancaOperacionalResultadoDto> CriarCobrancaAsync(
         string apiToken,
         AmbienteAsaas ambiente,
@@ -22,4 +31,13 @@ public interface IAsaasOperacionalGateway
    AmbienteAsaas ambiente,
    CriarClienteAsaasOperacionalDto cliente,
    CancellationToken cancellationToken);
+
+    Task<IReadOnlyList<CobrancaOperacionalResultadoDto>>
+    BuscarCobrancasPorReferenciaAsync(
+        string apiToken,
+        AmbienteAsaas ambiente,
+        string externalReference,
+        CancellationToken cancellationToken);
+
+  
 }

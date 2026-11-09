@@ -6,4 +6,5 @@ public sealed record CobrancaOperacionalResultadoDto(
     string BillingType,
     decimal Valor,
     string? InvoiceUrl,
-    string? ExternalReference);
+    string? ExternalReference,
+    string? Customer);
