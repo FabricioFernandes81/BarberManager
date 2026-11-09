@@ -100,8 +100,35 @@ public sealed class CobrancaPixOperacionalService
             throw Erro("A conta não possui cliente vinculado.");
         }
 
-        if (conta.Status is StatusContas.Cancelada or StatusContas.Recebida)
-            throw Erro("A conta não está disponível para cobrança.");
+        switch (cobranca.Status)
+        {
+            case StatusCobrancaOperacional.Pendente:
+
+                if (string.IsNullOrWhiteSpace(cobranca.GatewayPagamentoId))
+                {
+                    throw Erro(
+                        "A cobrança está pendente, mas não possui identificador no gateway.");
+                }
+
+                return await RecuperarQrCodeAsync(
+                    cobranca,
+                    cancellationToken);
+
+            case StatusCobrancaOperacional.EmProcessamento:
+
+                return await ReconciliarCobrancaAsync(
+                    cobranca,
+                    cancellationToken);
+
+            case StatusCobrancaOperacional.Reservada:
+
+                break;
+
+            default:
+
+                throw Erro(
+                    $"A cobrança não pode ser iniciada. Status atual: {cobranca.Status}.");
+        }
 
         // 4. Revalidar o saldo antes de chamar o gateway.
         var saldoAtual = decimal.Round(
@@ -220,6 +247,125 @@ public sealed class CobrancaPixOperacionalService
             new[] { mensagem });
     }
 
+    private async Task<CriarCobrancaPixResponse> ReconciliarCobrancaAsync(
+    CobrancaOperacional cobranca,
+    CancellationToken cancellationToken)
+    {
+        var configuracao = await _repositorioConfiguracao
+            .ObterPorEmpresaAsync(
+                cobranca.EmpresaId,
+                cancellationToken);
+
+        if (configuracao is null || !configuracao.Ativo)
+            throw Erro("A integração Asaas não está configurada ou está desativada.");
+
+        if (string.IsNullOrWhiteSpace(configuracao.ApiTokenProtegido))
+            throw Erro("O token da API Asaas não está configurado.");
+
+        var apiToken = _protecaoCredenciais.Desproteger(
+            configuracao.ApiTokenProtegido);
+
+        if (string.IsNullOrWhiteSpace(apiToken))
+            throw Erro("Não foi possível recuperar a credencial Asaas.");
+
+        var cobrancasGateway = await _gateway.ListarCobrancasPorReferenciaAsync(
+            apiToken,
+            configuracao.Ambiente,
+            cobranca.ExternalReference,
+            cancellationToken);
+
+        if (cobrancasGateway.Count == 0)
+        {
+            throw Erro(
+                "Não foi encontrada cobrança no Asaas para esta referência. " +
+                "A cobrança permanece em processamento e deverá ser reconciliada novamente.");
+        }
+
+        if (cobrancasGateway.Count > 1)
+        {
+            throw Erro(
+                "Foram encontradas múltiplas cobranças no Asaas para a mesma referência. " +
+                "É necessária análise antes de continuar.");
+        }
+
+        var pagamento = cobrancasGateway.Single();
+
+        if (!string.Equals(
+                pagamento.ExternalReference,
+                cobranca.ExternalReference,
+                StringComparison.Ordinal))
+        {
+            throw Erro("A referência externa retornada pelo Asaas não corresponde à cobrança.");
+        }
+
+        if (!string.Equals(
+                pagamento.BillingType,
+                "PIX",
+                StringComparison.OrdinalIgnoreCase))
+        {
+            throw Erro("O pagamento localizado no Asaas não é do tipo Pix.");
+        }
+
+        if (pagamento.Valor != cobranca.Valor)
+            throw Erro("O valor da cobrança localizada no Asaas não corresponde ao valor reservado.");
+
+        if (string.IsNullOrWhiteSpace(pagamento.Customer))
+            throw Erro("O Asaas não retornou o identificador do cliente da cobrança.");
+
+        // Confirma que o cliente corresponde ao cliente da conta a receber.
+        var conta = await _repositorioRecebimento
+            .ObterContaParaRecebimentoAsync(
+                cobranca.EmpresaId,
+                cobranca.ContaReceberId,
+                cancellationToken);
+
+        if (conta is null || !conta.ClienteId.HasValue)
+            throw Erro("Não foi possível validar o cliente da conta a receber.");
+
+        var clienteAsaasId = await _clienteAsaas.ObterOuCriarAsync(
+            cobranca.EmpresaId,
+            conta.ClienteId.Value,
+            cancellationToken);
+
+        if (!string.Equals(
+                pagamento.Customer,
+                clienteAsaasId,
+                StringComparison.Ordinal))
+        {
+            throw Erro("O cliente da cobrança localizada no Asaas não corresponde ao cliente esperado.");
+        }
+
+        await _dispatcher.Command<RegistrarPagamentoGatewayCommand, Guid>(
+            new RegistrarPagamentoGatewayCommand(
+                cobranca.Id,
+                pagamento.Id),
+            cancellationToken);
+
+        // Após registrar o ID, a cobrança passa para Pendente.
+        var pix = await _gateway.ObterQrCodePixAsync(
+            apiToken,
+            configuracao.Ambiente,
+            pagamento.Id,
+            cancellationToken);
+
+        if (string.IsNullOrWhiteSpace(pix.Payload) ||
+            string.IsNullOrWhiteSpace(pix.EncodedImage))
+        {
+            throw new InvalidOperationException(
+                "O Asaas não retornou os dados do QR Code Pix.");
+        }
+
+        return new CriarCobrancaPixResponse(
+            cobranca.Id,
+            cobranca.ContaReceberId,
+            pagamento.Id,
+            cobranca.Valor,
+            pagamento.Status,
+            pix.Payload,
+            pix.EncodedImage,
+            pix.ExpirationDate);
+    }
+
     private async Task<CriarCobrancaPixResponse> RecuperarQrCodeAsync(
     Domain.Entities.Financeiro.CobrancaOperacional cobranca,
     CancellationToken cancellationToken)
@@ -264,4 +410,6 @@ public sealed class CobrancaPixOperacionalService
             pix.EncodedImage,
             pix.ExpirationDate);
     }
+
+
 }

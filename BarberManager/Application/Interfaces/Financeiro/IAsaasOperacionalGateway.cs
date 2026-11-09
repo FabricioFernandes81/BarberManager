@@ -32,12 +32,7 @@ public interface IAsaasOperacionalGateway
    CriarClienteAsaasOperacionalDto cliente,
    CancellationToken cancellationToken);
 
-    Task<IReadOnlyList<CobrancaOperacionalResultadoDto>>
-    BuscarCobrancasPorReferenciaAsync(
-        string apiToken,
-        AmbienteAsaas ambiente,
-        string externalReference,
-        CancellationToken cancellationToken);
+
 
   
 }

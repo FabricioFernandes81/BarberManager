@@ -197,12 +197,13 @@ public sealed class AsaasOperacionalGateway : IAsaasOperacionalGateway
         }
 
         return new CobrancaOperacionalResultadoDto(
-            resultado.Id,
-            resultado.Status,
-            resultado.BillingType,
-            resultado.Value,
-            resultado.InvoiceUrl,
-            resultado.ExternalReference);
+       resultado.Id,
+       resultado.Status,
+       resultado.BillingType,
+       resultado.Value,
+       resultado.InvoiceUrl,
+       resultado.ExternalReference,
+       resultado.Customer);
     }
 
     public async Task<PixOperacionalResultadoDto> ObterQrCodePixAsync(
@@ -424,10 +425,6 @@ public sealed class AsaasOperacionalGateway : IAsaasOperacionalGateway
         return cobrancas;
     }
 
-    public Task<IReadOnlyList<CobrancaOperacionalResultadoDto>> BuscarCobrancasPorReferenciaAsync(string apiToken, AmbienteAsaas ambiente, string externalReference, CancellationToken cancellationToken)
-    {
-        throw new NotImplementedException();
-    }
 
     private sealed class ClienteResponse
     {
