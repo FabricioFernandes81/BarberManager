@@ -161,7 +161,9 @@ namespace Infrastructure
             services.AddScoped<
     IClienteAsaasOperacionalService,
     ClienteAsaasOperacionalService>();
-
+            services.AddScoped<
+    ICobrancaPixOperacionalService,
+    CobrancaPixOperacionalService>();
 
             return services;
         }
