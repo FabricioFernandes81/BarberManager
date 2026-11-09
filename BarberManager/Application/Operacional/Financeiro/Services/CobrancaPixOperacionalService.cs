@@ -322,10 +322,22 @@ public sealed class CobrancaPixOperacionalService
         if (conta is null || !conta.ClienteId.HasValue)
             throw Erro("Não foi possível validar o cliente da conta a receber.");
 
+        var clienteAsaasId = await _clienteAsaas.ObterClienteAsaasIdAsync(
+    cobranca.EmpresaId,
+    conta.ClienteId.Value,
+    cancellationToken);
+
+        if (string.IsNullOrWhiteSpace(clienteAsaasId))
+        {
+            throw Erro(
+                "O cliente não possui vínculo previamente registrado no Asaas. " +
+                "A reconciliação não pode criar um novo cliente automaticamente.");
+        }
+        /*
         var clienteAsaasId = await _clienteAsaas.ObterOuCriarAsync(
             cobranca.EmpresaId,
             conta.ClienteId.Value,
-            cancellationToken);
+            cancellationToken);*/
 
         if (!string.Equals(
                 pagamento.Customer,

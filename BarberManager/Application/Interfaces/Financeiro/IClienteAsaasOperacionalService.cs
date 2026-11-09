@@ -6,5 +6,10 @@
             Guid empresaId,
             Guid clienteId,
             CancellationToken cancellationToken = default);
+
+        Task<string?> ObterClienteAsaasIdAsync(
+    Guid empresaId,
+    Guid clienteId,
+    CancellationToken cancellationToken = default);
     }
 }

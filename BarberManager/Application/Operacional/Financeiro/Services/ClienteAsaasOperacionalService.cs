@@ -161,5 +161,37 @@ namespace Application.Operacional.Financeiro.Services
 
             return resultado.Id;
         }
+
+        public async Task<string?> ObterClienteAsaasIdAsync(
+    Guid empresaId,
+    Guid clienteId,
+    CancellationToken cancellationToken = default)
+        {
+            var erros = new List<string>();
+
+            if (empresaId == Guid.Empty)
+                erros.Add("Empresa inválida.");
+
+            if (clienteId == Guid.Empty)
+                erros.Add("Cliente inválido.");
+
+            if (erros.Count > 0)
+                throw new CustomValidationException(erros);
+
+            var associacao = await _repositorioClienteAsaas
+                .ObterPorClienteAsync(
+                    empresaId,
+                    clienteId,
+                    cancellationToken);
+
+            if (associacao is null)
+                return null;
+
+            if (string.IsNullOrWhiteSpace(associacao.ClienteAsaasId))
+                throw new InvalidOperationException(
+                    "O vínculo do cliente com o Asaas está inconsistente.");
+
+            return associacao.ClienteAsaasId;
+        }
     }
 }
