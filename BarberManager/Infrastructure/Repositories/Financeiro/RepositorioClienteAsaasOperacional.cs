@@ -1,5 +1,6 @@
 ﻿
 using Application.Interfaces.Financeiro;
+using Domain.Entities.Clientes;
 using Domain.Entities.Financeiro;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
@@ -52,6 +53,22 @@ namespace Infrastructure.Repositories.Financeiro
 
             // Não chamar SaveChangesAsync.
             // A UnitOfWork controla a persistência.
+        }
+
+        public async Task<Cliente?> ObterPorUsuarioEEmpresaAsync(
+    Guid usuarioId,
+    Guid empresaId,
+    CancellationToken cancellationToken = default)
+        {
+            return await _context.Clientes
+                .AsNoTracking()
+                .SingleOrDefaultAsync(
+                    x => x.UsuarioId == usuarioId
+                        && x.Ativo
+                        && x.Empresas.Any(e =>
+                            e.EmpresaId == empresaId &&
+                            e.Ativo),
+                    cancellationToken);
         }
     }
 }

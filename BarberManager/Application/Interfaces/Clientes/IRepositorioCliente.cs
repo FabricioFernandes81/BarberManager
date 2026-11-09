@@ -17,5 +17,8 @@ namespace Application.Interfaces.Clientes
             Cliente cliente,
             CancellationToken cancellationToken = default);
 
+        Task<Cliente?> ObterPorUsuarioEEmpresaAsync(
+    Guid usuarioId,Guid empresaId, CancellationToken cancellationToken = default);
+
     }
 }
