@@ -21,7 +21,7 @@ namespace Domain.Entities.Financeiro
         public decimal Valor { get; private set; }
 
         public StatusCobrancaOperacional Status { get; private set; }
-            = StatusCobrancaOperacional.Pendente;
+            = StatusCobrancaOperacional.Reservada;
 
         public DateTime CriadaEmUtc { get; private set; }
 
@@ -61,19 +61,25 @@ namespace Domain.Entities.Financeiro
             ChaveIdempotencia = chaveIdempotencia.Trim();
             Valor = decimal.Round(valor, 2, MidpointRounding.AwayFromZero);
             CriadaEmUtc = DateTime.UtcNow;
-            Status = StatusCobrancaOperacional.Pendente;
+            Status = StatusCobrancaOperacional.Reservada;
         }
 
         public void RegistrarPagamentoGateway(string pagamentoGatewayId)
         {
             if (string.IsNullOrWhiteSpace(pagamentoGatewayId))
-                throw new ArgumentException("O identificador do pagamento é obrigatório.");
+                throw new ArgumentException(
+                    "O identificador do pagamento é obrigatório.");
 
-            if (Status != StatusCobrancaOperacional.Pendente)
+            if (Status != StatusCobrancaOperacional.EmProcessamento)
                 throw new InvalidOperationException(
-                    "A cobrança não está pendente.");
+                    "A cobrança não está em processamento.");
+
+            if (!string.IsNullOrWhiteSpace(GatewayPagamentoId))
+                throw new InvalidOperationException(
+                    "A cobrança já possui identificador no gateway.");
 
             GatewayPagamentoId = pagamentoGatewayId.Trim();
+            Status = StatusCobrancaOperacional.Pendente;
         }
 
         public void Confirmar(DateTime confirmadaEmUtc)
@@ -99,6 +105,7 @@ namespace Domain.Entities.Financeiro
         Cancelada = 3,
         Expirada = 4,
         Falha = 5,
-        EmProcessamento = 6
+        EmProcessamento = 6,
+        Reservada = 7
     }
 }

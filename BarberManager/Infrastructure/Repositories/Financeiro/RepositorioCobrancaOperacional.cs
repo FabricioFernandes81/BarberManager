@@ -65,5 +65,25 @@ namespace Infrastructure.Repositories.Financeiro
                       && x.EmpresaId == empresaId,
                     cancellationToken);
         }
+
+        public async Task<bool> TentarIniciarProcessamentoAsync(
+    Guid empresaId,
+    Guid cobrancaId,
+    CancellationToken cancellationToken)
+        {
+            var linhasAfetadas = await _context.CobrancasOperacionais
+                .Where(x =>
+                    x.Id == cobrancaId &&
+                    x.EmpresaId == empresaId &&
+                    x.Status == StatusCobrancaOperacional.Reservada &&
+                    x.GatewayPagamentoId == null)
+                .ExecuteUpdateAsync(
+                    atualizacao => atualizacao.SetProperty(
+                        x => x.Status,
+                        StatusCobrancaOperacional.EmProcessamento),
+                    cancellationToken);
+
+            return linhasAfetadas == 1;
+        }
     }
 }

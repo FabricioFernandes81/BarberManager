@@ -23,5 +23,10 @@ namespace Application.Interfaces.Financeiro
        Guid empresaId,
        Guid cobrancaId,
        CancellationToken cancellationToken);
+
+        Task<bool> TentarIniciarProcessamentoAsync(
+    Guid empresaId,
+    Guid cobrancaId,
+    CancellationToken cancellationToken);
     }
 }
