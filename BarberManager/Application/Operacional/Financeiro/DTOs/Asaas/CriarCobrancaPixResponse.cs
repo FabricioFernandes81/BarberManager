@@ -8,5 +8,6 @@ public sealed record CriarCobrancaPixResponse(
     string Status,
     string PayloadPix,
     string ImagemQrCode,
-    DateTime? ExpiracaoPix
+    DateTime? ExpiracaoPix,
+    string? LinkPagamento
 );

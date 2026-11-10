@@ -66,10 +66,11 @@ namespace Infrastructure.Repositories.Financeiro
                     cancellationToken);
         }
 
+
         public async Task<bool> TentarIniciarProcessamentoAsync(
-    Guid empresaId,
-    Guid cobrancaId,
-    CancellationToken cancellationToken)
+            Guid empresaId,
+            Guid cobrancaId,
+            CancellationToken cancellationToken)
         {
             var linhasAfetadas = await _context.CobrancasOperacionais
                 .Where(x =>
@@ -83,7 +84,24 @@ namespace Infrastructure.Repositories.Financeiro
                         StatusCobrancaOperacional.EmProcessamento),
                     cancellationToken);
 
-            return linhasAfetadas == 1;
+            if (linhasAfetadas != 1)
+                return false;
+
+            // Sincroniza a entidade que eventualmente já esteja
+            // rastreada pelo DbContext.
+            var entrada = _context.ChangeTracker
+                .Entries<CobrancaOperacional>()
+                .FirstOrDefault(x =>
+                    x.Entity.Id == cobrancaId &&
+                    x.Entity.EmpresaId == empresaId);
+
+            if (entrada is not null)
+            {
+                await entrada.ReloadAsync(cancellationToken);
+            }
+
+            return true;
         }
+
     }
 }

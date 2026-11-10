@@ -238,7 +238,8 @@ public sealed class CobrancaPixOperacionalService
             resultadoGateway.Status,
             pix.Payload,
             pix.EncodedImage,
-            pix.ExpirationDate);
+            pix.ExpirationDate,
+            resultadoGateway.InvoiceUrl);
     }
 
     private static CustomValidationException Erro(string mensagem)
@@ -364,14 +365,15 @@ public sealed class CobrancaPixOperacionalService
         }
 
         return new CriarCobrancaPixResponse(
-            cobranca.Id,
-            cobranca.ContaReceberId,
-            pagamento.Id,
-            cobranca.Valor,
-            pagamento.Status,
-            pix.Payload,
-            pix.EncodedImage,
-            pix.ExpirationDate);
+                 cobranca.Id,
+                 cobranca.ContaReceberId,
+                 pagamento.Id,
+                 cobranca.Valor,
+                 pagamento.Status,
+                 pix.Payload,
+                 pix.EncodedImage,
+                 pix.ExpirationDate,
+                 pagamento.InvoiceUrl);
     }
 
     private async Task<CriarCobrancaPixResponse> RecuperarQrCodeAsync(
@@ -408,15 +410,50 @@ public sealed class CobrancaPixOperacionalService
                 "O Asaas não retornou os dados do QR Code Pix.");
         }
 
+        var pagamentosGateway =
+    await _gateway.ListarCobrancasPorReferenciaAsync(
+        apiToken,
+        configuracao.Ambiente,
+        cobranca.ExternalReference,
+        cancellationToken);
+
+        var pagamentoGateway = pagamentosGateway.SingleOrDefault(
+            x => string.Equals(
+                x.Id,
+                cobranca.GatewayPagamentoId,
+                StringComparison.Ordinal));
+
+        if (pagamentoGateway is null)
+        {
+            throw Erro(
+                "Não foi possível localizar a cobrança no Asaas para recuperar o link de pagamento.");
+        }
+
+        if (!string.Equals(
+                pagamentoGateway.BillingType,
+                "PIX",
+                StringComparison.OrdinalIgnoreCase))
+        {
+            throw Erro("A cobrança recuperada no Asaas não é do tipo Pix.");
+        }
+
+        if (pagamentoGateway.Valor != cobranca.Valor)
+        {
+            throw Erro(
+                "O valor da cobrança recuperada no Asaas não corresponde ao valor reservado.");
+        }
+
+
         return new CriarCobrancaPixResponse(
-            cobranca.Id,
-            cobranca.ContaReceberId,
-            cobranca.GatewayPagamentoId!,
-            cobranca.Valor,
-            cobranca.Status.ToString(),
-            pix.Payload,
-            pix.EncodedImage,
-            pix.ExpirationDate);
+                cobranca.Id,
+                cobranca.ContaReceberId,
+                cobranca.GatewayPagamentoId!,
+                cobranca.Valor,
+                cobranca.Status.ToString(),
+                pix.Payload,
+                pix.EncodedImage,
+                pix.ExpirationDate,
+                pagamentoGateway.InvoiceUrl);
     }
 
 
