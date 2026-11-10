@@ -39,5 +39,10 @@ namespace Application.Interfaces.Financeiro
         Task AdicionarContaAsync(
     ContaReceber conta,
     CancellationToken cancellationToken);
+
+        Task<ContaReceber?> ObterContaComClienteAsync(
+    Guid empresaId,
+    Guid contaReceberId,
+    CancellationToken cancellationToken);
     }
 }

@@ -91,5 +91,18 @@ namespace Infrastructure.Repositories.Financeiro
                      .SingleOrDefaultAsync(x => x.EmpresaId == empresaId &&
                      x.VendaId == vendaId, cancellationToken);
         }
+
+        public async Task<ContaReceber?> ObterContaComClienteAsync(
+    Guid empresaId,
+    Guid contaReceberId,
+    CancellationToken cancellationToken)
+        {
+            return await _context.ContasReceber
+                .Include(x => x.Cliente)
+                .FirstOrDefaultAsync(
+                    x => x.EmpresaId == empresaId &&
+                         x.Id == contaReceberId,
+                    cancellationToken);
+        }
     }
 }

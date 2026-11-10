@@ -96,6 +96,7 @@ namespace Infrastructure.Seeds.Clientes
                 "Dev@Ana2026!",
                 "Ana",
                 "Souza",
+                
                 new DateTime(1995, 5, 12)),
 
             new ClienteTeste(

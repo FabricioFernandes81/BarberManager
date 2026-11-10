@@ -1,6 +1,7 @@
 ﻿using Domain.Entities.Agendamentos;
 using Domain.Entities.Assinaturas;
 using Domain.Entities.Clientes;
+using Domain.Entities.Common;
 using Domain.Entities.Compras;
 using Domain.Entities.Estoque;
 using Domain.Entities.Financeiro;
@@ -8,6 +9,7 @@ using Domain.Entities.Produtos;
 using Domain.Entities.Profissionais;
 using Domain.Entities.Servicos;
 using Domain.Entities.Vendas;
+using Infrastructure.Configurations.Financeiro;
 using Infrastructure.Configurations.Operacional;
 using Infrastructure.Configurations.Operacional.Compras;
 using Infrastructure.Configurations.Operacional.Estoque;
@@ -124,7 +126,8 @@ namespace Infrastructure.Context
 
         public DbSet<ClienteAsaasOperacional> ClientesAsaasOperacionais
     => Set<ClienteAsaasOperacional>();
-
+        public DbSet<OutboxMessage> OutboxMessages =>
+    Set<OutboxMessage>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -203,7 +206,8 @@ namespace Infrastructure.Context
 
             modelBuilder.ApplyConfiguration(
     new ClienteAsaasOperacionalConfiguration());
-
+            modelBuilder.ApplyConfiguration(
+    new OutboxOperacionalConfiguration());
 
             SeedProfissionais.SeedProfissial(modelBuilder);
             SeedModuloServicos.SeedIniciarServico(modelBuilder);

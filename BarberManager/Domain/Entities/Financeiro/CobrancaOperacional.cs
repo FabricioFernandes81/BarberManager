@@ -26,7 +26,7 @@ namespace Domain.Entities.Financeiro
         public DateTime CriadaEmUtc { get; private set; }
 
         public DateTime? ConfirmadaEmUtc { get; private set; }
-
+        public string? InvoiceUrl { get; private set; }
         protected CobrancaOperacional()
         {
         }
@@ -64,7 +64,8 @@ namespace Domain.Entities.Financeiro
             Status = StatusCobrancaOperacional.Reservada;
         }
 
-        public void RegistrarPagamentoGateway(string pagamentoGatewayId)
+        public void RegistrarPagamentoGateway(
+    string pagamentoGatewayId, string? invoiceUrl)
         {
             if (string.IsNullOrWhiteSpace(pagamentoGatewayId))
                 throw new ArgumentException(
@@ -79,7 +80,12 @@ namespace Domain.Entities.Financeiro
                     "A cobrança já possui identificador no gateway.");
 
             GatewayPagamentoId = pagamentoGatewayId.Trim();
+
+            InvoiceUrl = string.IsNullOrWhiteSpace(invoiceUrl)
+                ? null : invoiceUrl.Trim();
+
             Status = StatusCobrancaOperacional.Pendente;
+
         }
 
         public void Confirmar(DateTime confirmadaEmUtc)

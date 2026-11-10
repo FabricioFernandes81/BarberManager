@@ -158,12 +158,10 @@ namespace Infrastructure
             services.AddScoped< IRepositorioClienteAsaasOperacional,RepositorioClienteAsaasOperacional>();
             services.AddScoped<IConsultaUsuarioIdentity,ConsultaUsuarioIdentity>();
 
-            services.AddScoped<
-    IClienteAsaasOperacionalService,
-    ClienteAsaasOperacionalService>();
-            services.AddScoped<
-    ICobrancaPixOperacionalService,
-    CobrancaPixOperacionalService>();
+            services.AddScoped<IClienteAsaasOperacionalService,ClienteAsaasOperacionalService>();
+            services.AddScoped<ICobrancaPixOperacionalService,CobrancaPixOperacionalService>();
+
+            services.AddScoped<IOutboxOperacionalWriter,OutboxOperacionalWriter>();
 
             return services;
         }

@@ -311,6 +311,7 @@ public sealed class AsaasOperacionalGateway : IAsaasOperacionalGateway
         }
     }
 
+
     private static async Task GarantirSucessoAsync(
         HttpResponseMessage response,
         CancellationToken cancellationToken)
@@ -320,13 +321,59 @@ public sealed class AsaasOperacionalGateway : IAsaasOperacionalGateway
 
         var statusCode = response.StatusCode;
 
-        // Não incluir o corpo da resposta em exceções genéricas:
-        // respostas de cartão podem conter dados sensíveis.
+        var corpoResposta = await response.Content.ReadAsStringAsync(
+            cancellationToken);
+
+        var detalhes = new List<string>();
+
+        try
+        {
+            using var documento = JsonDocument.Parse(corpoResposta);
+
+            if (documento.RootElement.TryGetProperty(
+                    "errors",
+                    out var errors) &&
+                errors.ValueKind == JsonValueKind.Array)
+            {
+                foreach (var erro in errors.EnumerateArray())
+                {
+                    var codigo = erro.TryGetProperty(
+                        "code",
+                        out var codeElement)
+                        ? codeElement.GetString()
+                        : null;
+
+                    var descricao = erro.TryGetProperty(
+                        "description",
+                        out var descriptionElement)
+                        ? descriptionElement.GetString()
+                        : null;
+
+                    if (!string.IsNullOrWhiteSpace(codigo) ||
+                        !string.IsNullOrWhiteSpace(descricao))
+                    {
+                        detalhes.Add(
+                            $"{codigo}: {descricao}".Trim(':', ' '));
+                    }
+                }
+            }
+        }
+        catch (JsonException)
+        {
+            // Não incluir o corpo bruto da resposta na exceção.
+        }
+
+        var mensagem = detalhes.Count > 0
+            ? string.Join(" | ", detalhes)
+            : "O Asaas não forneceu detalhes estruturados do erro.";
+
         throw new HttpRequestException(
-            $"Falha na comunicação com o Asaas. HTTP {(int)statusCode}.",
+            $"Falha na comunicação com o Asaas. " +
+            $"HTTP {(int)statusCode}. {mensagem}",
             null,
             statusCode);
     }
+
     public async Task<IReadOnlyList<CobrancaOperacionalResultadoDto>>
     ListarCobrancasPorReferenciaAsync(
         string apiToken,

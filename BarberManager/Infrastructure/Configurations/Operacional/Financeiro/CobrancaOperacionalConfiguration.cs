@@ -96,6 +96,9 @@ namespace Infrastructure.Configurations.Operacional
                 x.EmpresaId,
                 x.Status
             });
+            builder.Property(x => x.InvoiceUrl)
+    .HasMaxLength(2048)
+    .IsRequired(false);
         }
     }
 }

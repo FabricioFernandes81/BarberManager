@@ -10,13 +10,18 @@ public sealed class RegistrarPagamentoGatewayHandler
 {
     private readonly IRepositorioCobrancaOperacional _repositorio;
     private readonly ITenantContext _tenantContext;
+    private readonly IOutboxOperacionalWriter _outboxWriter;
+
+
 
     public RegistrarPagamentoGatewayHandler(
-        IRepositorioCobrancaOperacional repositorio,
-        ITenantContext tenantContext)
+    IRepositorioCobrancaOperacional repositorio,
+    ITenantContext tenantContext,
+    IOutboxOperacionalWriter outboxWriter)
     {
         _repositorio = repositorio;
         _tenantContext = tenantContext;
+        _outboxWriter = outboxWriter;
     }
 
     public async Task<Guid> Handle(
@@ -34,6 +39,17 @@ public sealed class RegistrarPagamentoGatewayHandler
         if (string.IsNullOrWhiteSpace(command.GatewayPagamentoId))
             erros.Add("O identificador do pagamento no gateway é obrigatório.");
 
+        if (command.Evento is null)
+            erros.Add("Os dados do evento de cobrança são obrigatórios.");
+
+        if (command.Evento is not null &&
+            (command.Evento.CobrancaId != command.CobrancaId ||
+             command.Evento.EmpresaId != _tenantContext.EmpresaId))
+        {
+            erros.Add("Os dados do evento não correspondem à cobrança ou empresa.");
+        }
+
+
         if (erros.Count > 0)
             throw new CustomValidationException(erros);
 
@@ -50,8 +66,20 @@ public sealed class RegistrarPagamentoGatewayHandler
 
         try
         {
+
+
             cobranca.RegistrarPagamentoGateway(
-                command.GatewayPagamentoId);
+     command.GatewayPagamentoId,
+     command.InvoiceUrl);
+
+
+            await _outboxWriter.AdicionarAsync(
+    eventType: "CobrancaPixCriada",
+    targetWorkflow: "NotificacaoWhatsApp",
+    payload: command.Evento,
+    cancellationToken: cancellationToken);
+
+
         }
         catch (InvalidOperationException ex)
         {

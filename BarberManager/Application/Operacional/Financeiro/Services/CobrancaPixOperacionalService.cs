@@ -1,11 +1,13 @@
 ﻿
 using Application.Common.Exceptions;
+using Application.Common.Tenancy;
 using Application.Dispatcher;
+using Application.Interfaces.Clientes;
 using Application.Interfaces.Financeiro;
 using Application.Operacional.Financeiro.Commands;
+using Application.Operacional.Financeiro.DTOs;
 using Application.Operacional.Financeiro.DTOs.Asaas;
 using Application.Operacional.Financeiro.Interfaces;
-using Application.Common.Tenancy;
 using Domain.Entities.Common.Enuns;
 using Domain.Entities.Financeiro;
 
@@ -22,16 +24,18 @@ public sealed class CobrancaPixOperacionalService
     private readonly IAsaasOperacionalGateway _gateway;
     private readonly IDispatcher _dispatcher;
     private readonly ITenantContext _tenantContext;
+    private readonly IConsultaUsuarioIdentity _consultaUsuarioIdentity;
 
     public CobrancaPixOperacionalService(
-        IRepositorioCobrancaOperacional repositorioCobranca,
-        IRepositorioRecebimento repositorioRecebimento,
-        IRepositorioConfiguracaoAssasClient repositorioConfiguracao,
-        IProtecaoCredenciaisAsaas protecaoCredenciais,
-        IClienteAsaasOperacionalService clienteAsaas,
-        IAsaasOperacionalGateway gateway,
-        IDispatcher dispatcher,
-        ITenantContext tenantContext)
+     IRepositorioCobrancaOperacional repositorioCobranca,
+     IRepositorioRecebimento repositorioRecebimento,
+     IRepositorioConfiguracaoAssasClient repositorioConfiguracao,
+     IProtecaoCredenciaisAsaas protecaoCredenciais,
+     IClienteAsaasOperacionalService clienteAsaas,
+     IAsaasOperacionalGateway gateway,
+     IDispatcher dispatcher,
+     ITenantContext tenantContext,
+     IConsultaUsuarioIdentity consultaUsuarioIdentity)
     {
         _repositorioCobranca = repositorioCobranca;
         _repositorioRecebimento = repositorioRecebimento;
@@ -41,6 +45,7 @@ public sealed class CobrancaPixOperacionalService
         _gateway = gateway;
         _dispatcher = dispatcher;
         _tenantContext = tenantContext;
+        _consultaUsuarioIdentity = consultaUsuarioIdentity;
     }
 
     public async Task<CriarCobrancaPixResponse> IniciarAsync(
@@ -85,11 +90,16 @@ public sealed class CobrancaPixOperacionalService
         }
 
         // 3. Recuperar a conta a receber.
+        /*  var conta = await _repositorioRecebimento
+              .ObterContaParaRecebimentoAsync(
+                  empresaId,
+                  cobranca.ContaReceberId,
+                  cancellationToken);*/
         var conta = await _repositorioRecebimento
-            .ObterContaParaRecebimentoAsync(
-                empresaId,
-                cobranca.ContaReceberId,
-                cancellationToken);
+      .ObterContaComClienteAsync(
+          empresaId,
+          cobranca.ContaReceberId,
+          cancellationToken);
 
         if (conta is null)
             throw Erro("Conta a receber não encontrada.");
@@ -208,14 +218,29 @@ public sealed class CobrancaPixOperacionalService
 
         // 9. Persistir o identificador do gateway.
         // O comando possui sua própria transação curta.
+        /*await _dispatcher.Command<
+            RegistrarPagamentoGatewayCommand,
+            Guid>(
+                new RegistrarPagamentoGatewayCommand(
+                    cobrancaId,
+                    resultadoGateway.Id,
+                     resultadoGateway.InvoiceUrl),
+                cancellationToken);*/
+        var evento = await PrepararEventoCobrancaPixAsync(
+    cobranca,
+    conta,
+    resultadoGateway.InvoiceUrl,
+    cancellationToken);
+
         await _dispatcher.Command<
             RegistrarPagamentoGatewayCommand,
             Guid>(
                 new RegistrarPagamentoGatewayCommand(
                     cobrancaId,
-                    resultadoGateway.Id),
+                    resultadoGateway.Id,
+                    resultadoGateway.InvoiceUrl,
+                    evento),
                 cancellationToken);
-
         // 10. Consultar QR Code Pix.
         var pix = await _gateway.ObterQrCodePixAsync(
             apiToken,
@@ -314,11 +339,16 @@ public sealed class CobrancaPixOperacionalService
             throw Erro("O Asaas não retornou o identificador do cliente da cobrança.");
 
         // Confirma que o cliente corresponde ao cliente da conta a receber.
-        var conta = await _repositorioRecebimento
+        /*var conta = await _repositorioRecebimento
             .ObterContaParaRecebimentoAsync(
                 cobranca.EmpresaId,
                 cobranca.ContaReceberId,
-                cancellationToken);
+                cancellationToken);*/
+        var conta = await _repositorioRecebimento
+    .ObterContaComClienteAsync(
+        cobranca.EmpresaId,
+        cobranca.ContaReceberId,
+        cancellationToken);
 
         if (conta is null || !conta.ClienteId.HasValue)
             throw Erro("Não foi possível validar o cliente da conta a receber.");
@@ -344,11 +374,28 @@ public sealed class CobrancaPixOperacionalService
             throw Erro("O cliente da cobrança localizada no Asaas não corresponde ao cliente esperado.");
         }
 
-        await _dispatcher.Command<RegistrarPagamentoGatewayCommand, Guid>(
+        /*await _dispatcher.Command<RegistrarPagamentoGatewayCommand, Guid>(
             new RegistrarPagamentoGatewayCommand(
                 cobranca.Id,
-                pagamento.Id),
-            cancellationToken);
+                pagamento.Id,
+                pagamento.InvoiceUrl),
+            cancellationToken);*/
+
+        var evento = await PrepararEventoCobrancaPixAsync(
+    cobranca,
+    conta,
+    pagamento.InvoiceUrl,
+    cancellationToken);
+
+        await _dispatcher.Command<
+            RegistrarPagamentoGatewayCommand,
+            Guid>(
+                new RegistrarPagamentoGatewayCommand(
+                    cobranca.Id,
+                    pagamento.Id,
+                    pagamento.InvoiceUrl,
+                    evento),
+                cancellationToken);
 
         // Após registrar o ID, a cobrança passa para Pendente.
         var pix = await _gateway.ObterQrCodePixAsync(
@@ -456,5 +503,67 @@ public sealed class CobrancaPixOperacionalService
                 pagamentoGateway.InvoiceUrl);
     }
 
+    private async Task<CobrancaPixCriadaEvent> PrepararEventoCobrancaPixAsync(
+    CobrancaOperacional cobranca,
+    ContaReceber conta,
+    string? invoiceUrl,
+    CancellationToken cancellationToken)
+    {
+        var cliente = conta.Cliente;
+
+        if (cliente is null)
+        {
+            throw Erro(
+                "Não foi possível recuperar o cliente da cobrança.");
+        }
+
+        DadosContatoUsuarioDto? contato = null;
+
+        if (cliente.UsuarioId != Guid.Empty)
+        {
+            contato = await _consultaUsuarioIdentity.ObterContatoAsync(
+                cliente.UsuarioId,
+                cancellationToken);
+        }
+
+        var telefone = string.IsNullOrWhiteSpace(contato?.Telefone)
+            ? null
+            : contato.Telefone.Trim();
+
+        var linkPagamento = string.IsNullOrWhiteSpace(invoiceUrl)
+            ? null
+            : invoiceUrl.Trim();
+
+        string? motivoNaoEnvio = null;
+
+        if (telefone is null)
+        {
+            motivoNaoEnvio = "Telefone não cadastrado no Identity";
+        }
+        else if (linkPagamento is null)
+        {
+            motivoNaoEnvio =
+                "Link oficial de pagamento não retornado pelo Asaas";
+        }
+
+        var clienteNome = string.Join(
+            " ",
+            new[] { cliente.Nome, cliente.Sobrenome }
+                .Where(x => !string.IsNullOrWhiteSpace(x)));
+
+        return new CobrancaPixCriadaEvent(
+            EventId: Guid.NewGuid(),
+            EmpresaId: cobranca.EmpresaId,
+            ClienteId: cliente.Id,
+            ClienteNome: clienteNome,
+            Telefone: telefone,
+            CobrancaId: cobranca.Id,
+            Valor: cobranca.Valor,
+            LinkPagamento: linkPagamento,
+            DataVencimento: conta.DataVencimento,
+            Notificavel: telefone is not null && linkPagamento is not null,
+            MotivoNaoEnvio: motivoNaoEnvio
+        );
+    }
 
 }
