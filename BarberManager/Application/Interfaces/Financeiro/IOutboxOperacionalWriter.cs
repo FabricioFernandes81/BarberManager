@@ -3,9 +3,11 @@ namespace Application.Interfaces.Financeiro;
 
 public interface IOutboxOperacionalWriter
 {
-    Task AdicionarAsync<TPayload>(
-        string eventType,
-        string targetWorkflow,
-        TPayload payload,
-        CancellationToken cancellationToken = default);
+    Task AdicionarAsync<T>(
+       Guid empresaId,
+       Guid aggregateId,
+       string eventType,
+       string targetWorkflow,
+       T payload,
+       CancellationToken cancellationToken = default);
 }

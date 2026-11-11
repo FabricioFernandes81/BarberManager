@@ -126,8 +126,8 @@ namespace Infrastructure.Context
 
         public DbSet<ClienteAsaasOperacional> ClientesAsaasOperacionais
     => Set<ClienteAsaasOperacional>();
-        public DbSet<OutboxMessage> OutboxMessages =>
-    Set<OutboxMessage>();
+        public DbSet<OutboxOperacionalMessage> OutboxMessages =>
+      Set<OutboxOperacionalMessage>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

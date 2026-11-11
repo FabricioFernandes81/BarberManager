@@ -74,10 +74,12 @@ public sealed class RegistrarPagamentoGatewayHandler
 
 
             await _outboxWriter.AdicionarAsync(
-    eventType: "CobrancaPixCriada",
-    targetWorkflow: "NotificacaoWhatsApp",
-    payload: command.Evento,
-    cancellationToken: cancellationToken);
+      empresaId: _tenantContext.EmpresaId,
+      aggregateId: command.CobrancaId,
+      eventType: "CobrancaPixCriada",
+      targetWorkflow: "NotificacaoWhatsApp",
+      payload: command.Evento,
+      cancellationToken: cancellationToken);
 
 
         }

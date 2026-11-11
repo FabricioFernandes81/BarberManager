@@ -6,13 +6,22 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 namespace Infrastructure.Configurations.Financeiro;
 
 public sealed class OutboxOperacionalConfiguration
-    : IEntityTypeConfiguration<OutboxMessage>
+    : IEntityTypeConfiguration<OutboxOperacionalMessage>
 {
-    public void Configure(EntityTypeBuilder<OutboxMessage> builder)
+    public void Configure(EntityTypeBuilder<OutboxOperacionalMessage> builder)
     {
         builder.ToTable("OutboxMessages");
 
-        builder.HasKey(x => x.Id);
+        builder.HasIndex(x => new
+        {
+            x.EmpresaId,
+            x.AggregateId,
+            x.EventType,
+            x.TargetWorkflow
+        })
+ .IsUnique()
+ .HasFilter(
+     "[EmpresaId] IS NOT NULL AND [AggregateId] IS NOT NULL");
 
         builder.Property(x => x.EventType)
             .HasMaxLength(150)

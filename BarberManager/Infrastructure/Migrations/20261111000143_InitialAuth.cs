@@ -344,21 +344,21 @@ namespace Infrastructure.Migrations
                 columns: new[] { "Id", "Codigo", "DataAtualizacao", "DataCadastro", "Descricao", "Nome" },
                 values: new object[,]
                 {
-                    { new Guid("80000000-0000-0000-0000-000000000002"), "cliente.visualizar", null, new DateTime(2026, 11, 5, 4, 32, 7, 433, DateTimeKind.Utc).AddTicks(7578), "Permite visualizar os clientes cadastrados.", "Visualizar Clientes" },
-                    { new Guid("80000000-0000-0000-0000-000000000003"), "cliente.criar", null, new DateTime(2026, 11, 5, 4, 32, 7, 433, DateTimeKind.Utc).AddTicks(7580), "Permite cadastrar novos clientes.", "Cadastrar Clientes" },
-                    { new Guid("80000000-0000-0000-0000-000000000004"), "cliente.editar", null, new DateTime(2026, 11, 5, 4, 32, 7, 433, DateTimeKind.Utc).AddTicks(7581), "Permite editar clientes cadastrados.", "Editar Clientes" },
-                    { new Guid("80000000-0000-0000-0000-000000000005"), "cliente.excluir", null, new DateTime(2026, 11, 5, 4, 32, 7, 433, DateTimeKind.Utc).AddTicks(7583), "Permite excluir clientes cadastrados.", "Excluir Clientes" },
-                    { new Guid("b0000000-0000-0000-0000-000000000013"), "empresa.visualizar", null, new DateTime(2026, 11, 5, 4, 32, 7, 433, DateTimeKind.Utc).AddTicks(5987), "Permite listar empresas.", "Visualizar Empresas" },
-                    { new Guid("b0000000-0000-0000-0000-000000000014"), "empresa.detalhes", null, new DateTime(2026, 11, 5, 4, 32, 7, 433, DateTimeKind.Utc).AddTicks(7549), "Permite visualizar detalhes.", "Detalhes Empresa" },
-                    { new Guid("b0000000-0000-0000-0000-000000000015"), "empresa.criar", null, new DateTime(2026, 11, 5, 4, 32, 7, 433, DateTimeKind.Utc).AddTicks(7551), "Permite cadastrar empresas.", "Cadastrar Empresa" },
-                    { new Guid("b0000000-0000-0000-0000-000000000016"), "empresa.editar", null, new DateTime(2026, 11, 5, 4, 32, 7, 433, DateTimeKind.Utc).AddTicks(7553), "Permite editar empresas.", "Editar Empresa" },
-                    { new Guid("b0000000-0000-0000-0000-000000000017"), "empresa.excluir", null, new DateTime(2026, 11, 5, 4, 32, 7, 433, DateTimeKind.Utc).AddTicks(7554), "Permite excluir empresas.", "Excluir Empresa" },
-                    { new Guid("b0000000-0000-0000-0000-000000000018"), "empresa.ativar", null, new DateTime(2026, 11, 5, 4, 32, 7, 433, DateTimeKind.Utc).AddTicks(7565), "Permite ativar empresas.", "Ativar Empresa" },
-                    { new Guid("b0000000-0000-0000-0000-000000000019"), "empresa.bloquear", null, new DateTime(2026, 11, 5, 4, 32, 7, 433, DateTimeKind.Utc).AddTicks(7566), "Permite bloquear empresas.", "Bloquear Empresa" },
-                    { new Guid("b0000000-0000-0000-0000-000000000020"), "empresa.desbloquear", null, new DateTime(2026, 11, 5, 4, 32, 7, 433, DateTimeKind.Utc).AddTicks(7568), "Permite desbloquear empresas.", "Desbloquear Empresa" },
-                    { new Guid("b0000000-0000-0000-0000-000000000021"), "empresa.renovar", null, new DateTime(2026, 11, 5, 4, 32, 7, 433, DateTimeKind.Utc).AddTicks(7573), "Permite renovar assinatura.", "Renovar Assinatura" },
-                    { new Guid("b0000000-0000-0000-0000-000000000022"), "empresa.estatisticas", null, new DateTime(2026, 11, 5, 4, 32, 7, 433, DateTimeKind.Utc).AddTicks(7576), "Permite visualizar estatísticas.", "Estatísticas" },
-                    { new Guid("b0000000-0000-0000-0000-000000000023"), "empresa.usuarios", null, new DateTime(2026, 11, 5, 4, 32, 7, 433, DateTimeKind.Utc).AddTicks(7577), "Permite visualizar usuários da empresa.", "Usuários" }
+                    { new Guid("80000000-0000-0000-0000-000000000002"), "cliente.visualizar", null, new DateTime(2026, 11, 11, 0, 1, 42, 735, DateTimeKind.Utc).AddTicks(8477), "Permite visualizar os clientes cadastrados.", "Visualizar Clientes" },
+                    { new Guid("80000000-0000-0000-0000-000000000003"), "cliente.criar", null, new DateTime(2026, 11, 11, 0, 1, 42, 735, DateTimeKind.Utc).AddTicks(8478), "Permite cadastrar novos clientes.", "Cadastrar Clientes" },
+                    { new Guid("80000000-0000-0000-0000-000000000004"), "cliente.editar", null, new DateTime(2026, 11, 11, 0, 1, 42, 735, DateTimeKind.Utc).AddTicks(8480), "Permite editar clientes cadastrados.", "Editar Clientes" },
+                    { new Guid("80000000-0000-0000-0000-000000000005"), "cliente.excluir", null, new DateTime(2026, 11, 11, 0, 1, 42, 735, DateTimeKind.Utc).AddTicks(8481), "Permite excluir clientes cadastrados.", "Excluir Clientes" },
+                    { new Guid("b0000000-0000-0000-0000-000000000013"), "empresa.visualizar", null, new DateTime(2026, 11, 11, 0, 1, 42, 735, DateTimeKind.Utc).AddTicks(6644), "Permite listar empresas.", "Visualizar Empresas" },
+                    { new Guid("b0000000-0000-0000-0000-000000000014"), "empresa.detalhes", null, new DateTime(2026, 11, 11, 0, 1, 42, 735, DateTimeKind.Utc).AddTicks(8445), "Permite visualizar detalhes.", "Detalhes Empresa" },
+                    { new Guid("b0000000-0000-0000-0000-000000000015"), "empresa.criar", null, new DateTime(2026, 11, 11, 0, 1, 42, 735, DateTimeKind.Utc).AddTicks(8448), "Permite cadastrar empresas.", "Cadastrar Empresa" },
+                    { new Guid("b0000000-0000-0000-0000-000000000016"), "empresa.editar", null, new DateTime(2026, 11, 11, 0, 1, 42, 735, DateTimeKind.Utc).AddTicks(8450), "Permite editar empresas.", "Editar Empresa" },
+                    { new Guid("b0000000-0000-0000-0000-000000000017"), "empresa.excluir", null, new DateTime(2026, 11, 11, 0, 1, 42, 735, DateTimeKind.Utc).AddTicks(8451), "Permite excluir empresas.", "Excluir Empresa" },
+                    { new Guid("b0000000-0000-0000-0000-000000000018"), "empresa.ativar", null, new DateTime(2026, 11, 11, 0, 1, 42, 735, DateTimeKind.Utc).AddTicks(8461), "Permite ativar empresas.", "Ativar Empresa" },
+                    { new Guid("b0000000-0000-0000-0000-000000000019"), "empresa.bloquear", null, new DateTime(2026, 11, 11, 0, 1, 42, 735, DateTimeKind.Utc).AddTicks(8463), "Permite bloquear empresas.", "Bloquear Empresa" },
+                    { new Guid("b0000000-0000-0000-0000-000000000020"), "empresa.desbloquear", null, new DateTime(2026, 11, 11, 0, 1, 42, 735, DateTimeKind.Utc).AddTicks(8464), "Permite desbloquear empresas.", "Desbloquear Empresa" },
+                    { new Guid("b0000000-0000-0000-0000-000000000021"), "empresa.renovar", null, new DateTime(2026, 11, 11, 0, 1, 42, 735, DateTimeKind.Utc).AddTicks(8472), "Permite renovar assinatura.", "Renovar Assinatura" },
+                    { new Guid("b0000000-0000-0000-0000-000000000022"), "empresa.estatisticas", null, new DateTime(2026, 11, 11, 0, 1, 42, 735, DateTimeKind.Utc).AddTicks(8474), "Permite visualizar estatísticas.", "Estatísticas" },
+                    { new Guid("b0000000-0000-0000-0000-000000000023"), "empresa.usuarios", null, new DateTime(2026, 11, 11, 0, 1, 42, 735, DateTimeKind.Utc).AddTicks(8476), "Permite visualizar usuários da empresa.", "Usuários" }
                 });
 
             migrationBuilder.InsertData(
