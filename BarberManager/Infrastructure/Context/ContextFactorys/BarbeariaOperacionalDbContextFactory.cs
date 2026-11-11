@@ -17,11 +17,11 @@ namespace Infrastructure.Context.ContextFactorys
                  new DbContextOptionsBuilder<BarbeariaOperacionalDbContext>();
 
             optionsBuilder.UseSqlServer(
-     @"Server=(localdb)\MSSQLLocalDB;
-      Database=BarbeariaDb;
-      Trusted_Connection=True;
-      MultipleActiveResultSets=False;
-      TrustServerCertificate=True");
+                @"Server=(localdb)\MSSQLLocalDB;
+              Database=BarbeariaDb;
+              Trusted_Connection=True;
+              MultipleActiveResultSets=true;
+              TrustServerCertificate=True");
 
             return new BarbeariaOperacionalDbContext(
                 optionsBuilder.Options);

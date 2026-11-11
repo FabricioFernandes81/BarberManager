@@ -1,3 +1,4 @@
+using Api.Admin.BackgroundServices;
 using Application;
 using Application.Common.Exceptions;
 using Application.Common.Security;
@@ -6,12 +7,14 @@ using Application.Dispatcher;
 using Domain.Entities.AuthUsers;
 using Infrastructure;
 using Infrastructure.Context;
+using Infrastructure.Notifications;
 using Infrastructure.Seeds.AuthUsers;
 using Infrastructure.Seeds.Clientes;
 using Infrastructure.Seeds.Operacional;
 using Infrastructure.Seeds.Operacional.Financeiro;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +24,25 @@ var builder = WebApplication.CreateBuilder(args);
 // ==========================================
 
 builder.Services.AddInfrastructure(builder.Configuration);
+
+//
+builder.Services.Configure<N8nWebhookOptions>(
+    builder.Configuration.GetSection(
+        N8nWebhookOptions.SectionName));
+
+builder.Services.AddHttpClient(
+    "N8nWebhook",
+    (serviceProvider, client) =>
+    {
+        var options = serviceProvider
+            .GetRequiredService<IOptions<N8nWebhookOptions>>()
+            .Value;
+
+        client.Timeout = TimeSpan.FromSeconds(
+            Math.Max(1, options.HttpTimeoutSeconds));
+    });
+
+builder.Services.AddHostedService<OutboxOperacionalWorker>();
 
 // ==========================================
 // 2. Identity

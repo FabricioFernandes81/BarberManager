@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Infrastructure.Notifications
+﻿namespace Infrastructure.Notifications
 {
     public class N8nWebhookOptions
     {
@@ -13,6 +7,8 @@ namespace Infrastructure.Notifications
         public string ProprietarioWebhookUrl { get; set; } = string.Empty;
 
         public string AtendimentoWebhookUrl { get; set; } = string.Empty;
+
+        public string NotificacaoWhatsAppWebhookUrl { get; set; } = string.Empty;
 
         public string WebhookSecret { get; set; } = string.Empty;
 
