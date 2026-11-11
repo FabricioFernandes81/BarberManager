@@ -6,6 +6,7 @@ using Application.Interfaces.Clientes;
 using Application.Interfaces.Compras;
 using Application.Interfaces.Empresas;
 using Application.Interfaces.Empresas.Pagamentos;
+using Application.Interfaces.Estoque;
 using Application.Interfaces.Financeiro;
 using Application.Interfaces.Produtos;
 using Application.Interfaces.Profissionais;
@@ -162,6 +163,9 @@ namespace Infrastructure
             services.AddScoped<ICobrancaPixOperacionalService,CobrancaPixOperacionalService>();
 
             services.AddScoped<IOutboxOperacionalWriter,OutboxOperacionalWriter>();
+            services.AddScoped<IRepositorioEstoque, RepositorioEstoque>();
+
+
 
             return services;
         }
