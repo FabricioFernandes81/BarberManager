@@ -1,6 +1,7 @@
 ﻿using Application.Interfaces.Estoque;
 using Domain.Entities.Common.Enuns;
 using Domain.Entities.Estoque;
+using Domain.Entities.Produtos;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -90,6 +91,27 @@ namespace Infrastructure.Repositories
                 .ToListAsync(cancellationToken);
 
             return (movimentacoes, totalRegistros);
+        }
+        public async Task<Produto?> ObterProdutoParaMovimentacaoAsync(
+    Guid empresaId,
+    Guid produtoId,
+    CancellationToken cancellationToken)
+        {
+            return await _context.Produtos
+                .Include(p => p.Estoque)
+                .FirstOrDefaultAsync(
+                    p => p.Id == produtoId &&
+                         p.EmpresaId == empresaId,
+                    cancellationToken);
+        }
+
+        public async Task AdicionarMovimentacaoAsync(
+    MovimentacaoEstoque movimentacao,
+    CancellationToken cancellationToken)
+        {
+            await _context.MovimentacoesEstoque.AddAsync(
+                movimentacao,
+                cancellationToken);
         }
 
     }

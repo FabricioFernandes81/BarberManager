@@ -1,5 +1,6 @@
 ﻿using Domain.Entities.Common.Enuns;
 using Domain.Entities.Estoque;
+using Domain.Entities.Produtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,6 +28,15 @@ namespace Application.Interfaces.Estoque
             OrigemMovimentacaoEstoque? origem,
             int pageNumber,
             int pageSize,
+            CancellationToken cancellationToken);
+
+        Task<Produto?> ObterProdutoParaMovimentacaoAsync(
+            Guid empresaId,
+            Guid produtoId,
+            CancellationToken cancellationToken);
+
+        Task AdicionarMovimentacaoAsync(
+            MovimentacaoEstoque movimentacao,
             CancellationToken cancellationToken);
     }
 }
