@@ -137,5 +137,29 @@ namespace Api.Admin.Controllers
             return Ok(resultado);
         }
 
+        [HttpGet("produtos/estoque-minimo")]
+        [ProducesResponseType(
+    typeof(ListarProdutosEstoqueMinimoDto),
+    StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<ListarProdutosEstoqueMinimoDto>>
+    ListarProdutosEstoqueMinimo(
+        [FromQuery] int pageNumber = 1,
+        [FromQuery] int pageSize = 10,
+        CancellationToken cancellationToken = default)
+        {
+            var query = new ListarProdutosEstoqueMinimoQuery(
+                pageNumber,
+                pageSize);
+
+            var resultado = await _dispatcher.Query<
+                ListarProdutosEstoqueMinimoQuery,
+                ListarProdutosEstoqueMinimoDto>(
+                    query,
+                    cancellationToken);
+
+            return Ok(resultado);
+        }
     }
 }

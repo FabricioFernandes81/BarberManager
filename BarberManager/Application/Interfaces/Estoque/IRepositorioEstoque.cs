@@ -38,6 +38,12 @@ namespace Application.Interfaces.Estoque
         Task AdicionarMovimentacaoAsync(
             MovimentacaoEstoque movimentacao,
             CancellationToken cancellationToken);
+
+        Task<(IReadOnlyList<Produto> Itens, int TotalRegistros )> ListarProdutosEstoqueMinimoAsync(
+    Guid empresaId,
+    int pageNumber,
+    int pageSize,
+    CancellationToken cancellationToken);
     }
 }
 

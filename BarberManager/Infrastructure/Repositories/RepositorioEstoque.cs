@@ -114,5 +114,35 @@ namespace Infrastructure.Repositories
                 cancellationToken);
         }
 
+        public async Task<(
+      IReadOnlyList<Produto> Itens,
+      int TotalRegistros
+  )> ListarProdutosEstoqueMinimoAsync(
+      Guid empresaId,
+      int pageNumber,
+      int pageSize,
+      CancellationToken cancellationToken)
+        {
+            var consulta = _context.Produtos
+                .AsNoTracking()
+                .Include(p => p.Estoque)
+                .Where(p =>
+                    p.EmpresaId == empresaId &&
+                    p.ControlaEstoque &&
+                    p.Estoque != null &&
+                    p.Estoque.QuantidadeAtual <= p.Estoque.EstoqueMinimo);
+
+            var totalRegistros = await consulta.CountAsync(
+                cancellationToken);
+
+            var produtos = await consulta
+                .OrderBy(p => p.Nome)
+                .ThenBy(p => p.Id)
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync(cancellationToken);
+
+            return (produtos, totalRegistros);
+        }
     }
 }
