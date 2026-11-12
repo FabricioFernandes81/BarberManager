@@ -30,6 +30,7 @@ namespace Domain.Entities.Compras
         public decimal QuantidadePendente =>
             Quantidade - QuantidadeRecebida;
 
+     
         public byte[]? RowVersion { get; private set; }
 
 
@@ -43,7 +44,7 @@ namespace Domain.Entities.Compras
             string descricaoProduto,
             decimal quantidade,
             decimal valorUnitario,
-            decimal desconto = 0)
+            decimal desconto = 0, decimal quantidadeDevolvida = 0)
         {
             if (compraId == Guid.Empty)
                 throw new ArgumentException(
@@ -115,6 +116,8 @@ namespace Domain.Entities.Compras
 
             ValorTotal = Arredondar(
                 subtotal - descontoArredondado);
+
+           
         }
 
         private static decimal Arredondar(decimal valor)
@@ -147,5 +150,6 @@ namespace Domain.Entities.Compras
             DataAtualizacao = DateTime.UtcNow;
         }
 
+       
     }
 }

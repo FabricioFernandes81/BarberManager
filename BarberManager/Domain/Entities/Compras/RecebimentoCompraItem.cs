@@ -18,6 +18,7 @@ namespace Domain.Entities.Compras
         public Guid ProdutoId { get; private set; }
 
         public decimal QuantidadeRecebida { get; private set; }
+
         public decimal QuantidadeAcumuladaAposRecebimento
         {
             get;
@@ -29,6 +30,12 @@ namespace Domain.Entities.Compras
             get;
             private set;
         }
+
+        public decimal QuantidadeDevolvida { get; private set; }
+
+        public decimal QuantidadeDisponivelParaDevolucao =>
+            QuantidadeRecebida - QuantidadeDevolvida;
+
         protected RecebimentoCompraItem()
         {
         }
@@ -39,7 +46,7 @@ namespace Domain.Entities.Compras
             Guid produtoId,
             decimal quantidadeRecebida,
             decimal quantidadeAcumuladaAposRecebimento,
-decimal quantidadePendenteAposRecebimento)
+            decimal quantidadePendenteAposRecebimento)
         {
             if (recebimentoCompraId == Guid.Empty)
                 throw new ArgumentException(
@@ -86,15 +93,37 @@ decimal quantidadePendenteAposRecebimento)
             RecebimentoCompraId = recebimentoCompraId;
             CompraItemId = compraItemId;
             ProdutoId = produtoId;
+
             QuantidadeRecebida = quantidadeRecebida;
 
             QuantidadeAcumuladaAposRecebimento =
-    quantidadeAcumuladaAposRecebimento;
+                quantidadeAcumuladaAposRecebimento;
 
             QuantidadePendenteAposRecebimento =
                 quantidadePendenteAposRecebimento;
+
+            QuantidadeDevolvida = 0;
         }
 
+        public void RegistrarDevolucao(decimal quantidade)
+        {
+            if (quantidade <= 0)
+                throw new ArgumentOutOfRangeException(
+                    nameof(quantidade),
+                    "A quantidade devolvida deve ser maior que zero.");
 
+            if (quantidade != decimal.Round(quantidade, 3))
+                throw new ArgumentException(
+                    "A quantidade devolvida deve possuir no máximo três casas decimais.",
+                    nameof(quantidade));
+
+            if (quantidade > QuantidadeDisponivelParaDevolucao)
+                throw new InvalidOperationException(
+                    "A quantidade devolvida não pode superar a quantidade disponível para devolução.");
+
+            QuantidadeDevolvida += quantidade;
+
+            DataAtualizacao = DateTime.UtcNow;
+        }
     }
 }

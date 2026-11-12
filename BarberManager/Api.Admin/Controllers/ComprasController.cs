@@ -150,5 +150,42 @@ namespace Api.Admin.Controllers
 
             return Ok(resultado);
         }
+
+
+        [HttpPost("{compraId:guid}/devolucoes")]
+        [ProducesResponseType(
+            typeof(RegistrarDevolucaoCompraDto),
+            StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status409Conflict)]
+        public async Task<ActionResult<RegistrarDevolucaoCompraDto>> RegistrarDevolucao(
+            [FromRoute] Guid compraId,
+            [FromHeader(Name = "Idempotency-Key")] string chaveIdempotencia,
+            [FromBody] RegistrarDevolucaoCompraRequest request,
+            CancellationToken cancellationToken)
+        {
+            var command = new RegistrarDevolucaoCompraCommand
+            {
+                CompraId = compraId,
+                ChaveIdempotencia = chaveIdempotencia,
+                Motivo = request.Motivo,
+                Observacao = request.Observacao,
+                Itens = request.Itens?.ToList()
+                    ?? new List<RegistrarDevolucaoCompraItemDto>()
+            };
+
+            var resultado = await _dispatcher.Command<
+                RegistrarDevolucaoCompraCommand,
+                RegistrarDevolucaoCompraDto>(
+                    command,
+                    cancellationToken);
+
+            return Created(
+                $"/api/Compras/{compraId}/devolucoes/{resultado.Id}",
+                resultado);
+        }
+
     }
 }

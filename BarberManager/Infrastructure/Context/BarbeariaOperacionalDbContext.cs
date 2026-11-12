@@ -129,6 +129,11 @@ namespace Infrastructure.Context
         public DbSet<OutboxOperacionalMessage> OutboxMessages =>
       Set<OutboxOperacionalMessage>();
 
+        public DbSet<DevolucaoCompra> DevolucoesCompras =>
+    Set<DevolucaoCompra>();
+
+        public DbSet<DevolucaoCompraItem> DevolucoesComprasItens =>
+            Set<DevolucaoCompraItem>();
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -208,6 +213,14 @@ namespace Infrastructure.Context
     new ClienteAsaasOperacionalConfiguration());
             modelBuilder.ApplyConfiguration(
     new OutboxOperacionalConfiguration());
+
+            modelBuilder.ApplyConfiguration(
+    new DevolucaoCompraConfiguration());
+
+            modelBuilder.ApplyConfiguration(
+                new DevolucaoCompraItemConfiguration());
+
+
 
             SeedProfissionais.SeedProfissial(modelBuilder);
             SeedModuloServicos.SeedIniciarServico(modelBuilder);

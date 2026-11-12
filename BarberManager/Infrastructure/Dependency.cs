@@ -164,7 +164,9 @@ namespace Infrastructure
 
             services.AddScoped<IOutboxOperacionalWriter,OutboxOperacionalWriter>();
             services.AddScoped<IRepositorioEstoque, RepositorioEstoque>();
-
+            services.AddScoped<
+    IRepositorioDevolucaoCompra,
+    RepositorioDevolucaoCompra>();
 
 
             return services;
