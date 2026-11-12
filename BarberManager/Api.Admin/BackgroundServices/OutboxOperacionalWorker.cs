@@ -75,14 +75,14 @@ public sealed class OutboxOperacionalWorker : BackgroundService
     private async Task ProcessarLoteAsync(
         CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(_options.WebhookSecret))
+        /*if (string.IsNullOrWhiteSpace(_options.WebhookSecret))
         {
             _logger.LogError(
                 "N8n:WebhookSecret não configurado. " +
                 "A publicação da Outbox operacional foi suspensa.");
 
             return;
-        }
+        }*/
 
         if (string.IsNullOrWhiteSpace(
             _options.NotificacaoWhatsAppWebhookUrl))
@@ -187,10 +187,15 @@ public sealed class OutboxOperacionalWorker : BackgroundService
                 HttpMethod.Post,
                 _options.NotificacaoWhatsAppWebhookUrl);
 
-            request.Headers.Add(
-                "X-Webhook-Secret",
-                _options.WebhookSecret);
-
+            /*   request.Headers.Add(
+                   "X-Webhook-Secret",
+                   _options.WebhookSecret);*/
+            if (!string.IsNullOrWhiteSpace(_options.WebhookSecret))
+            {
+                request.Headers.Add(
+                    "X-Webhook-Secret",
+                    _options.WebhookSecret);
+            }
             request.Headers.Add(
                 "X-Event-Id",
                 mensagem.Id.ToString());

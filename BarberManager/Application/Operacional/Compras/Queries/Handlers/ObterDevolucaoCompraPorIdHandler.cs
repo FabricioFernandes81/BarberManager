@@ -75,7 +75,7 @@ namespace Application.Operacional.Compras.Queries.Handlers
                 devolucao.UsuarioResponsavelId,
                 devolucao.DataDevolucao,
                 devolucao.Motivo,
-                devolucao.Observacao,
+                devolucao.Observacao, devolucao.PoliticaFinanceiraDevolucao,
                 itens);
         }
     }

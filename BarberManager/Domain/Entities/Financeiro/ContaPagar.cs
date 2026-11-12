@@ -40,6 +40,8 @@ namespace Domain.Entities.Financeiro
         public ICollection<Pagamento> Pagamentos { get; set; }
             = new List<Pagamento>();
 
+        public decimal ValorAbatidoDevolucao { get; private set; } = 0;
+
 
         public void RegistrarPagamento(
             decimal valor,
@@ -100,7 +102,9 @@ namespace Domain.Entities.Financeiro
 
         public decimal ObterSaldoRestante()
         {
-            return Math.Max(Valor - ValorPago, 0);
+            return Math.Max(
+          0,
+          Valor - ValorPago - ValorAbatidoDevolucao);
         }
 
         public void Cancelar()
@@ -129,7 +133,33 @@ namespace Domain.Entities.Financeiro
             DataAtualizacao = DateTime.UtcNow;
         }
 
+        public void RegistrarAbatimentoDevolucao(decimal valor)
+        {
+            if (valor <= 0)
+                throw new InvalidOperationException(
+                    "O valor do abatimento deve ser maior que zero.");
 
+            if (valor != decimal.Round(valor, 2))
+                throw new InvalidOperationException(
+                    "O valor do abatimento deve possuir no máximo duas casas decimais.");
+
+            if (Status == StatusContas.Cancelada)
+                throw new InvalidOperationException(
+                    "Não é possível abater uma conta cancelada.");
+
+            var saldoRestante = ObterSaldoRestante();
+
+            if (valor > saldoRestante)
+                throw new InvalidOperationException(
+                    "O abatimento ultrapassa o saldo pendente da conta.");
+
+            ValorAbatidoDevolucao = decimal.Round(
+                ValorAbatidoDevolucao + valor,
+                2,
+                MidpointRounding.AwayFromZero);
+
+            DataAtualizacao = DateTime.UtcNow;
+        }
 
     }
 

@@ -1,4 +1,6 @@
 ﻿
+using Domain.Entities.Common.Enuns;
+
 namespace Application.Operacional.Compras.DTOs
 {
     public sealed record DevolucaoCompraDetalheDto(
@@ -11,6 +13,7 @@ namespace Application.Operacional.Compras.DTOs
         DateTimeOffset DataDevolucao,
         string Motivo,
         string? Observacao,
+        PoliticaFinanceiraDevolucao PoliticaFinanceiraDevolucao,
         IReadOnlyList<DevolucaoCompraItemDetalheDto> Itens
     );
 

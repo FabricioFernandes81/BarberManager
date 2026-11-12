@@ -101,7 +101,8 @@ namespace Infrastructure.Seeds.Operacional
                     ValorTotal = 125.00m,
 
                     DataCadastro = dataCadastro,
-                    DataAtualizacao = (DateTime?)null
+                    DataAtualizacao = (DateTime?)null,
+
                 }
             );
 
@@ -131,7 +132,9 @@ namespace Infrastructure.Seeds.Operacional
                     TotalParcelas = 2,
 
                     DataCadastro = dataCadastro,
-                    DataAtualizacao = (DateTime?)null
+                    DataAtualizacao = (DateTime?)null,
+                    ValorAbatidoDevolucao = 0m
+
                 },
                 new
                 {
@@ -154,7 +157,8 @@ namespace Infrastructure.Seeds.Operacional
                     TotalParcelas = 2,
 
                     DataCadastro = dataCadastro,
-                    DataAtualizacao = (DateTime?)null
+                    DataAtualizacao = (DateTime?)null,
+                    ValorAbatidoDevolucao = 0m
                 }
             );
         }
