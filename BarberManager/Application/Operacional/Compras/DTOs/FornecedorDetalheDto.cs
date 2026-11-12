@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Domain.Entities.Common.Enuns;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,6 +17,7 @@ namespace Application.Operacional.Compras.DTOs
         string? Observacao,
         bool Ativo,
         DateTime DataCadastro,
-        DateTime? DataAtualizacao
+        DateTime? DataAtualizacao,
+        PoliticaFinanceiraDevolucao PoliticaFinanceiraDevolucao
     );
 }

@@ -62,6 +62,10 @@ namespace Infrastructure.Configurations.Operacional.Compras
                 d.CompraId,
                 d.DataDevolucao
             });
+
+            builder.Property(d => d.PoliticaFinanceiraDevolucao)
+    .HasConversion<int>()
+    .IsRequired();
         }
     }
 }

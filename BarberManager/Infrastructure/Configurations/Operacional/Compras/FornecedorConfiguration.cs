@@ -1,4 +1,5 @@
-﻿using Domain.Entities.Compras;
+﻿using Domain.Entities.Common.Enuns;
+using Domain.Entities.Compras;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using System;
@@ -60,6 +61,12 @@ namespace Infrastructure.Configurations.Operacional.Compras
                 .IsUnique()
                 .HasFilter("[Documento] IS NOT NULL")
                 .HasDatabaseName("IX_Fornecedores_EmpresaId_Documento");
+
+            builder.Property(f => f.PoliticaFinanceiraDevolucao)
+                    .HasConversion<int>()
+                    .HasDefaultValue(
+                        PoliticaFinanceiraDevolucao.CreditoFornecedor)
+                    .IsRequired();
         }
     }
 }

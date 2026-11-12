@@ -1,5 +1,6 @@
 ﻿
 using Domain.Entities.Common;
+using Domain.Entities.Common.Enuns;
 
 namespace Domain.Entities.Compras
 {
@@ -23,6 +24,11 @@ namespace Domain.Entities.Compras
 
         public string? Observacao { get; private set; }
 
+        public PoliticaFinanceiraDevolucao PoliticaFinanceiraDevolucao
+        {
+            get;
+            private set;
+        }
         public ICollection<DevolucaoCompraItem> Itens
         {
             get;
@@ -40,7 +46,8 @@ namespace Domain.Entities.Compras
             string chaveIdempotencia,
             string motivo,
             string? observacao = null,
-            DateTimeOffset? dataDevolucao = null)
+            DateTimeOffset? dataDevolucao = null,
+            PoliticaFinanceiraDevolucao politicaFinanceiraDevolucao = PoliticaFinanceiraDevolucao.CreditoFornecedor)
         {
             if (empresaId == Guid.Empty)
                 throw new ArgumentException(
@@ -86,6 +93,12 @@ namespace Domain.Entities.Compras
                     "A observação deve possuir no máximo 500 caracteres.",
                     nameof(observacao));
 
+            if (!Enum.IsDefined(politicaFinanceiraDevolucao))
+                throw new ArgumentOutOfRangeException(
+                    nameof(politicaFinanceiraDevolucao),
+                    "A política financeira da devolução é inválida.");
+
+
             EmpresaId = empresaId;
             CompraId = compraId;
             UsuarioResponsavelId = usuarioResponsavelId;
@@ -98,6 +111,7 @@ namespace Domain.Entities.Compras
                 : observacao.Trim();
 
             DataDevolucao = dataDevolucao ?? DateTimeOffset.UtcNow;
+            PoliticaFinanceiraDevolucao = politicaFinanceiraDevolucao;
         }
 
         public void AdicionarItem(DevolucaoCompraItem item)

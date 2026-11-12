@@ -221,5 +221,40 @@ namespace Api.Admin.Controllers
             return Ok(resultado);
         }
 
+        [HttpGet("devolucoes")]
+        [ProducesResponseType(
+            typeof(ListarDevolucoesCompraDto),
+            StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        public async Task<ActionResult<ListarDevolucoesCompraDto>>
+            ListarDevolucoes(
+                [FromQuery] int pageNumber = 1,
+                [FromQuery] int pageSize = 10,
+                [FromQuery] Guid? compraId = null,
+                [FromQuery] Guid? fornecedorId = null,
+                [FromQuery] DateTime? inicio = null,
+                [FromQuery] DateTime? fim = null,
+                [FromQuery] string? searchTerm = null,
+                CancellationToken cancellationToken = default)
+        {
+            var query = new ListarDevolucoesCompraQuery(
+                pageNumber,
+                pageSize,
+                compraId,
+                fornecedorId,
+                inicio,
+                fim,
+                searchTerm);
+
+            var resultado = await _dispatcher.Query<
+                ListarDevolucoesCompraQuery,
+                ListarDevolucoesCompraDto>(
+                    query,
+                    cancellationToken);
+
+            return Ok(resultado);
+        }
+
     }
 }

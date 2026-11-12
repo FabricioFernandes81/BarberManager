@@ -98,6 +98,10 @@ namespace Application.Operacional.Compras.Commands.Handlers
                 erros.Add(
                     "A observação deve ter no máximo 1000 caracteres.");
             }
+            if (!Enum.IsDefined(command.PoliticaFinanceiraDevolucao))
+            {
+                erros.Add("A política financeira de devolução informada é inválida.");
+            }
 
             if (erros.Count > 0)
                 throw new CustomValidationException(erros);
@@ -134,6 +138,8 @@ namespace Application.Operacional.Compras.Commands.Handlers
                 email: email,
                 telefone: telefone,
                 observacao: observacao);
+            fornecedor.AlterarPoliticaFinanceiraDevolucao(
+    command.PoliticaFinanceiraDevolucao);
 
             // 6. Registrar no contexto transacional.
             await _repositorio.AdicionarAsync(
@@ -150,7 +156,8 @@ namespace Application.Operacional.Compras.Commands.Handlers
                 Telefone: fornecedor.Telefone,
                 Observacao: fornecedor.Observacao,
                 Ativo: fornecedor.Ativo,
-                DataCadastro: fornecedor.DataCadastro);
+                DataCadastro: fornecedor.DataCadastro, 
+                PoliticaFinanceiraDevolucao: fornecedor.PoliticaFinanceiraDevolucao);
         }
 
         private static string? Normalizar(string? valor)

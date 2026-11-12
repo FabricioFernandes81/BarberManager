@@ -45,6 +45,11 @@ namespace Application.Operacional.Compras.Commands.Handlers
                 erros.Add("O identificador do fornecedor é inválido.");
             }
 
+            if (!Enum.IsDefined(command.PoliticaFinanceiraDevolucao))
+            {
+                erros.Add("A política financeira de devolução informada é inválida.");
+            }
+
             // 3. Normalizar os dados.
             var nome = command.Nome?.Trim() ?? string.Empty;
 
@@ -157,6 +162,8 @@ namespace Application.Operacional.Compras.Commands.Handlers
                 telefone,
                 observacao);
 
+            fornecedor.AlterarPoliticaFinanceiraDevolucao(
+    command.PoliticaFinanceiraDevolucao);
             // 8. A entidade está rastreada pelo DbContext.
             // O TransactionMiddleware fará a persistência.
             await _repositorio.AtualizarAsync(fornecedor);
@@ -172,7 +179,7 @@ namespace Application.Operacional.Compras.Commands.Handlers
                 fornecedor.Observacao,
                 fornecedor.Ativo,
                 fornecedor.DataCadastro,
-                fornecedor.DataAtualizacao);
+                fornecedor.DataAtualizacao, fornecedor.PoliticaFinanceiraDevolucao);
         }
 
         private static string? Normalizar(string? valor)

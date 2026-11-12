@@ -1,4 +1,5 @@
 ﻿using Application.Common.Transactions;
+using Domain.Entities.Common.Enuns;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -15,7 +16,8 @@ namespace Application.Operacional.Compras.Commands
        string? Documento,
        string? Email,
        string? Telefone,
-       string? Observacao
+       string? Observacao,
+       PoliticaFinanceiraDevolucao PoliticaFinanceiraDevolucao
    ) : ITransactionalCommand
     {
         [NotMapped]

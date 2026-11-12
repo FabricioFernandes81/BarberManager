@@ -92,6 +92,15 @@ namespace Application.Operacional.Compras.Commands.Handlers
             if (command.Itens is null || command.Itens.Count == 0)
                 erros.Add("Informe pelo menos um item para devolução.");
 
+
+            if (command.PoliticaFinanceiraDevolucao.HasValue &&
+    !Enum.IsDefined(command.PoliticaFinanceiraDevolucao.Value))
+            {
+                erros.Add(
+                    "A política financeira de devolução informada é inválida.");
+            }
+
+
             if (erros.Count > 0)
                 throw new CustomValidationException(erros);
 
@@ -144,16 +153,22 @@ namespace Application.Operacional.Compras.Commands.Handlers
                 var mesmosDados =
                     CompararItens(devolucaoExistente, itensInformados);
 
+                var mesmaPolitica =
+                    !command.PoliticaFinanceiraDevolucao.HasValue ||
+                    devolucaoExistente.PoliticaFinanceiraDevolucao ==
+                        command.PoliticaFinanceiraDevolucao.Value;
+
                 if (!mesmaCompra ||
                     !mesmosDados ||
+                    !mesmaPolitica ||
                     devolucaoExistente.Motivo != motivo ||
                     devolucaoExistente.Observacao != observacao)
                 {
                     throw new CustomValidationException(
                         new[]
                         {
-                            "A chave de idempotência já foi utilizada " +
-                            "em outra operação ou com dados diferentes."
+                "A chave de idempotência já foi utilizada " +
+                "em outra operação ou com dados diferentes."
                         });
                 }
 
@@ -174,7 +189,10 @@ namespace Application.Operacional.Compras.Commands.Handlers
                 throw new CustomValidationException(
                     new[] { "Compra não encontrada nesta empresa." });
             }
-
+            // 6.1. Resolver a política financeira da devolução.
+            var politicaFinanceira =
+                command.PoliticaFinanceiraDevolucao
+                ?? compra.Fornecedor.PoliticaFinanceiraDevolucao;
             // 7. Indexar os itens dos recebimentos da compra.
             var itensRecebidos = compra.Recebimentos
                 .SelectMany(r => r.Itens)
@@ -296,7 +314,7 @@ namespace Application.Operacional.Compras.Commands.Handlers
                 usuarioResponsavelId: usuarioId,
                 chaveIdempotencia: chaveIdempotencia,
                 motivo: motivo,
-                observacao: observacao);
+                observacao: observacao, politicaFinanceiraDevolucao: politicaFinanceira);
 
             // 12. Registrar os itens da devolução.
             foreach (var (itemRecebido, quantidade) in itensParaDevolver)
@@ -396,7 +414,8 @@ namespace Application.Operacional.Compras.Commands.Handlers
                 CompraId: devolucao.CompraId,
                 DataDevolucao: devolucao.DataDevolucao,
                 Motivo: devolucao.Motivo,
-                Observacao: devolucao.Observacao,
+                Observacao: devolucao.Observacao, PoliticaFinanceiraDevolucao:
+    devolucao.PoliticaFinanceiraDevolucao,
                 Itens: itens);
         }
     }

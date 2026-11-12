@@ -24,5 +24,19 @@ namespace Application.Interfaces.Compras
             Guid empresaId,
             Guid devolucaoId,
             CancellationToken cancellationToken);
+
+        Task<(
+    IReadOnlyList<DevolucaoCompra> Itens,
+    int TotalRegistros
+)> ListarAsync(
+    Guid empresaId,
+    int pageNumber,
+    int pageSize,
+    Guid? compraId,
+    Guid? fornecedorId,
+    DateTime? inicio,
+    DateTime? fim,
+    string? searchTerm,
+    CancellationToken cancellationToken);
     }
 }

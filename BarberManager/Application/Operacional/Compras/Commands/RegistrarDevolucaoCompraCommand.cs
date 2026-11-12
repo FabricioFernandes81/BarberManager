@@ -1,6 +1,7 @@
 ﻿
 using Application.Common.Transactions;
 using Application.Operacional.Compras.DTOs;
+using Domain.Entities.Common.Enuns;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Application.Operacional.Compras.Commands
@@ -15,6 +16,12 @@ namespace Application.Operacional.Compras.Commands
         public string Motivo { get; set; } = string.Empty;
 
         public string? Observacao { get; set; }
+
+        public PoliticaFinanceiraDevolucao? PoliticaFinanceiraDevolucao
+        {
+            get;
+            set;
+        }
 
         public List<RegistrarDevolucaoCompraItemDto> Itens { get; set; }
             = new();

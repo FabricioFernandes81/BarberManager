@@ -62,7 +62,7 @@ namespace Application.Operacional.Compras.Queries.Handlers
             fornecedor.Observacao,
             fornecedor.Ativo,
             fornecedor.DataCadastro,
-            fornecedor.DataAtualizacao);
+            fornecedor.DataAtualizacao, fornecedor.PoliticaFinanceiraDevolucao);
     }
 }
 }

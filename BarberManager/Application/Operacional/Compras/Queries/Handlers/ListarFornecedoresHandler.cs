@@ -3,6 +3,7 @@ using Application.Common.Middlewares.Handler;
 using Application.Common.Tenancy;
 using Application.Interfaces.Compras;
 using Application.Operacional.Compras.DTOs;
+using Domain.Entities.Compras;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -75,7 +76,7 @@ namespace Application.Operacional.Compras.Queries.Handlers
                     f.Email,
                     f.Telefone,
                     f.Ativo,
-                    f.DataCadastro))
+                    f.DataCadastro, f.PoliticaFinanceiraDevolucao))
                 .ToArray();
 
             var totalPaginas = (int)Math.Ceiling(

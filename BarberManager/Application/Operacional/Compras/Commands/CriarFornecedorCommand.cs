@@ -1,4 +1,5 @@
 ﻿using Application.Common.Transactions;
+using Domain.Entities.Common.Enuns;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -21,6 +22,9 @@ namespace Application.Operacional.Compras.Commands
         public string? Telefone { get; set; }
 
         public string? Observacao { get; set; }
+
+        public PoliticaFinanceiraDevolucao PoliticaFinanceiraDevolucao { get; set; }
+    = PoliticaFinanceiraDevolucao.CreditoFornecedor;
 
         [NotMapped]
         public TransactionContext TransactionContext =>

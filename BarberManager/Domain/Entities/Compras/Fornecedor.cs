@@ -1,4 +1,5 @@
 ﻿using Domain.Entities.Common;
+using Domain.Entities.Common.Enuns;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,6 +26,11 @@ namespace Domain.Entities.Compras
 
         public bool Ativo { get; private set; }
 
+        public PoliticaFinanceiraDevolucao PoliticaFinanceiraDevolucao
+        {
+            get;
+            private set;
+        } = PoliticaFinanceiraDevolucao.CreditoFornecedor;
         public Fornecedor()
         {
         }
@@ -116,6 +122,18 @@ namespace Domain.Entities.Compras
                 documento
                     .Where(char.IsDigit)
                     .ToArray());
+        }
+
+        public void AlterarPoliticaFinanceiraDevolucao(
+    PoliticaFinanceiraDevolucao politica)
+        {
+            if (!Enum.IsDefined(politica))
+                throw new ArgumentOutOfRangeException(
+                    nameof(politica),
+                    "A política financeira informada é inválida.");
+
+            PoliticaFinanceiraDevolucao = politica;
+            DataAtualizacao = DateTime.UtcNow;
         }
     }
 }
