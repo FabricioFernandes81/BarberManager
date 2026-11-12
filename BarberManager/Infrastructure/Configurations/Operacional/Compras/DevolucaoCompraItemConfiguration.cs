@@ -39,7 +39,7 @@ namespace Infrastructure.Configurations.Operacional.Compras
                 .HasForeignKey(i => i.RecebimentoCompraItemId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne<Produto>()
+            builder.HasOne(i => i.Produto)
                 .WithMany()
                 .HasForeignKey(i => i.ProdutoId)
                 .OnDelete(DeleteBehavior.Restrict);

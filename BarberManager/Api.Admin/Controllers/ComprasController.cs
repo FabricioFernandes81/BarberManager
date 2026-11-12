@@ -187,5 +187,39 @@ namespace Api.Admin.Controllers
                 resultado);
         }
 
+        [HttpGet("{compraId:guid}/devolucoes/{devolucaoId:guid}")]
+        [ProducesResponseType(
+            typeof(DevolucaoCompraDetalheDto),
+            StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<ActionResult<DevolucaoCompraDetalheDto>>
+            ObterDevolucaoPorId(
+                [FromRoute] Guid compraId,
+                [FromRoute] Guid devolucaoId,
+                CancellationToken cancellationToken)
+        {
+            if (compraId == Guid.Empty || devolucaoId == Guid.Empty)
+            {
+                return BadRequest("Os identificadores informados são inválidos.");
+            }
+
+            var query = new ObterDevolucaoCompraPorIdQuery(devolucaoId);
+
+            var resultado = await _dispatcher.Query<
+                ObterDevolucaoCompraPorIdQuery,
+                DevolucaoCompraDetalheDto>(
+                    query,
+                    cancellationToken);
+
+            if (resultado.CompraId != compraId)
+            {
+                return NotFound();
+            }
+
+            return Ok(resultado);
+        }
+
     }
 }

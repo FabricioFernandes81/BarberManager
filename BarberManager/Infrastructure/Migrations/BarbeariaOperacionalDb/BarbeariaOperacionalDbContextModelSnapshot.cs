@@ -264,7 +264,7 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                         {
                             Id = new Guid("81000000-0000-0000-0000-000000000001"),
                             Ativo = true,
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 247, DateTimeKind.Utc).AddTicks(8363),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 692, DateTimeKind.Utc).AddTicks(2419),
                             DiaSemana = 1,
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
                             HoraFim = new TimeOnly(18, 0, 0),
@@ -274,7 +274,7 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                         {
                             Id = new Guid("81000000-0000-0000-0000-000000000002"),
                             Ativo = true,
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 247, DateTimeKind.Utc).AddTicks(9092),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 692, DateTimeKind.Utc).AddTicks(3167),
                             DiaSemana = 2,
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
                             HoraFim = new TimeOnly(18, 0, 0),
@@ -284,7 +284,7 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                         {
                             Id = new Guid("81000000-0000-0000-0000-000000000003"),
                             Ativo = true,
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 247, DateTimeKind.Utc).AddTicks(9095),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 692, DateTimeKind.Utc).AddTicks(3169),
                             DiaSemana = 3,
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
                             HoraFim = new TimeOnly(18, 0, 0),
@@ -294,7 +294,7 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                         {
                             Id = new Guid("81000000-0000-0000-0000-000000000004"),
                             Ativo = true,
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 247, DateTimeKind.Utc).AddTicks(9100),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 692, DateTimeKind.Utc).AddTicks(3174),
                             DiaSemana = 4,
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
                             HoraFim = new TimeOnly(18, 0, 0),
@@ -304,7 +304,7 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                         {
                             Id = new Guid("81000000-0000-0000-0000-000000000005"),
                             Ativo = true,
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 247, DateTimeKind.Utc).AddTicks(9103),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 692, DateTimeKind.Utc).AddTicks(3176),
                             DiaSemana = 5,
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
                             HoraFim = new TimeOnly(18, 0, 0),
@@ -314,7 +314,7 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                         {
                             Id = new Guid("81000000-0000-0000-0000-000000000006"),
                             Ativo = true,
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 247, DateTimeKind.Utc).AddTicks(9104),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 692, DateTimeKind.Utc).AddTicks(3177),
                             DiaSemana = 6,
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
                             HoraFim = new TimeOnly(13, 0, 0),
@@ -1350,9 +1350,6 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                     b.Property<Guid>("ProdutoId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ProdutoId1")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<decimal>("QuantidadeDevolvida")
                         .HasPrecision(18, 3)
                         .HasColumnType("decimal(18,3)");
@@ -1365,8 +1362,6 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                     b.HasIndex("DevolucaoCompraId");
 
                     b.HasIndex("ProdutoId");
-
-                    b.HasIndex("ProdutoId1");
 
                     b.HasIndex("RecebimentoCompraItemId");
 
@@ -2568,7 +2563,7 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                         {
                             Id = new Guid("a2000000-0000-0000-0000-000000000001"),
                             Ativo = true,
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 249, DateTimeKind.Utc).AddTicks(277),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 693, DateTimeKind.Utc).AddTicks(4295),
                             Descricao = "Linha profissional para barbearias.",
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
                             Nome = "Barber Pro"
@@ -2577,7 +2572,7 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                         {
                             Id = new Guid("a2000000-0000-0000-0000-000000000002"),
                             Ativo = true,
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 249, DateTimeKind.Utc).AddTicks(1206),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 693, DateTimeKind.Utc).AddTicks(5254),
                             Descricao = "Produtos clássicos para cuidados pessoais.",
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
                             Nome = "Classic Grooming"
@@ -2586,7 +2581,7 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                         {
                             Id = new Guid("a2000000-0000-0000-0000-000000000003"),
                             Ativo = true,
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 249, DateTimeKind.Utc).AddTicks(1214),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 693, DateTimeKind.Utc).AddTicks(5262),
                             Descricao = "Linha premium de cuidados capilares.",
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
                             Nome = "Premium Care"
@@ -2894,7 +2889,7 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                             Celular = "11999999999",
                             Cpf = "123 ",
                             DataAdmissao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 242, DateTimeKind.Utc).AddTicks(5869),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 687, DateTimeKind.Utc).AddTicks(7440),
                             DataNascimento = new DateTime(1990, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Destaque = true,
                             Email = "carlos.henrique@example.com",
@@ -2927,7 +2922,7 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                             Celular = "11999999999",
                             Cpf = "123 ",
                             DataAdmissao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 243, DateTimeKind.Utc).AddTicks(2271),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 688, DateTimeKind.Utc).AddTicks(3669),
                             DataNascimento = new DateTime(1990, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Destaque = true,
                             Email = "alexandre.fernandes@example.com",
@@ -2959,7 +2954,7 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                             Celular = "11999999999",
                             Cpf = "123 ",
                             DataAdmissao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 243, DateTimeKind.Utc).AddTicks(2280),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 688, DateTimeKind.Utc).AddTicks(3677),
                             DataNascimento = new DateTime(1990, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Destaque = true,
                             Email = "alexandre.fernandes@example.com",
@@ -2991,7 +2986,7 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                             Celular = "11999999999",
                             Cpf = "123 ",
                             DataAdmissao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 243, DateTimeKind.Utc).AddTicks(2308),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 688, DateTimeKind.Utc).AddTicks(3701),
                             DataNascimento = new DateTime(1990, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Destaque = true,
                             Email = "alexandre.fernandes@example.com",
@@ -3023,7 +3018,7 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                             Celular = "11999999999",
                             Cpf = "123 ",
                             DataAdmissao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 243, DateTimeKind.Utc).AddTicks(2313),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 688, DateTimeKind.Utc).AddTicks(3706),
                             DataNascimento = new DateTime(1990, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Destaque = true,
                             Email = "alexandre.fernandes@example.com",
@@ -3055,7 +3050,7 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                             Celular = "11999999999",
                             Cpf = "123 ",
                             DataAdmissao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 243, DateTimeKind.Utc).AddTicks(2330),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 688, DateTimeKind.Utc).AddTicks(3719),
                             DataNascimento = new DateTime(1990, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Destaque = true,
                             Email = "alexandre.fernandes@example.com",
@@ -3087,7 +3082,7 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                             Celular = "11999999999",
                             Cpf = "123 ",
                             DataAdmissao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 243, DateTimeKind.Utc).AddTicks(2334),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 688, DateTimeKind.Utc).AddTicks(3741),
                             DataNascimento = new DateTime(1990, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Destaque = true,
                             Email = "alexandre.fernandes@example.com",
@@ -3119,7 +3114,7 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                             Celular = "11999999999",
                             Cpf = "123 ",
                             DataAdmissao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 243, DateTimeKind.Utc).AddTicks(2347),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 688, DateTimeKind.Utc).AddTicks(3745),
                             DataNascimento = new DateTime(1990, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Destaque = true,
                             Email = "alexandre.fernandes@example.com",
@@ -3151,7 +3146,7 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                             Celular = "11999999999",
                             Cpf = "123 ",
                             DataAdmissao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 243, DateTimeKind.Utc).AddTicks(2365),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 688, DateTimeKind.Utc).AddTicks(3753),
                             DataNascimento = new DateTime(1990, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Destaque = true,
                             Email = "fabricio.fernandes@example.com",
@@ -3183,7 +3178,7 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                             Celular = "11999999999",
                             Cpf = "123 ",
                             DataAdmissao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 243, DateTimeKind.Utc).AddTicks(2370),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 688, DateTimeKind.Utc).AddTicks(3758),
                             DataNascimento = new DateTime(1990, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Destaque = true,
                             Email = "alexandre.fernandes@example.com",
@@ -3215,7 +3210,7 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                             Celular = "11999999999",
                             Cpf = "123 ",
                             DataAdmissao = new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified),
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 243, DateTimeKind.Utc).AddTicks(2375),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 688, DateTimeKind.Utc).AddTicks(3763),
                             DataNascimento = new DateTime(1990, 5, 15, 0, 0, 0, 0, DateTimeKind.Unspecified),
                             Destaque = true,
                             Email = "rebeca.fernandes@example.com",
@@ -3286,7 +3281,7 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                             Id = new Guid("22222222-2222-2222-2222-222222222222"),
                             Ativo = 1,
                             Cor = "#FF5733",
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 244, DateTimeKind.Utc).AddTicks(1862),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 689, DateTimeKind.Utc).AddTicks(2501),
                             Descricao = "Serviço de corte de cabelo",
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
                             Icone = "content_cut",
@@ -3298,7 +3293,7 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                             Id = new Guid("33333333-3333-3333-3333-333333333333"),
                             Ativo = 1,
                             Cor = "#33FF57",
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 244, DateTimeKind.Utc).AddTicks(3832),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 689, DateTimeKind.Utc).AddTicks(4321),
                             Descricao = "Serviço de categoria 2",
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
                             Icone = "icone-categoria2",
@@ -3310,7 +3305,7 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                             Id = new Guid("44444444-4444-4444-4444-444444444444"),
                             Ativo = 1,
                             Cor = "#3357FF",
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 244, DateTimeKind.Utc).AddTicks(3835),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 689, DateTimeKind.Utc).AddTicks(4324),
                             Descricao = "Serviço de categoria 3",
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
                             Icone = "icone-categoria3",
@@ -3366,10 +3361,10 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                     b.HasData(
                         new
                         {
-                            Id = new Guid("a791ac09-422a-4998-a14b-bac80705da09"),
+                            Id = new Guid("31db64f7-a5ec-4cb5-861f-3f1de1b0b418"),
                             Ativo = 1,
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 246, DateTimeKind.Utc).AddTicks(2300),
-                            DataVinculo = new DateTime(2026, 11, 12, 2, 7, 32, 246, DateTimeKind.Utc).AddTicks(2263),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 690, DateTimeKind.Utc).AddTicks(6913),
+                            DataVinculo = new DateTime(2026, 11, 12, 2, 33, 2, 690, DateTimeKind.Utc).AddTicks(6907),
                             DuracaoPersonalizada = 25,
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
                             ProfissionalId = new Guid("91000000-0000-0000-0000-000000000001"),
@@ -3378,10 +3373,10 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                         },
                         new
                         {
-                            Id = new Guid("cb84d047-2f14-47c6-8af3-5a081b42b363"),
+                            Id = new Guid("e4c56990-e015-4ad5-9aab-ba2a9bd458f4"),
                             Ativo = 1,
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 246, DateTimeKind.Utc).AddTicks(3762),
-                            DataVinculo = new DateTime(2026, 11, 12, 2, 7, 32, 246, DateTimeKind.Utc).AddTicks(3758),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 690, DateTimeKind.Utc).AddTicks(8106),
+                            DataVinculo = new DateTime(2026, 11, 12, 2, 33, 2, 690, DateTimeKind.Utc).AddTicks(8103),
                             DuracaoPersonalizada = 35,
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
                             ProfissionalId = new Guid("91000000-0000-0000-0000-000000000001"),
@@ -3390,10 +3385,10 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                         },
                         new
                         {
-                            Id = new Guid("575a1827-2547-45c8-a324-7e6b0d7a7a58"),
+                            Id = new Guid("f33e7fba-8152-4d22-9c21-bc299f0cc88f"),
                             Ativo = 3,
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 246, DateTimeKind.Utc).AddTicks(3767),
-                            DataVinculo = new DateTime(2026, 11, 12, 2, 7, 32, 246, DateTimeKind.Utc).AddTicks(3765),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 690, DateTimeKind.Utc).AddTicks(8110),
+                            DataVinculo = new DateTime(2026, 11, 12, 2, 33, 2, 690, DateTimeKind.Utc).AddTicks(8109),
                             DuracaoPersonalizada = 40,
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
                             ProfissionalId = new Guid("91000000-0000-0000-0000-000000000001"),
@@ -3402,10 +3397,10 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                         },
                         new
                         {
-                            Id = new Guid("5786b2fe-0fc7-4f25-a286-3d33ecc1cc6a"),
+                            Id = new Guid("e47ba9cf-c30d-459b-bb95-faf54e119a27"),
                             Ativo = 3,
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 246, DateTimeKind.Utc).AddTicks(3770),
-                            DataVinculo = new DateTime(2026, 11, 12, 2, 7, 32, 246, DateTimeKind.Utc).AddTicks(3768),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 690, DateTimeKind.Utc).AddTicks(8113),
+                            DataVinculo = new DateTime(2026, 11, 12, 2, 33, 2, 690, DateTimeKind.Utc).AddTicks(8112),
                             DuracaoPersonalizada = 45,
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
                             ProfissionalId = new Guid("91000000-0000-0000-0000-000000000002"),
@@ -3414,10 +3409,10 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                         },
                         new
                         {
-                            Id = new Guid("1e2a8b5e-7eee-4c24-9e96-6defb1ac909e"),
+                            Id = new Guid("a3ab7ac0-89e8-4927-a71e-fe2fd95b7051"),
                             Ativo = 3,
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 246, DateTimeKind.Utc).AddTicks(3772),
-                            DataVinculo = new DateTime(2026, 11, 12, 2, 7, 32, 246, DateTimeKind.Utc).AddTicks(3772),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 690, DateTimeKind.Utc).AddTicks(8116),
+                            DataVinculo = new DateTime(2026, 11, 12, 2, 33, 2, 690, DateTimeKind.Utc).AddTicks(8115),
                             DuracaoPersonalizada = 45,
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
                             ProfissionalId = new Guid("91000000-0000-0000-0000-000000000002"),
@@ -3426,10 +3421,10 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                         },
                         new
                         {
-                            Id = new Guid("71bb9eb7-7cad-4bd1-91c8-095cb22e095b"),
+                            Id = new Guid("c352680b-57fa-4de5-9fa8-48a1a717a54e"),
                             Ativo = 3,
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 246, DateTimeKind.Utc).AddTicks(3788),
-                            DataVinculo = new DateTime(2026, 11, 12, 2, 7, 32, 246, DateTimeKind.Utc).AddTicks(3787),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 690, DateTimeKind.Utc).AddTicks(8125),
+                            DataVinculo = new DateTime(2026, 11, 12, 2, 33, 2, 690, DateTimeKind.Utc).AddTicks(8124),
                             DuracaoPersonalizada = 45,
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
                             ProfissionalId = new Guid("91000000-0000-0000-0000-000000000003"),
@@ -3438,10 +3433,10 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                         },
                         new
                         {
-                            Id = new Guid("27b11102-c69b-4f4b-93a4-f5148562ba1a"),
+                            Id = new Guid("fc3ffdf9-694b-42b6-a244-e35fe36d35b2"),
                             Ativo = 3,
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 246, DateTimeKind.Utc).AddTicks(3791),
-                            DataVinculo = new DateTime(2026, 11, 12, 2, 7, 32, 246, DateTimeKind.Utc).AddTicks(3790),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 690, DateTimeKind.Utc).AddTicks(8127),
+                            DataVinculo = new DateTime(2026, 11, 12, 2, 33, 2, 690, DateTimeKind.Utc).AddTicks(8127),
                             DuracaoPersonalizada = 45,
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
                             ProfissionalId = new Guid("91000000-0000-0000-0000-000000000003"),
@@ -3450,10 +3445,10 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                         },
                         new
                         {
-                            Id = new Guid("7f6bb489-4004-481d-ae6e-ada6a91f4201"),
+                            Id = new Guid("d6de28bc-8aad-4630-ba86-cb7abd79d6a6"),
                             Ativo = 3,
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 246, DateTimeKind.Utc).AddTicks(3794),
-                            DataVinculo = new DateTime(2026, 11, 12, 2, 7, 32, 246, DateTimeKind.Utc).AddTicks(3793),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 690, DateTimeKind.Utc).AddTicks(8130),
+                            DataVinculo = new DateTime(2026, 11, 12, 2, 33, 2, 690, DateTimeKind.Utc).AddTicks(8129),
                             DuracaoPersonalizada = 10,
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
                             ProfissionalId = new Guid("91000000-0000-0000-0000-000000000011"),
@@ -3532,7 +3527,7 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                             Ativo = 1,
                             CategoriaServicoId = new Guid("22222222-2222-2222-2222-222222222222"),
                             Custo = 1m,
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 244, DateTimeKind.Utc).AddTicks(9877),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 690, DateTimeKind.Utc).AddTicks(378),
                             Descricao = "Serviço de corte de cabelo",
                             DuracaoMinutos = 30,
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
@@ -3550,7 +3545,7 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                             Ativo = 1,
                             CategoriaServicoId = new Guid("22222222-2222-2222-2222-222222222222"),
                             Custo = 1m,
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 245, DateTimeKind.Utc).AddTicks(2940),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 690, DateTimeKind.Utc).AddTicks(2222),
                             Descricao = "Serviço de corte de cabelo",
                             DuracaoMinutos = 60,
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
@@ -3568,7 +3563,7 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                             Ativo = 1,
                             CategoriaServicoId = new Guid("22222222-2222-2222-2222-222222222222"),
                             Custo = 1m,
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 245, DateTimeKind.Utc).AddTicks(2968),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 690, DateTimeKind.Utc).AddTicks(2233),
                             Descricao = "Serviço de corte de cabelo",
                             DuracaoMinutos = 30,
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
@@ -3586,7 +3581,7 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                             Ativo = 1,
                             CategoriaServicoId = new Guid("22222222-2222-2222-2222-222222222222"),
                             Custo = 1m,
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 245, DateTimeKind.Utc).AddTicks(3027),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 690, DateTimeKind.Utc).AddTicks(2236),
                             Descricao = "Serviço de corte de cabelo",
                             DuracaoMinutos = 30,
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
@@ -3604,7 +3599,7 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                             Ativo = 1,
                             CategoriaServicoId = new Guid("44444444-4444-4444-4444-444444444444"),
                             Custo = 1m,
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 245, DateTimeKind.Utc).AddTicks(3030),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 690, DateTimeKind.Utc).AddTicks(2238),
                             Descricao = "Serviço de corte de cabelo",
                             DuracaoMinutos = 30,
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
@@ -3622,7 +3617,7 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                             Ativo = 1,
                             CategoriaServicoId = new Guid("33333333-3333-3333-3333-333333333333"),
                             Custo = 1m,
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 245, DateTimeKind.Utc).AddTicks(3048),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 690, DateTimeKind.Utc).AddTicks(2249),
                             Descricao = "Serviço de corte de cabelo",
                             DuracaoMinutos = 30,
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
@@ -3640,7 +3635,7 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                             Ativo = 2,
                             CategoriaServicoId = new Guid("33333333-3333-3333-3333-333333333333"),
                             Custo = 1m,
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 245, DateTimeKind.Utc).AddTicks(3051),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 690, DateTimeKind.Utc).AddTicks(2251),
                             Descricao = "Serviço de corte de cabelo",
                             DuracaoMinutos = 30,
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
@@ -3658,7 +3653,7 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                             Ativo = 1,
                             CategoriaServicoId = new Guid("33333333-3333-3333-3333-333333333333"),
                             Custo = 1m,
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 245, DateTimeKind.Utc).AddTicks(3054),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 690, DateTimeKind.Utc).AddTicks(2254),
                             Descricao = "Serviço de corte de cabelo",
                             DuracaoMinutos = 30,
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
@@ -3676,7 +3671,7 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                             Ativo = 2,
                             CategoriaServicoId = new Guid("33333333-3333-3333-3333-333333333333"),
                             Custo = 1m,
-                            DataCadastro = new DateTime(2026, 11, 12, 2, 7, 32, 245, DateTimeKind.Utc).AddTicks(3057),
+                            DataCadastro = new DateTime(2026, 11, 12, 2, 33, 2, 690, DateTimeKind.Utc).AddTicks(2257),
                             Descricao = "Serviço de corte de cabelo",
                             DuracaoMinutos = 30,
                             EmpresaId = new Guid("50000000-0000-0000-0000-000000000001"),
@@ -3984,16 +3979,10 @@ namespace Infrastructure.Migrations.BarbeariaOperacionalDb
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Domain.Entities.Produtos.Produto", null)
+                    b.HasOne("Domain.Entities.Produtos.Produto", "Produto")
                         .WithMany()
                         .HasForeignKey("ProdutoId")
                         .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Domain.Entities.Produtos.Produto", "Produto")
-                        .WithMany()
-                        .HasForeignKey("ProdutoId1")
-                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Domain.Entities.Compras.RecebimentoCompraItem", "RecebimentoCompraItem")

@@ -65,5 +65,26 @@ namespace Infrastructure.Repositories.Compras
             // Não executar SaveChangesAsync.
             // O TransactionMiddleware controla o commit.
         }
+
+
+        public async Task<DevolucaoCompra?> ObterDetalheAsync(
+            Guid empresaId,
+            Guid devolucaoId,
+            CancellationToken cancellationToken)
+        {
+            return await _context.DevolucoesCompras
+                .AsNoTracking()
+                .AsSplitQuery()
+                .Include(d => d.Compra)
+                    .ThenInclude(c => c.Fornecedor)
+                .Include(d => d.Itens)
+                    .ThenInclude(i => i.RecebimentoCompraItem)
+                        .ThenInclude(r => r.CompraItem)
+                .SingleOrDefaultAsync(
+                    d => d.Id == devolucaoId &&
+                         d.EmpresaId == empresaId,
+                    cancellationToken);
+        }
+
     }
 }

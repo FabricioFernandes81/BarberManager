@@ -18,5 +18,11 @@ namespace Application.Interfaces.Compras
         Task AdicionarAsync(
             DevolucaoCompra devolucao,
             CancellationToken cancellationToken);
+
+
+        Task<DevolucaoCompra?> ObterDetalheAsync(
+            Guid empresaId,
+            Guid devolucaoId,
+            CancellationToken cancellationToken);
     }
 }
