@@ -18,11 +18,13 @@ namespace Infrastructure.Repositories.Interfaces
       : IRepositorioCriarAgendamento
     {
         private readonly BarbeariaOperacionalDbContext _context;
-
+        private readonly AuthDbContext _authContext;
         public RepositorioCriarAgendamento(
-            BarbeariaOperacionalDbContext context)
+            BarbeariaOperacionalDbContext context,
+            AuthDbContext authContext)
         {
             _context = context;
+            _authContext = authContext;
         }
 
         public async Task<bool> ClienteVinculadoEmpresaAsync(
@@ -38,7 +40,16 @@ namespace Infrastructure.Repositories.Interfaces
                       && x.Ativo,
                     cancellationToken);
         }
-
+        public async Task<string?> ObterTelefoneClienteAsync(
+    Guid usuarioId,
+    CancellationToken cancellationToken)
+        {
+            return await _authContext.Users
+                .AsNoTracking()
+                .Where(x => x.Id == usuarioId)
+                .Select(x => x.PhoneNumber)
+                .FirstOrDefaultAsync(cancellationToken);
+        }
         public Task<Cliente?> ObterClienteAsync(
             Guid clienteId,
             CancellationToken cancellationToken)

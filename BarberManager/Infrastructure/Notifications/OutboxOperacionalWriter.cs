@@ -7,7 +7,8 @@ using System.Text.Json;
 
 namespace Infrastructure.Notifications;
 
-public sealed class OutboxOperacionalWriter : IOutboxOperacionalWriter
+public sealed class OutboxOperacionalWriter
+    : IOutboxOperacionalWriter
 {
     private readonly BarbeariaOperacionalDbContext _context;
 
@@ -23,7 +24,8 @@ public sealed class OutboxOperacionalWriter : IOutboxOperacionalWriter
         string eventType,
         string targetWorkflow,
         TPayload payload,
-        CancellationToken cancellationToken = default)
+        CancellationToken cancellationToken = default,
+        DateTimeOffset? scheduledAtUtc = null)
     {
         if (empresaId == Guid.Empty)
             throw new ArgumentException(
@@ -32,12 +34,22 @@ public sealed class OutboxOperacionalWriter : IOutboxOperacionalWriter
 
         if (aggregateId == Guid.Empty)
             throw new ArgumentException(
-                "O agregado de origem do evento é obrigatório.",
+                "O agregado de origem é obrigatório.",
                 nameof(aggregateId));
 
         ArgumentException.ThrowIfNullOrWhiteSpace(eventType);
         ArgumentException.ThrowIfNullOrWhiteSpace(targetWorkflow);
         ArgumentNullException.ThrowIfNull(payload);
+
+        var agora = DateTime.UtcNow;
+
+        var dataProgramada = scheduledAtUtc?
+            .UtcDateTime ?? agora;
+
+        if (dataProgramada < agora)
+            throw new ArgumentException(
+                "A data programada não pode estar no passado.",
+                nameof(scheduledAtUtc));
 
         var eventoExistente = await _context.OutboxMessages
             .AnyAsync(x =>
@@ -50,21 +62,23 @@ public sealed class OutboxOperacionalWriter : IOutboxOperacionalWriter
         if (eventoExistente)
             return;
 
-        var agora = DateTime.UtcNow;
-
         var mensagem = new OutboxOperacionalMessage
         {
             EmpresaId = empresaId,
             AggregateId = aggregateId,
             EventType = eventType,
             TargetWorkflow = targetWorkflow,
+
             Payload = JsonSerializer.Serialize(
                 payload,
-                new JsonSerializerOptions(JsonSerializerDefaults.Web)),
+                new JsonSerializerOptions(
+                    JsonSerializerDefaults.Web)),
+
             Status = OutboxMessageStatus.Pendente,
+
             Attempts = 0,
             OccurredAtUtc = agora,
-            NextAttemptAtUtc = agora
+            NextAttemptAtUtc = dataProgramada
         };
 
         await _context.OutboxMessages.AddAsync(

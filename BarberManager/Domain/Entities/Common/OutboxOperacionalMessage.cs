@@ -28,4 +28,6 @@ public class OutboxOperacionalMessage : EntityBase
     public DateTime? ProcessedAtUtc { get; set; }
 
     public string? LastError { get; set; }
+
+   
 }

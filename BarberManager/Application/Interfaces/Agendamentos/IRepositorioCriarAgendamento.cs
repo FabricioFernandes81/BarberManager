@@ -74,5 +74,9 @@ namespace Application.Interfaces.Agendamentos
         Task<ConfiguracaoAgendaEmpresa?> ObterConfiguracaoAgendaEmpresaAsync(
     Guid empresaId,
     CancellationToken cancellationToken);
+
+        Task<string?> ObterTelefoneClienteAsync(
+    Guid usuarioId,
+    CancellationToken cancellationToken);
     }
 }

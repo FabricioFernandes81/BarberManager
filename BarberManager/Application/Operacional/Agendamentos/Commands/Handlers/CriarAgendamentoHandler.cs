@@ -2,6 +2,8 @@
 using Application.Common.Middlewares.Handler;
 using Application.Common.Tenancy;
 using Application.Interfaces.Agendamentos;
+using Application.Interfaces.Financeiro;
+using Application.Operacional.Agendamentos.Events;
 using Application.Operacional.Agendamentos.Queries;
 using Domain.Entities.Agendamentos;
 using Domain.Entities.Common.Enuns;
@@ -13,13 +15,15 @@ namespace Application.Operacional.Agendamentos.Commands.Handlers
     {
         private readonly ITenantContext _tenantContext;
         private readonly IRepositorioCriarAgendamento _repositorio;
+        private readonly IOutboxOperacionalWriter _outboxWriter;
 
         public CriarAgendamentoHandler(
             ITenantContext tenantContext,
-            IRepositorioCriarAgendamento repositorio)
+            IRepositorioCriarAgendamento repositorio, IOutboxOperacionalWriter outboxWriter)
         {
             _tenantContext = tenantContext;
             _repositorio = repositorio;
+            _outboxWriter = outboxWriter;
         }
 
         public async Task<CriarAgendamentoDto> Handle(
@@ -328,6 +332,61 @@ namespace Application.Operacional.Agendamentos.Commands.Handlers
                 }
             };
 
+            // 17. Registrar o lembrete na Outbox.
+
+            const int antecedenciaMinutos = 12 * 60;
+
+            var dataProgramadaUtc = agendamento.DataHoraInicio
+                .AddMinutes(-antecedenciaMinutos)
+                .ToUniversalTime();
+
+            var agoraUtc = DateTimeOffset.UtcNow;
+
+            // Não gerar lembrete quando o agendamento ocorrer
+            // em menos de 12 horas.
+            if (dataProgramadaUtc > agoraUtc)
+            {
+                var telefoneCliente =
+                    await _repositorio.ObterTelefoneClienteAsync(
+                        cliente.UsuarioId,
+                        cancellationToken);
+
+                var nomeCliente = string.Join(
+                    " ",
+                    new[] { cliente.Nome, cliente.Sobrenome }
+                        .Where(x => !string.IsNullOrWhiteSpace(x)));
+
+                var nomeProfissional = string.Join(
+                    " ",
+                    new[] { profissional.Nome, profissional.Sobrenome }
+                        .Where(x => !string.IsNullOrWhiteSpace(x)));
+
+                var evento = new LembreteAgendamentoEvent(
+                    EmpresaId: empresaId,
+                    AgendamentoId: agendamento.Id,
+                    ClienteId: cliente.Id,
+                    ClienteNome: nomeCliente,
+                    TelefoneCliente: telefoneCliente,
+                    ProfissionalNome: nomeProfissional,
+                    ServicoNome: servico.Nome,
+                    DataHoraInicio: agendamento.DataHoraInicio,
+                    DataHoraFim: agendamento.DataHoraFim,
+                    AntecedenciaMinutos: antecedenciaMinutos
+                );
+
+                await _outboxWriter.AdicionarAsync(
+                    empresaId,
+                    agendamento.Id,
+                    "LembreteAgendamento",
+                    "NotificacaoWhatsApp",
+                    evento,
+                    cancellationToken,
+                    scheduledAtUtc: dataProgramadaUtc);
+            }
+
+            // 18. Persistir o agendamento.
+            // O TransactionMiddleware fará o commit,
+            // incluindo a mensagem da Outbox.
             await _repositorio.CriarAsync(
                 agendamento,
                 cancellationToken);
