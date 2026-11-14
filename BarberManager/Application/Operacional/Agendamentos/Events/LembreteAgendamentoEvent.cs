@@ -1,6 +1,7 @@
 ﻿namespace Application.Operacional.Agendamentos.Events;
 
 public sealed record LembreteAgendamentoEvent(
+    Guid EventId,
     Guid EmpresaId,
     Guid AgendamentoId,
     Guid ClienteId,
@@ -10,5 +11,7 @@ public sealed record LembreteAgendamentoEvent(
     string ServicoNome,
     DateTimeOffset DataHoraInicio,
     DateTimeOffset DataHoraFim,
-    int AntecedenciaMinutos
+    int AntecedenciaMinutos,
+    bool Notificavel,
+    string? MotivoNaoEnvio
 );

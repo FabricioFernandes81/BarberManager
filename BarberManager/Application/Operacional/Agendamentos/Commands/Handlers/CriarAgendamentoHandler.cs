@@ -2,6 +2,7 @@
 using Application.Common.Middlewares.Handler;
 using Application.Common.Tenancy;
 using Application.Interfaces.Agendamentos;
+using Application.Interfaces.Clientes;
 using Application.Interfaces.Financeiro;
 using Application.Operacional.Agendamentos.Events;
 using Application.Operacional.Agendamentos.Queries;
@@ -16,14 +17,17 @@ namespace Application.Operacional.Agendamentos.Commands.Handlers
         private readonly ITenantContext _tenantContext;
         private readonly IRepositorioCriarAgendamento _repositorio;
         private readonly IOutboxOperacionalWriter _outboxWriter;
-
+        private readonly IConsultaUsuarioIdentity _consultaUsuarioIdentity;
         public CriarAgendamentoHandler(
-            ITenantContext tenantContext,
-            IRepositorioCriarAgendamento repositorio, IOutboxOperacionalWriter outboxWriter)
+     ITenantContext tenantContext,
+     IRepositorioCriarAgendamento repositorio,
+     IOutboxOperacionalWriter outboxWriter,
+     IConsultaUsuarioIdentity consultaUsuarioIdentity)
         {
             _tenantContext = tenantContext;
             _repositorio = repositorio;
             _outboxWriter = outboxWriter;
+            _consultaUsuarioIdentity = consultaUsuarioIdentity;
         }
 
         public async Task<CriarAgendamentoDto> Handle(
@@ -332,46 +336,56 @@ namespace Application.Operacional.Agendamentos.Commands.Handlers
                 }
             };
 
-            // 17. Registrar o lembrete na Outbox.
+            // 17. Programar lembrete de confirmação no WhatsApp.
 
             const int antecedenciaMinutos = 12 * 60;
 
-            var dataProgramadaUtc = agendamento.DataHoraInicio
+            var dataProgramadaUtc = inicio
                 .AddMinutes(-antecedenciaMinutos)
                 .ToUniversalTime();
 
             var agoraUtc = DateTimeOffset.UtcNow;
 
-            // Não gerar lembrete quando o agendamento ocorrer
-            // em menos de 12 horas.
+            // Só cria o lembrete quando ainda não passou
+            // o horário programado para seu envio.
             if (dataProgramadaUtc > agoraUtc)
             {
-                var telefoneCliente =
-                    await _repositorio.ObterTelefoneClienteAsync(
-                        cliente.UsuarioId,
-                        cancellationToken);
+                var contato = await _consultaUsuarioIdentity.ObterContatoAsync(
+                    cliente.UsuarioId,
+                    cancellationToken);
 
-                var nomeCliente = string.Join(
+                var telefone = string.IsNullOrWhiteSpace(contato?.Telefone)
+                    ? null
+                    : contato.Telefone.Trim();
+
+                var clienteNome = string.Join(
                     " ",
                     new[] { cliente.Nome, cliente.Sobrenome }
                         .Where(x => !string.IsNullOrWhiteSpace(x)));
 
-                var nomeProfissional = string.Join(
+                var profissionalNome = string.Join(
                     " ",
                     new[] { profissional.Nome, profissional.Sobrenome }
                         .Where(x => !string.IsNullOrWhiteSpace(x)));
 
+                var motivoNaoEnvio = telefone is null
+                    ? "Telefone não cadastrado no Identity"
+                    : null;
+
                 var evento = new LembreteAgendamentoEvent(
+                    EventId: Guid.NewGuid(),
                     EmpresaId: empresaId,
                     AgendamentoId: agendamento.Id,
                     ClienteId: cliente.Id,
-                    ClienteNome: nomeCliente,
-                    TelefoneCliente: telefoneCliente,
-                    ProfissionalNome: nomeProfissional,
+                    ClienteNome: clienteNome,
+                    TelefoneCliente: telefone,
+                    ProfissionalNome: profissionalNome,
                     ServicoNome: servico.Nome,
                     DataHoraInicio: agendamento.DataHoraInicio,
                     DataHoraFim: agendamento.DataHoraFim,
-                    AntecedenciaMinutos: antecedenciaMinutos
+                    AntecedenciaMinutos: antecedenciaMinutos,
+                    Notificavel: telefone is not null,
+                    MotivoNaoEnvio: motivoNaoEnvio
                 );
 
                 await _outboxWriter.AdicionarAsync(
