@@ -37,6 +37,8 @@ namespace Infrastructure.Seeds.Clientes
             string Senha,
             string Nome,
             string Sobrenome,
+            string cpf,
+            string phoneNumber,
             DateTime DataNascimento);
 
         public static async Task InicializarAsync(
@@ -96,7 +98,10 @@ namespace Infrastructure.Seeds.Clientes
                 "Dev@Ana2026!",
                 "Ana",
                 "Souza",
-                
+                "61395499063",
+                "5551991234567",
+
+
                 new DateTime(1995, 5, 12)),
 
             new ClienteTeste(
@@ -105,6 +110,8 @@ namespace Infrastructure.Seeds.Clientes
                 "Dev@Bruno2026!",
                 "Bruno",
                 "Lima",
+                "31421134012",
+                "5551999999999",
                 new DateTime(1990, 8, 24))
         };
 
@@ -129,6 +136,7 @@ namespace Infrastructure.Seeds.Clientes
                         UsuarioId = usuario.Id,
                         Nome = dados.Nome,
                         Sobrenome = dados.Sobrenome,
+                        Cpf = dados.cpf,
                         DataNascimento = dados.DataNascimento,
                         Ativo = true
                     };
@@ -189,7 +197,8 @@ namespace Infrastructure.Seeds.Clientes
                 EmailConfirmed = true,
                 PhoneNumberConfirmed = false,
                 LockoutEnabled = false,
-                TwoFactorEnabled = false
+                TwoFactorEnabled = false,
+                PhoneNumber = dados.phoneNumber,
             };
 
             var resultado = await userManager.CreateAsync(
