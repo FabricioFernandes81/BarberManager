@@ -26,6 +26,7 @@ using Infrastructure.Repositories.Clientes;
 using Infrastructure.Repositories.Compras;
 using Infrastructure.Repositories.Financeiro;
 using Infrastructure.Repositories.Interfaces;
+using Infrastructure.Repositories.Notificacoes;
 using Infrastructure.Repositories.Produtos;
 using Infrastructure.Repositories.Servicos;
 using Infrastructure.Repositories.Vendas;
@@ -170,8 +171,12 @@ namespace Infrastructure
             services.AddScoped<
     IRepositorioDevolucaoCompra,
     RepositorioDevolucaoCompra>();
-
-
+            services.AddScoped<
+    IRepositorioConfiguracaoWhatsApp,
+    RepositorioConfiguracaoWhatsApp>();
+            services.AddHttpClient<
+    IEvolutionApiClient,
+    EvolutionApiClient>();
             return services;
         }
     }

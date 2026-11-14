@@ -18,16 +18,20 @@ public sealed class OutboxOperacionalWorker : BackgroundService
     private readonly N8nWebhookOptions _options;
     private readonly ILogger<OutboxOperacionalWorker> _logger;
 
+    private readonly IWebHostEnvironment _environment;
+
     public OutboxOperacionalWorker(
-        IServiceScopeFactory scopeFactory,
-        IHttpClientFactory httpClientFactory,
-        IOptions<N8nWebhookOptions> options,
-        ILogger<OutboxOperacionalWorker> logger)
+     IServiceScopeFactory scopeFactory,
+     IHttpClientFactory httpClientFactory,
+     IOptions<N8nWebhookOptions> options,
+     ILogger<OutboxOperacionalWorker> logger,
+     IWebHostEnvironment environment)
     {
         _scopeFactory = scopeFactory;
         _httpClientFactory = httpClientFactory;
         _options = options.Value;
         _logger = logger;
+        _environment = environment;
     }
 
     protected override async Task ExecuteAsync(
@@ -75,10 +79,11 @@ public sealed class OutboxOperacionalWorker : BackgroundService
     private async Task ProcessarLoteAsync(
         CancellationToken cancellationToken)
     {
-        if (string.IsNullOrWhiteSpace(_options.WebhookSecret))
+        if (_environment.IsDevelopment() &&
+      string.IsNullOrWhiteSpace(_options.WebhookSecret))
         {
             _logger.LogError(
-                "N8n:WebhookSecret não configurado. " +
+                "N8n:WebhookSecret não configurado no ambiente Development. " +
                 "A publicação da Outbox operacional foi suspensa.");
 
             return;
@@ -208,18 +213,7 @@ public sealed class OutboxOperacionalWorker : BackgroundService
                 HttpMethod.Post,
                 _options.NotificacaoWhatsAppWebhookUrl);
 
-            /*   request.Headers.Add(
-                   "X-Webhook-Secret",
-                   _options.WebhookSecret);*/
-            /*if (!string.IsNullOrWhiteSpace(_options.WebhookSecret))
-            {
-                request.Headers.Add(
-                    "X-Webhook-Secret",
-                    _options.WebhookSecret);
-            }
-            request.Headers.Add(
-                "X-Event-Id",
-                mensagem.Id.ToString());*/
+            
             request.Headers.Add(
     "X-Webhook-Secret",
     _options.WebhookSecret);

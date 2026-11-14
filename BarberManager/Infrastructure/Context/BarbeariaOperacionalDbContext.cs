@@ -5,6 +5,7 @@ using Domain.Entities.Common;
 using Domain.Entities.Compras;
 using Domain.Entities.Estoque;
 using Domain.Entities.Financeiro;
+using Domain.Entities.Notificacoes;
 using Domain.Entities.Produtos;
 using Domain.Entities.Profissionais;
 using Domain.Entities.Servicos;
@@ -13,6 +14,7 @@ using Infrastructure.Configurations.Financeiro;
 using Infrastructure.Configurations.Operacional;
 using Infrastructure.Configurations.Operacional.Compras;
 using Infrastructure.Configurations.Operacional.Estoque;
+using Infrastructure.Configurations.Operacional.Notificacoes;
 using Infrastructure.Configurations.Operacional.Produtos;
 using Infrastructure.Configurations.Operacional.Vendas;
 using Infrastructure.Configurations.Saas;
@@ -137,6 +139,11 @@ namespace Infrastructure.Context
 
         public DbSet<ConfiguracaoWhatsApp> ConfiguracoesWhatsApp
     => Set<ConfiguracaoWhatsApp>();
+
+        public DbSet<NotificacaoWhatsAppEnvio> NotificacoesWhatsAppEnvios
+    => Set<NotificacaoWhatsAppEnvio>();
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -225,7 +232,8 @@ namespace Infrastructure.Context
 
             modelBuilder.ApplyConfiguration(
             new ConfiguracaoWhatsAppConfiguration());
-
+            modelBuilder.ApplyConfiguration(
+    new NotificacaoWhatsAppEnvioConfiguration());
             SeedProfissionais.SeedProfissial(modelBuilder);
             SeedModuloServicos.SeedIniciarServico(modelBuilder);
             SeedPlanosAssinatura.InicializarSeed(modelBuilder);
