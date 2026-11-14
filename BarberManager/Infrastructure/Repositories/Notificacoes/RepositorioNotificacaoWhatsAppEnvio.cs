@@ -320,4 +320,21 @@ public sealed class RepositorioNotificacaoWhatsAppEnvio
             ? texto
             : texto[..TamanhoMaximoErro];
     }
+
+    public async Task<Guid?> ObterEmpresaIdDoEventoAsync(
+       Guid outboxEventId,
+       CancellationToken cancellationToken)
+    {
+        if (outboxEventId == Guid.Empty)
+            throw new ArgumentException(
+                "OutboxEventId inválido.",
+                nameof(outboxEventId));
+
+        return await _context.OutboxMessages
+            .Where(x =>
+                x.Id == outboxEventId &&
+                x.TargetWorkflow == WorkflowNotificacao)
+            .Select(x => x.EmpresaId)
+            .SingleOrDefaultAsync(cancellationToken);
+    }
 }

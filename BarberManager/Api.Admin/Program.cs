@@ -8,6 +8,7 @@ using Domain.Entities.AuthUsers;
 using Infrastructure;
 using Infrastructure.Context;
 using Infrastructure.Notifications;
+using Infrastructure.Security;
 using Infrastructure.Seeds.AuthUsers;
 using Infrastructure.Seeds.Clientes;
 using Infrastructure.Seeds.Operacional;
@@ -63,6 +64,9 @@ builder.Services.AddJwtAuthentication(
     builder.Configuration,
     "Operacional");
 
+
+builder.Services.AddN8nServiceAuthentication(
+    builder.Configuration);
 // ==========================================
 // 4. Autorização e aplicação
 // ==========================================

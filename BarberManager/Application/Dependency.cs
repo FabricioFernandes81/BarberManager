@@ -5,7 +5,9 @@ using Application.Common.Security;
 using Application.Interfaces;
 using Application.Interfaces.Empresas.Pagamentos;
 using Application.Interfaces.Financeiro;
+using Application.Interfaces.Notificacoes;
 using Application.Operacional.Financeiro.Services;
+using Application.Operacional.Notificacoes.Services;
 using Application.Saas.Pagamentos.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.DependencyInjection;
@@ -53,7 +55,9 @@ public static class Dependency
         services.AddScoped<
     IConfiguracaoAsaasService,
     ConfiguracaoAsaasService>();
-
+        services.AddScoped<
+    INotificacaoWhatsAppOrquestracaoService,
+    NotificacaoWhatsAppOrquestracaoService>();
         return services;
     }
 

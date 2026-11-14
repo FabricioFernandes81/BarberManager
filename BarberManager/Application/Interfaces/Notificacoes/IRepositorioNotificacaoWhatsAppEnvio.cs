@@ -60,4 +60,8 @@ public interface IRepositorioNotificacaoWhatsAppEnvio
         string motivo,
         DateTime dataTentativaUtc,
         CancellationToken cancellationToken);
+
+    Task<Guid?> ObterEmpresaIdDoEventoAsync(
+    Guid outboxEventId,
+    CancellationToken cancellationToken);
 }
