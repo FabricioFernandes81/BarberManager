@@ -8,6 +8,7 @@ using Application.Interfaces.Empresas;
 using Application.Interfaces.Empresas.Pagamentos;
 using Application.Interfaces.Estoque;
 using Application.Interfaces.Financeiro;
+using Application.Interfaces.Notificacoes;
 using Application.Interfaces.Produtos;
 using Application.Interfaces.Profissionais;
 using Application.Interfaces.Servicos;
@@ -147,6 +148,8 @@ namespace Infrastructure
             services.AddDataProtection();
 
             services.AddScoped< IProtecaoCredenciaisAsaas, ProtecaoCredenciaisAsaas>();
+
+            services.AddScoped<IProtecaoCredenciaisWhatsApp,ProtecaoCredenciaisWhatsApp>();
 
             services.AddScoped<IRepositorioConfiguracaoAssasClient,RepositorioConfiguracaoAssasClient>();
 
