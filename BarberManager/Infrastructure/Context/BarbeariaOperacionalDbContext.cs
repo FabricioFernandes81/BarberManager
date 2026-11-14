@@ -134,6 +134,9 @@ namespace Infrastructure.Context
 
         public DbSet<DevolucaoCompraItem> DevolucoesComprasItens =>
             Set<DevolucaoCompraItem>();
+
+        public DbSet<ConfiguracaoWhatsApp> ConfiguracoesWhatsApp
+    => Set<ConfiguracaoWhatsApp>();
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -220,7 +223,8 @@ namespace Infrastructure.Context
             modelBuilder.ApplyConfiguration(
                 new DevolucaoCompraItemConfiguration());
 
-
+            modelBuilder.ApplyConfiguration(
+            new ConfiguracaoWhatsAppConfiguration());
 
             SeedProfissionais.SeedProfissial(modelBuilder);
             SeedModuloServicos.SeedIniciarServico(modelBuilder);

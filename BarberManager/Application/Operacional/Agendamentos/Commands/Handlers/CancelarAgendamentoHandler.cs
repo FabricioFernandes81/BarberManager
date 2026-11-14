@@ -101,6 +101,14 @@ namespace Application.Operacional.Agendamentos.Commands.Handlers
             agendamento.CanceladoPorUsuarioId = _usuarioLogado.UsuarioId;
             agendamento.DataAtualizacao = DateTime.UtcNow;
 
+
+            // 8. Invalidar lembretes que ainda não foram enviados.
+
+            await _repositorio.InvalidarLembretesPendentesAsync(
+                empresaId,
+                agendamento.Id,
+                "Agendamento cancelado antes do envio do lembrete.",
+                cancellationToken);
             // Não chamar SaveChangesAsync.
             // O TransactionMiddleware é responsável pela persistência.
 

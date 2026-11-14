@@ -19,5 +19,12 @@ namespace Application.Interfaces.Agendamentos
                Guid empresaId,
                ObterAgendaPeriodoQuery query,
                CancellationToken cancellationToken);
+
+
+        Task InvalidarLembretesPendentesAsync(
+    Guid empresaId,
+    Guid agendamentoId,
+    string motivo,
+    CancellationToken cancellationToken);
     }
 }

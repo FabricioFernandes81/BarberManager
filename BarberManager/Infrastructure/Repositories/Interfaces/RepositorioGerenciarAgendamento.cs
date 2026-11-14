@@ -2,6 +2,7 @@
 using Application.Operacional.Agendamentos.DTOs;
 using Application.Operacional.Agendamentos.Queries;
 using Domain.Entities.Agendamentos;
+using Domain.Entities.Common;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
 using System;
@@ -110,6 +111,30 @@ namespace Infrastructure.Repositories.Interfaces
             a => a.EmpresaId == empresaId
               && a.Id == agendamentoId,
             cancellationToken);
+        }
+
+        public async Task InvalidarLembretesPendentesAsync(
+    Guid empresaId,
+    Guid agendamentoId,
+    string motivo,
+    CancellationToken cancellationToken)
+        {
+            var lembretesPendentes = await _dbContext.OutboxMessages
+                .Where(x =>
+                    x.EmpresaId == empresaId &&
+                    x.AggregateId == agendamentoId &&
+                    x.EventType == "LembreteAgendamento" &&
+                    x.TargetWorkflow == "NotificacaoWhatsApp" &&
+                    x.Status == OutboxMessageStatus.Pendente)
+                .ToListAsync(cancellationToken);
+
+            foreach (var lembrete in lembretesPendentes)
+            {
+                lembrete.Status = OutboxMessageStatus.Ignorada;
+                lembrete.ProcessedAtUtc = DateTime.UtcNow;
+                lembrete.LockedUntilUtc = null;
+                lembrete.LastError = motivo;
+            }
         }
     }
 }

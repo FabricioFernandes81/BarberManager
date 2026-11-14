@@ -169,6 +169,27 @@ public sealed class OutboxOperacionalWorker : BackgroundService
     {
         try
         {
+            var motivoInvalidacao = await ObterMotivoInvalidacaoAsync(
+    dbContext,
+    mensagem,
+    cancellationToken);
+
+            if (motivoInvalidacao is not null)
+            {
+                mensagem.Status = OutboxMessageStatus.Ignorada;
+                mensagem.ProcessedAtUtc = DateTime.UtcNow;
+                mensagem.LockedUntilUtc = null;
+                mensagem.LastError = motivoInvalidacao;
+
+                await dbContext.SaveChangesAsync(cancellationToken);
+
+                _logger.LogInformation(
+                    "Lembrete {EventId} ignorado. Motivo: {Motivo}",
+                    mensagem.Id,
+                    motivoInvalidacao);
+
+                return;
+            }
             using var payloadDocument =
                 JsonDocument.Parse(mensagem.Payload);
 
@@ -286,5 +307,84 @@ public sealed class OutboxOperacionalWorker : BackgroundService
         }
 
         await dbContext.SaveChangesAsync(cancellationToken);
+    }
+
+    private async Task<string?> ObterMotivoInvalidacaoAsync(
+    BarbeariaOperacionalDbContext dbContext,
+    OutboxOperacionalMessage mensagem,
+    CancellationToken cancellationToken)
+    {
+        // Outros eventos do workflow não passam por esta validação.
+        if (mensagem.EventType != "LembreteAgendamento")
+            return null;
+
+        if (!mensagem.EmpresaId.HasValue ||
+            !mensagem.AggregateId.HasValue)
+        {
+            return "Evento sem identificação da empresa ou agendamento.";
+        }
+
+        try
+        {
+            using var documento = JsonDocument.Parse(mensagem.Payload);
+
+            var dados = documento.RootElement;
+
+            // Verifica se o evento está habilitado para notificação.
+            if (!dados.TryGetProperty("notificavel", out var notificavel) ||
+                notificavel.ValueKind != JsonValueKind.True)
+            {
+                return "Agendamento não está habilitado para notificação.";
+            }
+
+            // Verifica se existe telefone do cliente.
+            if (!dados.TryGetProperty("telefoneCliente", out var telefone) ||
+                telefone.ValueKind != JsonValueKind.String ||
+                string.IsNullOrWhiteSpace(telefone.GetString()))
+            {
+                return "Cliente sem telefone válido para notificação.";
+            }
+
+            // Recupera a data original do evento.
+            if (!dados.TryGetProperty("dataHoraInicio", out var dataInicio) ||
+                !dataInicio.TryGetDateTimeOffset(out var dataHoraEvento))
+            {
+                return "Data de início inválida no evento de lembrete.";
+            }
+
+            // Consulta o estado atual do agendamento no banco.
+            var agendamento = await dbContext.Agendamentos
+                .AsNoTracking()
+                .SingleOrDefaultAsync(
+                    x =>
+                        x.EmpresaId == mensagem.EmpresaId.Value &&
+                        x.Id == mensagem.AggregateId.Value,
+                    cancellationToken);
+
+            if (agendamento is null)
+            {
+                return "Agendamento não encontrado.";
+            }
+
+            // Somente agendamentos ativos podem gerar o lembrete.
+            if (agendamento.Status is not (
+                StatusAgendamento.Pendente or
+                StatusAgendamento.Confirmado))
+            {
+                return $"Agendamento não está ativo. Status atual: {agendamento.Status}.";
+            }
+
+            // Evita enviar um lembrete referente a um horário antigo.
+            if (agendamento.DataHoraInicio != dataHoraEvento)
+            {
+                return "Data do agendamento foi alterada após a criação do lembrete.";
+            }
+
+            return null;
+        }
+        catch (JsonException)
+        {
+            return "Payload do lembrete possui formato JSON inválido.";
+        }
     }
 }

@@ -37,6 +37,7 @@ namespace Domain.Entities.Common
         Pendente = 0,
         Processando = 1,
         Entregue = 2,
-        FalhaPermanente = 3
+        FalhaPermanente = 3,
+        Ignorada = 4
     }
 }
