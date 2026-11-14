@@ -174,6 +174,10 @@ namespace Infrastructure
             services.AddScoped<
     IRepositorioConfiguracaoWhatsApp,
     RepositorioConfiguracaoWhatsApp>();
+
+            services.AddScoped<
+    IRepositorioNotificacaoWhatsAppEnvio,
+    RepositorioNotificacaoWhatsAppEnvio>();
             services.AddHttpClient<
     IEvolutionApiClient,
     EvolutionApiClient>();
