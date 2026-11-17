@@ -124,4 +124,5 @@ public sealed class N8nNotificacaoWhatsAppController : ControllerBase
 
         return Ok(new { registrado = true });
     }
+
 }

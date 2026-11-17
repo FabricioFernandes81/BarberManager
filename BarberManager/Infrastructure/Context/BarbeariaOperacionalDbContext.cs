@@ -142,7 +142,8 @@ namespace Infrastructure.Context
 
         public DbSet<NotificacaoWhatsAppEnvio> NotificacoesWhatsAppEnvios
     => Set<NotificacaoWhatsAppEnvio>();
-
+        public DbSet<RespostaWhatsAppProcessada> RespostasWhatsAppProcessadas
+    => Set<RespostaWhatsAppProcessada>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -234,6 +235,11 @@ namespace Infrastructure.Context
             new ConfiguracaoWhatsAppConfiguration());
             modelBuilder.ApplyConfiguration(
     new NotificacaoWhatsAppEnvioConfiguration());
+
+            modelBuilder.ApplyConfiguration(
+    new RespostaWhatsAppProcessadaConfiguration());
+
+
             SeedProfissionais.SeedProfissial(modelBuilder);
             SeedModuloServicos.SeedIniciarServico(modelBuilder);
             SeedPlanosAssinatura.InicializarSeed(modelBuilder);

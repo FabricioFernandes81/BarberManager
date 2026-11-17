@@ -181,6 +181,10 @@ namespace Infrastructure
             services.AddHttpClient<
     IEvolutionApiClient,
     EvolutionApiClient>();
+
+            services.AddScoped<
+    IRepositorioRespostaWhatsApp,
+    RepositorioRespostaWhatsApp>();
             return services;
         }
     }
