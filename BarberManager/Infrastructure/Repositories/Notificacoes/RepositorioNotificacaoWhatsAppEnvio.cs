@@ -1,10 +1,12 @@
 ﻿
-using System.Data;
 using Application.Interfaces.Notificacoes;
 using Domain.Entities.Common.Enuns;
 using Domain.Entities.Notificacoes;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
+using System.Data;
+using System.Diagnostics;
 
 namespace Infrastructure.Repositories.Notificacoes;
 
@@ -15,11 +17,14 @@ public sealed class RepositorioNotificacaoWhatsAppEnvio
     private const int TamanhoMaximoErro = 2000;
 
     private readonly BarbeariaOperacionalDbContext _context;
+    private readonly ILogger<RepositorioNotificacaoWhatsAppEnvio> _logger;
 
     public RepositorioNotificacaoWhatsAppEnvio(
-        BarbeariaOperacionalDbContext context)
+        BarbeariaOperacionalDbContext context,
+        ILogger<RepositorioNotificacaoWhatsAppEnvio> logger)
     {
         _context = context;
+        _logger = logger;
     }
 
     public async Task<NotificacaoWhatsAppEnvio?> ObterPorEventoAsync(
@@ -320,21 +325,66 @@ public sealed class RepositorioNotificacaoWhatsAppEnvio
             ? texto
             : texto[..TamanhoMaximoErro];
     }
-
     public async Task<Guid?> ObterEmpresaIdDoEventoAsync(
-       Guid outboxEventId,
-       CancellationToken cancellationToken)
+    Guid outboxEventId,
+    CancellationToken cancellationToken)
     {
         if (outboxEventId == Guid.Empty)
             throw new ArgumentException(
                 "OutboxEventId inválido.",
                 nameof(outboxEventId));
 
-        return await _context.OutboxMessages
-            .Where(x =>
-                x.Id == outboxEventId &&
-                x.TargetWorkflow == WorkflowNotificacao)
-            .Select(x => x.EmpresaId)
-            .SingleOrDefaultAsync(cancellationToken);
+        var inicio = Stopwatch.StartNew();
+
+        try
+        {
+            _logger.LogInformation(
+                "Consultando empresa do evento {OutboxEventId}. Token cancelado: {TokenCancelado}",
+                outboxEventId,
+                cancellationToken.IsCancellationRequested);
+
+            var empresaId = await _context.OutboxMessages
+                .AsNoTracking()
+                .Where(x =>
+                    x.Id == outboxEventId &&
+                    x.TargetWorkflow == WorkflowNotificacao)
+                .Select(x => (Guid?)x.EmpresaId)
+                .SingleOrDefaultAsync(cancellationToken);
+
+            _logger.LogInformation(
+                "Consulta do evento {OutboxEventId} concluída em {TempoMs} ms. Empresa encontrada: {Encontrada}",
+                outboxEventId,
+                inicio.ElapsedMilliseconds,
+                empresaId.HasValue);
+
+            return empresaId;
+        }
+        catch (OperationCanceledException ex)
+        {
+            _logger.LogError(
+                ex,
+                "Consulta cancelada para o evento {OutboxEventId}. Token cancelado: {TokenCancelado}. Tempo: {TempoMs} ms.",
+                outboxEventId,
+                cancellationToken.IsCancellationRequested,
+                inicio.ElapsedMilliseconds);
+
+            throw;
+        }
     }
+    /*  public async Task<Guid?> ObterEmpresaIdDoEventoAsync(
+         Guid outboxEventId,
+         CancellationToken cancellationToken)
+      {
+          if (outboxEventId == Guid.Empty)
+              throw new ArgumentException(
+                  "OutboxEventId inválido.",
+                  nameof(outboxEventId));
+
+          return await _context.OutboxMessages
+              .Where(x =>
+                  x.Id == outboxEventId &&
+                  x.TargetWorkflow == WorkflowNotificacao)
+              .Select(x => x.EmpresaId)
+              .FirstOrDefaultAsync(cancellationToken);
+      }*/
 }
