@@ -1,5 +1,6 @@
 ﻿
-using Application.Interfaces.Notificacoes;
+using Application.Dispatcher;
+using Application.Operacional.Notificacoes.Commands;
 using Application.Operacional.Notificacoes.DTOs;
 using Infrastructure.Security;
 using Microsoft.AspNetCore.Authorization;
@@ -14,12 +15,12 @@ namespace Api.Admin.Controllers.Integracoes;
         N8nServiceDefaults.AuthenticationScheme)]
 public sealed class N8nRespostaWhatsAppController : ControllerBase
 {
-    private readonly IProcessarRespostaWhatsAppService _service;
+    private readonly IDispatcher _dispatcher;
 
     public N8nRespostaWhatsAppController(
-        IProcessarRespostaWhatsAppService service)
+        IDispatcher dispatcher)
     {
-        _service = service;
+        _dispatcher = dispatcher;
     }
 
     /// <summary>
@@ -36,9 +37,17 @@ public sealed class N8nRespostaWhatsAppController : ControllerBase
             [FromBody] ProcessarRespostaWhatsAppRequest request,
             CancellationToken cancellationToken)
     {
-        var resultado = await _service.ProcessarAsync(
-            request,
-            cancellationToken);
+        var command = new ProcessarRespostaWhatsAppCommand(
+            Instance: request.Instance,
+            Telefone: request.Telefone,
+            Mensagem: request.Mensagem,
+            MessageId: request.MessageId);
+
+        var resultado = await _dispatcher.Command<
+            ProcessarRespostaWhatsAppCommand,
+            ProcessarRespostaWhatsAppResultadoDto>(
+                command,
+                cancellationToken);
 
         return Ok(resultado);
     }

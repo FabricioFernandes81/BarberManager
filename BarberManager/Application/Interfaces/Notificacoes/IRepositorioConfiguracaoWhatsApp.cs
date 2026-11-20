@@ -1,15 +1,22 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Domain.Entities.Operacional;
 
-namespace Application.Interfaces.Notificacoes
+namespace Application.Interfaces.Notificacoes;
+
+public interface IRepositorioConfiguracaoWhatsApp
 {
-    public interface IRepositorioConfiguracaoWhatsApp
-    {
-        Task<ConfiguracaoWhatsApp?> ObterAtivaPorEmpresaAsync(
-            Guid empresaId,
-            CancellationToken cancellationToken);
-    }
+    Task<ConfiguracaoWhatsApp?> ObterAtivaPorEmpresaAsync(
+        Guid empresaId,
+        CancellationToken cancellationToken);
+
+    Task AdicionarAsync(
+        ConfiguracaoWhatsApp configuracao,
+        CancellationToken cancellationToken);
+
+    Task AtualizarAsync(
+        ConfiguracaoWhatsApp configuracao,
+        CancellationToken cancellationToken);
+
+    Task<ConfiguracaoWhatsApp?> ObterPorEmpresaAsync(
+    Guid empresaId,
+    CancellationToken cancellationToken);
 }

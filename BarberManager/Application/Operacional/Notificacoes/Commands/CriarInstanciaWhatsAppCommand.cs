@@ -1,0 +1,3 @@
+﻿namespace Application.Operacional.Notificacoes.Commands;
+
+public sealed record CriarInstanciaWhatsAppCommand;

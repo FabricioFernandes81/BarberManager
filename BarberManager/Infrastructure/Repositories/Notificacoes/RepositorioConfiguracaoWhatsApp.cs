@@ -27,4 +27,29 @@ public sealed class RepositorioConfiguracaoWhatsApp
                      x.Ativo,
                 cancellationToken);
     }
+
+    public async Task AdicionarAsync(
+    ConfiguracaoWhatsApp configuracao,
+    CancellationToken cancellationToken)
+    {
+        await _context.ConfiguracoesWhatsApp.AddAsync(
+            configuracao,
+            cancellationToken);
+
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public async Task AtualizarAsync(
+        ConfiguracaoWhatsApp configuracao,
+        CancellationToken cancellationToken)
+    {
+        _context.ConfiguracoesWhatsApp.Update(configuracao);
+
+        await _context.SaveChangesAsync(cancellationToken);
+    }
+
+    public Task<ConfiguracaoWhatsApp?> ObterPorEmpresaAsync(Guid empresaId, CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
 }

@@ -98,7 +98,14 @@ namespace Infrastructure
                     client.Timeout = TimeSpan.FromSeconds(70);
                 });
 
+            services.Configure<EvolutionOptions>(
+    configuration.GetSection(EvolutionOptions.SectionName));
 
+            services.AddHttpClient<IEvolutionInstanceClient, EvolutionInstanceClient>(
+                client =>
+                {
+                    client.Timeout = TimeSpan.FromSeconds(30);
+                });
 
             services.AddHttpClient<
                         IAsaasOperacionalClient,

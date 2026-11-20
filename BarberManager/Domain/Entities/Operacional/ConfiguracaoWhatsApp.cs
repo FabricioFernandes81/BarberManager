@@ -1,4 +1,5 @@
 ﻿using Domain.Entities.Common;
+using Domain.Entities.Operacional.Enums;
 
 public class ConfiguracaoWhatsApp : EntityBase
 {
@@ -15,4 +16,7 @@ public class ConfiguracaoWhatsApp : EntityBase
     public bool Ativo { get; set; } = true;
 
     public DateTime? DataConexao { get; set; }
+
+    public StatusConexaoWhatsApp StatusConexao { get; set; }
+    = StatusConexaoWhatsApp.Provisionando;
 }
