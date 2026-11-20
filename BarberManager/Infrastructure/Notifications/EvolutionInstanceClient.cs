@@ -17,6 +17,7 @@ public sealed class EvolutionInstanceClient : IEvolutionInstanceClient
         _httpClient = httpClient;
         _options = options.Value;
     }
+    public string BaseUrl => _options.BaseUrl;
 
     public async Task<CriarInstanciaEvolutionResultadoDto>
         CriarInstanciaAsync(

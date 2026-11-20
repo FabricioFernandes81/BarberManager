@@ -2,6 +2,8 @@
 
 public interface IEvolutionInstanceClient
 {
+    string BaseUrl { get; }
+
     Task<CriarInstanciaEvolutionResultadoDto> CriarInstanciaAsync(
         string instanceName,
         string instanceToken,
