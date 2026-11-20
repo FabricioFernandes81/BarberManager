@@ -5,8 +5,8 @@ using Application.Operacional.Notificacoes.DTOs;
 using Domain.Entities.Operacional.Enums;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using System.Security.Cryptography;
+
 namespace Application.Operacional.Notificacoes.Commands.Handlers;
 
 public sealed class CriarInstanciaWhatsAppHandler
@@ -16,22 +16,20 @@ public sealed class CriarInstanciaWhatsAppHandler
     private readonly IRepositorioConfiguracaoWhatsApp _repositorio;
     private readonly IEvolutionInstanceClient _evolutionClient;
     private readonly IProtecaoCredenciaisWhatsApp _protecao;
-    private readonly IOptions<EvolutionOptions> _evolutionOptions;
+   
     private readonly ILogger<CriarInstanciaWhatsAppHandler> _logger;
 
     public CriarInstanciaWhatsAppHandler(
-        ITenantContext tenantContext,
-        IRepositorioConfiguracaoWhatsApp repositorio,
-        IEvolutionInstanceClient evolutionClient,
-        IProtecaoCredenciaisWhatsApp protecao,
-        IOptions<EvolutionOptions> evolutionOptions,
-        ILogger<CriarInstanciaWhatsAppHandler> logger)
+    ITenantContext tenantContext,
+    IRepositorioConfiguracaoWhatsApp repositorio,
+    IEvolutionInstanceClient evolutionClient,
+    IProtecaoCredenciaisWhatsApp protecao,
+    ILogger<CriarInstanciaWhatsAppHandler> logger)
     {
         _tenantContext = tenantContext;
         _repositorio = repositorio;
         _evolutionClient = evolutionClient;
         _protecao = protecao;
-        _evolutionOptions = evolutionOptions;
         _logger = logger;
     }
 
@@ -82,7 +80,7 @@ public sealed class CriarInstanciaWhatsAppHandler
             {
                 EmpresaId = empresaId,
                 InstanceName = instanceName,
-                BaseUrl = _evolutionOptions.Value.BaseUrl,
+                BaseUrl = _evolutionClient.BaseUrl,
                 Ativo = true,
                 StatusConexao = StatusConexaoWhatsApp.Provisionando
             };
@@ -94,7 +92,7 @@ public sealed class CriarInstanciaWhatsAppHandler
         else
         {
             configuracao.InstanceName = instanceName;
-            configuracao.BaseUrl = _evolutionOptions.Value.BaseUrl;
+            configuracao.BaseUrl = _evolutionClient.BaseUrl;
             configuracao.Ativo = true;
             configuracao.StatusConexao =
                 StatusConexaoWhatsApp.Provisionando;

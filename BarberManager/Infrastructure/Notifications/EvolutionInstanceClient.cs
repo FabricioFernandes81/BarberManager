@@ -44,12 +44,24 @@ public sealed class EvolutionInstanceClient : IEvolutionInstanceClient
             "apikey",
             _options.GlobalApiKey);
 
+
         request.Content = JsonContent.Create(new
         {
             instanceName,
             token = instanceToken,
-            qrcode = true
+            qrcode = true,
+            integration = "WHATSAPP-BAILEYS",
+
+            webhook = new
+            {
+                enabled = true,
+                url = _options.WebhookUrl,
+                byEvents = false,
+                base64 = false,
+                events = _options.WebhookEvents
+            }
         });
+
 
         using var response = await _httpClient.SendAsync(
             request,
@@ -63,9 +75,10 @@ public sealed class EvolutionInstanceClient : IEvolutionInstanceClient
         {
             throw new HttpRequestException(
                 $"Falha ao criar instância Evolution. " +
-                $"HTTP {(int)response.StatusCode}.",
-            null,
-            response.StatusCode);
+                $"HTTP {(int)response.StatusCode}. " +
+                $"Resposta: {conteudo}",
+                null,
+                response.StatusCode);
         }
 
         using var documento = JsonDocument.Parse(conteudo);
@@ -121,6 +134,21 @@ public sealed class EvolutionInstanceClient : IEvolutionInstanceClient
         if (string.IsNullOrWhiteSpace(_options.GlobalApiKey))
             throw new InvalidOperationException(
                 "Evolution:GlobalApiKey não configurada.");
+
+        if (string.IsNullOrWhiteSpace(_options.WebhookUrl))
+            throw new InvalidOperationException(
+                "Evolution:WebhookUrl não configurada.");
+
+        if (!Uri.TryCreate(
+                _options.WebhookUrl,
+                UriKind.Absolute,
+                out var webhookUri) ||
+            webhookUri.Scheme != Uri.UriSchemeHttps)
+        {
+            throw new InvalidOperationException(
+                "Evolution:WebhookUrl inválida. Utilize uma URL HTTPS.");
+        }
+
 
         if (!Uri.TryCreate(
                 _options.BaseUrl,

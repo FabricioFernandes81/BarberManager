@@ -1,0 +1,3 @@
+﻿namespace Application.Operacional.Notificacoes.Queries;
+
+public sealed record ObterConfiguracaoWhatsAppQuery;

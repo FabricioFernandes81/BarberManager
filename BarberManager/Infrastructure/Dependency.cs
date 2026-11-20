@@ -98,8 +98,7 @@ namespace Infrastructure
                     client.Timeout = TimeSpan.FromSeconds(70);
                 });
 
-            services.Configure<EvolutionOptions>(
-    configuration.GetSection(EvolutionOptions.SectionName));
+  
 
             services.AddHttpClient<IEvolutionInstanceClient, EvolutionInstanceClient>(
                 client =>
@@ -192,6 +191,10 @@ namespace Infrastructure
             services.AddScoped<
     IRepositorioRespostaWhatsApp,
     RepositorioRespostaWhatsApp>();
+
+            services.Configure<EvolutionOptions>(
+    configuration.GetSection(EvolutionOptions.SectionName));
+
             return services;
         }
     }

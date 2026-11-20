@@ -40,16 +40,32 @@ public sealed class RepositorioConfiguracaoWhatsApp
     }
 
     public async Task AtualizarAsync(
-        ConfiguracaoWhatsApp configuracao,
-        CancellationToken cancellationToken)
+     ConfiguracaoWhatsApp configuracao,
+     CancellationToken cancellationToken)
     {
-        _context.ConfiguracoesWhatsApp.Update(configuracao);
+        var entry = _context.Entry(configuracao);
+
+        if (entry.State == EntityState.Detached)
+        {
+            _context.ConfiguracoesWhatsApp.Update(configuracao);
+        }
 
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public Task<ConfiguracaoWhatsApp?> ObterPorEmpresaAsync(Guid empresaId, CancellationToken cancellationToken)
+    public async Task<ConfiguracaoWhatsApp?> ObterPorEmpresaAsync(
+       Guid empresaId,
+       CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        if (empresaId == Guid.Empty)
+            throw new ArgumentException(
+                "EmpresaId inválido.",
+                nameof(empresaId));
+
+        return await _context.ConfiguracoesWhatsApp
+            .AsNoTracking()
+            .SingleOrDefaultAsync(
+                x => x.EmpresaId == empresaId,
+                cancellationToken);
     }
 }

@@ -43,8 +43,17 @@ builder.Services.AddHttpClient(
             Math.Max(1, options.HttpTimeoutSeconds));
     });
 
+builder.Configuration.AddUserSecrets<Program>(
+    optional: true);
+
 builder.Services.AddHostedService<OutboxOperacionalWorker>();
 
+
+var evolutionKey = builder.Configuration[
+    "Evolution:GlobalApiKey"];
+
+Console.WriteLine(
+    $"Evolution GlobalApiKey carregada: {!string.IsNullOrWhiteSpace(evolutionKey)}");
 // ==========================================
 // 2. Identity
 // ==========================================
