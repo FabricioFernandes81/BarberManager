@@ -336,20 +336,24 @@ namespace Application.Operacional.Agendamentos.Commands.Handlers
                 }
             };
 
+
             // 17. Programar lembrete de confirmação no WhatsApp.
 
             const int antecedenciaMinutos = 12 * 60;
+
+            var agoraUtc = DateTimeOffset.UtcNow;
 
             var dataProgramadaUtc = inicio
                 .AddMinutes(-antecedenciaMinutos)
                 .ToUniversalTime();
 
-            var agoraUtc = DateTimeOffset.UtcNow;
-
-            // Só cria o lembrete quando ainda não passou
-            // o horário programado para seu envio.
-            if (dataProgramadaUtc > agoraUtc)
+            // Só cria lembrete para agendamentos que ainda não começaram.
+            if (inicio.ToUniversalTime() > agoraUtc)
             {
+                // Se o horário ideal já passou, programa para execução imediata.
+                if (dataProgramadaUtc <= agoraUtc)
+                    dataProgramadaUtc = agoraUtc;
+
                 var contato = await _consultaUsuarioIdentity.ObterContatoAsync(
                     cliente.UsuarioId,
                     cancellationToken);
@@ -389,14 +393,17 @@ namespace Application.Operacional.Agendamentos.Commands.Handlers
                 );
 
                 await _outboxWriter.AdicionarAsync(
-                    empresaId,
-                    agendamento.Id,
-                    "LembreteAgendamento",
-                    "NotificacaoWhatsApp",
-                    evento,
-                    cancellationToken,
-                    scheduledAtUtc: dataProgramadaUtc);
+                     empresaId,
+                     agendamento.Id,
+                     "LembreteAgendamento",
+                     "NotificacaoWhatsApp",
+                     evento,
+                     cancellationToken,
+                     scheduledAtUtc: dataProgramadaUtc > agoraUtc
+                     ? dataProgramadaUtc
+                     : null);
             }
+
 
             // 18. Persistir o agendamento.
             // O TransactionMiddleware fará o commit,

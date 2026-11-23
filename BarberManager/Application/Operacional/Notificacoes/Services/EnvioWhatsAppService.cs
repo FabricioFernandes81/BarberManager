@@ -58,6 +58,32 @@ public sealed class EnvioWhatsAppService : IEnvioWhatsAppService
                 "O envio não possui uma reserva válida para processamento.");
         }
 
+
+        // Confirma que telefone e conteúdo são exatamente os reservados.
+        var telefoneNormalizado = request.Telefone.Trim();
+
+        var dadosHash = Encoding.UTF8.GetBytes(
+            $"{telefoneNormalizado}\n{request.Conteudo}");
+
+        var hashAtual = Convert.ToHexString(
+            SHA256.HashData(dadosHash));
+
+        if (!string.Equals(
+                envio.HashConteudo,
+                hashAtual,
+                StringComparison.OrdinalIgnoreCase))
+        {
+            throw ErroValidacao(
+                "O conteúdo da notificação foi alterado após a reserva.");
+        }
+        var agoraUtc = DateTime.UtcNow;
+
+        if (!envio.LeaseExpiraEmUtc.HasValue ||
+            envio.LeaseExpiraEmUtc.Value <= agoraUtc)
+        {
+            throw ErroValidacao(
+                "A reserva do envio expirou. É necessário verificar o estado da notificação.");
+        }
         // Recupera a configuração específica da empresa.
         var configuracao = await _repositorioConfiguracao
             .ObterPorEmpresaAsync(
@@ -99,7 +125,7 @@ public sealed class EnvioWhatsAppService : IEnvioWhatsAppService
             configuracao.InstanceName,
             apiKey,
             NormalizarTelefone(request.Telefone),
-            request.Conteudo.Trim(),
+            request.Conteudo,
             cancellationToken);
 
         return new EnviarMensagemWhatsAppResultadoDto(

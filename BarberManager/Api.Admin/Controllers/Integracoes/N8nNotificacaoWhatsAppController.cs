@@ -1,4 +1,5 @@
-﻿using Application.Interfaces.Notificacoes;
+﻿
+using Application.Interfaces.Notificacoes;
 using Application.Operacional.Notificacoes.DTOs;
 using Infrastructure.Security;
 using Microsoft.AspNetCore.Authorization;
@@ -14,11 +15,14 @@ namespace Api.Admin.Controllers.Integracoes;
 public sealed class N8nNotificacaoWhatsAppController : ControllerBase
 {
     private readonly INotificacaoWhatsAppOrquestracaoService _service;
+    private readonly IEnvioWhatsAppService _envioWhatsAppService;
 
     public N8nNotificacaoWhatsAppController(
-        INotificacaoWhatsAppOrquestracaoService service)
+        INotificacaoWhatsAppOrquestracaoService service,
+        IEnvioWhatsAppService envioWhatsAppService)
     {
         _service = service;
+        _envioWhatsAppService = envioWhatsAppService;
     }
 
     /// <summary>
@@ -38,6 +42,29 @@ public sealed class N8nNotificacaoWhatsAppController : ControllerBase
         var resultado = await _service.ReservarAsync(
             request,
             cancellationToken);
+
+        return Ok(resultado);
+    }
+
+    /// <summary>
+    /// Envia uma mensagem utilizando a instância WhatsApp
+    /// configurada para a empresa proprietária do evento.
+    /// </summary>
+    [HttpPost("enviar")]
+    [ProducesResponseType(
+        typeof(EnviarMensagemWhatsAppResultadoDto),
+        StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status409Conflict)]
+    public async Task<ActionResult<EnviarMensagemWhatsAppResultadoDto>>
+        Enviar(
+            [FromBody] EnviarMensagemWhatsAppRequest request,
+            CancellationToken cancellationToken)
+    {
+        var resultado = await _envioWhatsAppService.EnviarAsync(
+    request,
+    cancellationToken);
 
         return Ok(resultado);
     }
@@ -124,5 +151,4 @@ public sealed class N8nNotificacaoWhatsAppController : ControllerBase
 
         return Ok(new { registrado = true });
     }
-
 }

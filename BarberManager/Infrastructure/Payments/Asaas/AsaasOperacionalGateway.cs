@@ -321,8 +321,23 @@ public sealed class AsaasOperacionalGateway : IAsaasOperacionalGateway
 
         var statusCode = response.StatusCode;
 
+        // Identificação da requisição que falhou.
+        var metodoHttp = response.RequestMessage?.Method.Method
+            ?? "Desconhecido";
+
+        var endpoint = response.RequestMessage?.RequestUri?.AbsolutePath
+            ?? "Desconhecido";
+
+        // Corpo original retornado pelo Asaas.
         var corpoResposta = await response.Content.ReadAsStringAsync(
             cancellationToken);
+
+        Console.WriteLine("========== ERRO ASAAS ==========");
+        Console.WriteLine($"Método HTTP: {metodoHttp}");
+        Console.WriteLine($"Endpoint: {endpoint}");
+        Console.WriteLine($"Código HTTP: {(int)statusCode}");
+        Console.WriteLine($"Corpo da resposta: {corpoResposta}");
+        Console.WriteLine("================================");
 
         var detalhes = new List<string>();
 
@@ -360,7 +375,7 @@ public sealed class AsaasOperacionalGateway : IAsaasOperacionalGateway
         }
         catch (JsonException)
         {
-            // Não incluir o corpo bruto da resposta na exceção.
+            // Corpo não retornado em formato JSON válido.
         }
 
         var mensagem = detalhes.Count > 0
@@ -373,6 +388,68 @@ public sealed class AsaasOperacionalGateway : IAsaasOperacionalGateway
             null,
             statusCode);
     }
+
+    /* private static async Task GarantirSucessoAsync(
+         HttpResponseMessage response,
+         CancellationToken cancellationToken)
+     {
+         if (response.IsSuccessStatusCode)
+             return;
+
+         var statusCode = response.StatusCode;
+
+         var corpoResposta = await response.Content.ReadAsStringAsync(
+             cancellationToken);
+
+         var detalhes = new List<string>();
+
+         try
+         {
+             using var documento = JsonDocument.Parse(corpoResposta);
+
+             if (documento.RootElement.TryGetProperty(
+                     "errors",
+                     out var errors) &&
+                 errors.ValueKind == JsonValueKind.Array)
+             {
+                 foreach (var erro in errors.EnumerateArray())
+                 {
+                     var codigo = erro.TryGetProperty(
+                         "code",
+                         out var codeElement)
+                         ? codeElement.GetString()
+                         : null;
+
+                     var descricao = erro.TryGetProperty(
+                         "description",
+                         out var descriptionElement)
+                         ? descriptionElement.GetString()
+                         : null;
+
+                     if (!string.IsNullOrWhiteSpace(codigo) ||
+                         !string.IsNullOrWhiteSpace(descricao))
+                     {
+                         detalhes.Add(
+                             $"{codigo}: {descricao}".Trim(':', ' '));
+                     }
+                 }
+             }
+         }
+         catch (JsonException)
+         {
+             // Não incluir o corpo bruto da resposta na exceção.
+         }
+
+         var mensagem = detalhes.Count > 0
+             ? string.Join(" | ", detalhes)
+             : "O Asaas não forneceu detalhes estruturados do erro.";
+
+         throw new HttpRequestException(
+             $"Falha na comunicação com o Asaas. " +
+             $"HTTP {(int)statusCode}. {mensagem}",
+             null,
+             statusCode);
+     }*/
 
     public async Task<IReadOnlyList<CobrancaOperacionalResultadoDto>>
     ListarCobrancasPorReferenciaAsync(

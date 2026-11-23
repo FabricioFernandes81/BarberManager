@@ -94,11 +94,11 @@ namespace Infrastructure.Seeds.Clientes
             {
             new ClienteTeste(
                 UsuarioAnaId,
-                "ana.cliente@barbermanager.local",
-                "Dev@Ana2026!",
-                "Ana",
+                "ana.cliente1@barbermanager.local",
+                "Dev01@Ana2026!",
+                "Ana Carolina",
                 "Souza",
-                "61395499063",
+                "19054201029",
                 "5551991234567",
 
 
@@ -107,8 +107,8 @@ namespace Infrastructure.Seeds.Clientes
             new ClienteTeste(
                 UsuarioBrunoId,
                 "bruno.cliente@barbermanager.local",
-                "Dev@Bruno2026!",
-                "Bruno",
+                "Dev01@Bruno2026!",
+                "Bruno Felipe",
                 "Lima",
                 "31421134012",
                 "5551999999999",
