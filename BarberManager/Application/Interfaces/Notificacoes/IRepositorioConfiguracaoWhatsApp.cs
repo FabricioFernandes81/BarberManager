@@ -19,4 +19,8 @@ public interface IRepositorioConfiguracaoWhatsApp
     Task<ConfiguracaoWhatsApp?> ObterPorEmpresaAsync(
     Guid empresaId,
     CancellationToken cancellationToken);
+
+    Task<ConfiguracaoWhatsApp?> ObterPorInstanceNameAsync(
+    string instanceName,
+    CancellationToken cancellationToken);
 }

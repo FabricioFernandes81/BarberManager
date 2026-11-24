@@ -68,4 +68,25 @@ public sealed class RepositorioConfiguracaoWhatsApp
                 x => x.EmpresaId == empresaId,
                 cancellationToken);
     }
+
+    public async Task<ConfiguracaoWhatsApp?> ObterPorInstanceNameAsync(
+    string instanceName,
+    CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(instanceName))
+            throw new ArgumentException(
+                "InstanceName inválido.",
+                nameof(instanceName));
+
+        var instanceNormalizada = instanceName.Trim();
+
+        var tamanho = instanceNormalizada.Length;
+        var primeiroCaracter = instanceNormalizada[0];
+        var codigoPrimeiroCaracter = (int)instanceNormalizada[0];
+
+        return await _context.ConfiguracoesWhatsApp
+            .SingleOrDefaultAsync(
+                x => x.InstanceName == instanceNormalizada,
+                cancellationToken);
+    }
 }
