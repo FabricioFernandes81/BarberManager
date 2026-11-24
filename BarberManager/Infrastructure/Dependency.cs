@@ -192,6 +192,11 @@ namespace Infrastructure
     IRepositorioRespostaWhatsApp,
     RepositorioRespostaWhatsApp>();
 
+            services.AddScoped<
+    IRepositorioInteracaoWhatsApp,
+    RepositorioInteracaoWhatsApp>();
+
+
             services.Configure<EvolutionOptions>(
     configuration.GetSection(EvolutionOptions.SectionName));
 
