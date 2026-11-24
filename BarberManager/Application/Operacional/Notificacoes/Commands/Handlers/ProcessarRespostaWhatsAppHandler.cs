@@ -117,11 +117,27 @@ public sealed class ProcessarRespostaWhatsAppHandler
 
         if (elegiveis.Count > 1)
         {
+            /*  return Resultado(
+                  false,
+                  "MultiplosAgendamentos",
+                  "Existe mais de um agendamento elegível. " +
+                  "É necessário identificar qual deles deseja alterar.");*/
+            var opcoes = elegiveis
+        .Select(a => new AgendamentoElegivelRespostaWhatsAppDto(
+            a.Id,
+            a.DataHoraInicio,
+            string.Join(", ",
+                a.Servicos
+                    .OrderBy(s => s.Ordem)
+                    .Select(s => s.NomeServico)),
+            $"{a.Profissional.Nome} {a.Profissional.Sobrenome}".Trim()))
+        .ToList();
+
             return Resultado(
                 false,
                 "MultiplosAgendamentos",
-                "Existe mais de um agendamento elegível. " +
-                "É necessário identificar qual deles deseja alterar.");
+                "Existe mais de um agendamento elegível. Escolha um deles.",
+                agendamentos: opcoes);
         }
 
         var agendamentoId = elegiveis[0].Id;
@@ -279,12 +295,14 @@ public sealed class ProcessarRespostaWhatsAppHandler
         bool processado,
         string status,
         string mensagem,
-        Guid? agendamentoId = null)
+        Guid? agendamentoId = null,
+        IReadOnlyCollection<AgendamentoElegivelRespostaWhatsAppDto>? agendamentos = null)
     {
         return new ProcessarRespostaWhatsAppResultadoDto(
             processado,
             status,
             mensagem,
-            agendamentoId);
+            agendamentoId,
+            agendamentos);
     }
 }

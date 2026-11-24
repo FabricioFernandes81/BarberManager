@@ -4,4 +4,6 @@ public sealed record ProcessarRespostaWhatsAppResultadoDto(
     bool Processado,
     string Status,
     string Mensagem,
-    Guid? AgendamentoId = null);
+    Guid? AgendamentoId = null,
+    IReadOnlyCollection<AgendamentoElegivelRespostaWhatsAppDto>?
+        Agendamentos = null);

@@ -112,11 +112,16 @@ public sealed class RepositorioRespostaWhatsApp
 
         var clientes = clientesIds.Distinct().ToList();
 
+        var agoraUtc = DateTimeOffset.UtcNow;
+
         return await _operacionalContext.Agendamentos
             .AsNoTracking()
+            .Include(a => a.Profissional)
+            .Include(a => a.Servicos)
             .Where(a =>
                 a.EmpresaId == empresaId &&
                 clientes.Contains(a.ClienteId) &&
+                a.DataHoraInicio >= agoraUtc &&
                 (a.Status == StatusAgendamento.Pendente ||
                  a.Status == StatusAgendamento.Confirmado))
             .OrderBy(a => a.DataHoraInicio)
