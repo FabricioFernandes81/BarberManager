@@ -82,4 +82,33 @@ public sealed class RepositorioInteracaoWhatsApp
                      x.Status == StatusInteracaoWhatsApp.AguardandoConfirmacao),
                 cancellationToken);
     }
+
+    public async Task<bool> MensagemJaProcessadaAsync(
+    Guid empresaId,
+    string providerMessageId,
+    CancellationToken cancellationToken)
+    {
+        if (empresaId == Guid.Empty ||
+            string.IsNullOrWhiteSpace(providerMessageId))
+        {
+            return false;
+        }
+
+        return await _context.RespostasWhatsAppProcessadas
+            .AnyAsync(
+                x => x.EmpresaId == empresaId &&
+                     x.ProviderMessageId == providerMessageId.Trim(),
+                cancellationToken);
+    }
+
+    public async Task AdicionarRespostaProcessadaAsync(
+        RespostaWhatsAppProcessada resposta,
+        CancellationToken cancellationToken)
+    {
+        ArgumentNullException.ThrowIfNull(resposta);
+
+        await _context.RespostasWhatsAppProcessadas.AddAsync(
+            resposta,
+            cancellationToken);
+    }
 }

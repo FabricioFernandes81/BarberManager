@@ -20,4 +20,13 @@ public interface IRepositorioInteracaoWhatsApp
         string telefone,
         Guid interacaoId,
         CancellationToken cancellationToken);
+
+    Task<bool> MensagemJaProcessadaAsync(
+    Guid empresaId,
+    string providerMessageId,
+    CancellationToken cancellationToken);
+
+    Task AdicionarRespostaProcessadaAsync(
+        RespostaWhatsAppProcessada resposta,
+        CancellationToken cancellationToken);
 }
