@@ -59,6 +59,10 @@ public static class Dependency
     INotificacaoWhatsAppOrquestracaoService,
     NotificacaoWhatsAppOrquestracaoService>();
 
+        services.AddScoped<
+    IInteracaoWhatsAppService,
+    InteracaoWhatsAppService>();
+
         services.AddScoped<  IEnvioWhatsAppService,  EnvioWhatsAppService>();
         return services;
     }

@@ -1,8 +1,11 @@
 ﻿
 using Application.Common.Middlewares.Handler;
+using Application.Interfaces.Financeiro;
 using Application.Interfaces.Notificacoes;
-using Application.Operacional.Notificacoes.DTOs;
 using Application.Operacional.Notificacoes.Commands;
+using Application.Operacional.Notificacoes.DTOs;
+using Application.Operacional.Notificacoes.Events;
+using Domain.Common.Enums;
 using Domain.Entities.Common.Enuns;
 using Domain.Entities.Notificacoes;
 using System.Globalization;
@@ -16,11 +19,20 @@ public sealed class ProcessarRespostaWhatsAppHandler
         ProcessarRespostaWhatsAppResultadoDto>
 {
     private readonly IRepositorioRespostaWhatsApp _repositorio;
+    private readonly IRepositorioInteracaoWhatsApp _repositorioInteracao;
+    private readonly IInteracaoWhatsAppService _interacaoWhatsAppService;
+    private readonly IOutboxOperacionalWriter _outboxWriter;
 
     public ProcessarRespostaWhatsAppHandler(
-        IRepositorioRespostaWhatsApp repositorio)
+     IRepositorioRespostaWhatsApp repositorio,
+     IRepositorioInteracaoWhatsApp repositorioInteracao,
+     IInteracaoWhatsAppService interacaoWhatsAppService,
+     IOutboxOperacionalWriter outboxWriter)
     {
         _repositorio = repositorio;
+        _repositorioInteracao = repositorioInteracao;
+        _interacaoWhatsAppService = interacaoWhatsAppService;
+        _outboxWriter = outboxWriter;
     }
 
     public async Task<ProcessarRespostaWhatsAppResultadoDto> Handle(
@@ -29,21 +41,14 @@ public sealed class ProcessarRespostaWhatsAppHandler
     {
         ValidarRequest(command);
 
-        var comando = NormalizarComando(command.Mensagem);
-
-        if (comando is not ("SIM" or "NAO"))
-        {
-            return Resultado(
-                false,
-                "MensagemNaoReconhecida",
-                "Responda SIM para confirmar ou NÃO para cancelar.");
-        }
-
+        var mensagem = NormalizarComando(command.Mensagem);
         var telefone = NormalizarTelefone(command.Telefone);
+        var instance = command.Instance.Trim();
+        var messageId = command.MessageId.Trim();
 
         var empresaId =
             await _repositorio.ObterEmpresaPorInstanciaAsync(
-                command.Instance,
+                instance,
                 cancellationToken);
 
         if (!empresaId.HasValue)
@@ -54,10 +59,10 @@ public sealed class ProcessarRespostaWhatsAppHandler
                 "A instância WhatsApp não está configurada ou ativa.");
         }
 
-        // Idempotência: evita processar a mesma mensagem novamente.
+        // Impede o reprocessamento de mensagens já recebidas.
         if (await _repositorio.MensagemJaProcessadaAsync(
             empresaId.Value,
-            command.MessageId,
+            messageId,
             cancellationToken))
         {
             return Resultado(
@@ -66,9 +71,225 @@ public sealed class ProcessarRespostaWhatsAppHandler
                 "Esta mensagem já foi processada.");
         }
 
+        // Primeiro verifica se existe uma interação aguardando resposta.
+        var interacao =
+            await _repositorioInteracao.ObterInteracaoAtivaAsync(
+                empresaId.Value,
+                instance,
+                telefone,
+                cancellationToken);
+
+        if (interacao is not null)
+        {
+            return await ProcessarInteracaoAtivaAsync(
+                interacao,
+                empresaId.Value,
+                instance,
+                telefone,
+                mensagem,
+                messageId,
+                cancellationToken);
+        }
+
+        // Sem interação ativa, somente SIM ou NAO iniciam o fluxo.
+        if (mensagem is not ("SIM" or "NAO"))
+        {
+            return Resultado(
+                false,
+                "MensagemNaoReconhecida",
+                "Não existe uma seleção pendente. Responda SIM para confirmar ou NÃO para cancelar.");
+        }
+
+        return await ProcessarNovaRespostaAsync(
+            empresaId.Value,
+            instance,
+            telefone,
+            mensagem,
+            messageId,
+            cancellationToken);
+    }
+
+    private async Task<ProcessarRespostaWhatsAppResultadoDto>
+        ProcessarInteracaoAtivaAsync(
+            InteracaoWhatsAppPendente interacao,
+            Guid empresaId,
+            string instance,
+            string telefone,
+            string mensagem,
+            string messageId,
+            CancellationToken cancellationToken)
+    {
+        if (interacao.Status == StatusInteracaoWhatsApp.AguardandoSelecao)
+        {
+            if (!int.TryParse(
+                mensagem,
+                NumberStyles.None,
+                CultureInfo.InvariantCulture,
+                out var ordem) ||
+                ordem <= 0)
+            {
+                return Resultado(
+                    false,
+                    "AguardandoSelecao",
+                    "Escolha uma das opções enviadas respondendo apenas com o número correspondente.");
+            }
+
+            var resultado =
+     await _interacaoWhatsAppService.SelecionarOpcaoAsync(
+         empresaId,
+         instance,
+         telefone,
+         ordem,
+         messageId,
+         cancellationToken);
+
+            if (resultado.Processado)
+            {
+                var conteudo = MontarMensagemSolicitarConfirmacao(resultado);
+
+                var evento = new MensagemInteracaoWhatsAppEvent(
+                    EventId: Guid.NewGuid(),
+                    EmpresaId: empresaId,
+                    InteracaoId: resultado.InteracaoId,
+                    AgendamentoId: resultado.AgendamentoId,
+                    Telefone: telefone,
+                    Conteudo: conteudo,
+                    TipoMensagem: "SolicitarConfirmacao",
+                    ProviderMessageIdOrigem: messageId);
+
+                await _outboxWriter.AdicionarAsync(
+                    empresaId,
+                    evento.EventId,
+                    "MensagemInteracaoWhatsApp",
+                    "NotificacaoWhatsApp",
+                    evento,
+                    cancellationToken);
+            }
+
+            return Resultado(
+                resultado.Processado,
+                resultado.Status,
+                resultado.Mensagem,
+                resultado.AgendamentoId);
+        }
+
+        if (interacao.Status == StatusInteracaoWhatsApp.AguardandoConfirmacao)
+        {
+            if (mensagem == "SIM")
+            {
+                var resultado =
+                    await _interacaoWhatsAppService.ConcluirInteracaoAsync(
+                        empresaId,
+                        instance,
+                        telefone,
+                        messageId,
+                        cancellationToken);
+
+                if (resultado.Processado)
+                {
+                    await RegistrarMensagemSaidaAsync(
+                        empresaId,
+                        resultado.InteracaoId,
+                        resultado.AgendamentoId,
+                        telefone,
+                        resultado.Mensagem,
+                        "AgendamentoConfirmado",
+                        messageId,
+                        cancellationToken);
+                }
+
+                return Resultado(
+                    resultado.Processado,
+                    resultado.Status,
+                    resultado.Mensagem,
+                    resultado.AgendamentoId);
+            }
+
+            if (mensagem == "NAO")
+            {
+                var resultado =
+                    await _interacaoWhatsAppService.CancelarInteracaoAsync(
+                        empresaId,
+                        instance,
+                        telefone,
+                        messageId,
+                        cancellationToken);
+
+                if (resultado.Processado)
+                {
+                    await RegistrarMensagemSaidaAsync(
+                        empresaId,
+                        resultado.InteracaoId,
+                        resultado.AgendamentoId,
+                        telefone,
+                        resultado.Mensagem,
+                        "InteracaoCancelada",
+                        messageId,
+                        cancellationToken);
+                }
+
+                return Resultado(
+                    resultado.Processado,
+                    resultado.Status,
+                    resultado.Mensagem,
+                    resultado.AgendamentoId);
+            }
+
+            return Resultado(
+                false,
+                "AguardandoConfirmacao",
+                "Responda SIM para confirmar a opção selecionada ou NÃO para cancelar a operação.");
+        }
+
+        return Resultado(
+            false,
+            "InteracaoIndisponivel",
+            "Não foi possível continuar esta interação. Inicie uma nova solicitação.");
+    }
+
+    private static string MontarMensagemSolicitarConfirmacao(
+    ResultadoInteracaoWhatsAppDto resultado)
+    {
+        var mensagem = new StringBuilder();
+
+        mensagem.AppendLine("Confira o agendamento selecionado:");
+        mensagem.AppendLine();
+
+        if (resultado.DataHoraInicio.HasValue)
+        {
+            mensagem.AppendLine(
+                $"Data: {resultado.DataHoraInicio.Value.ToString(
+                    "dd/MM/yyyy 'às' HH:mm",
+                    CultureInfo.GetCultureInfo("pt-BR"))}");
+        }
+
+        if (!string.IsNullOrWhiteSpace(resultado.Servicos))
+            mensagem.AppendLine($"Serviços: {resultado.Servicos}");
+
+        if (!string.IsNullOrWhiteSpace(resultado.Profissional))
+            mensagem.AppendLine($"Profissional: {resultado.Profissional}");
+
+        mensagem.AppendLine();
+        mensagem.AppendLine("Deseja prosseguir com esta operação?");
+        mensagem.AppendLine();
+        mensagem.AppendLine("Responda:");
+        mensagem.AppendLine("SIM - para confirmar.");
+        mensagem.AppendLine("NÃO - para cancelar a operação.");
+
+        return mensagem.ToString();
+    }
+    private async Task<ProcessarRespostaWhatsAppResultadoDto>
+        ProcessarNovaRespostaAsync(
+            Guid empresaId,
+            string instance,
+            string telefone,
+            string comando,
+            string messageId,
+            CancellationToken cancellationToken)
+    {
         var clientesIds =
             await _repositorio.ObterClientesPorTelefoneAsync(
-                empresaId.Value,
+                empresaId,
                 telefone,
                 cancellationToken);
 
@@ -82,21 +303,21 @@ public sealed class ProcessarRespostaWhatsAppHandler
 
         if (clientesIds.Count > 1)
         {
+
             return Resultado(
                 false,
                 "ClienteAmbiguo",
-                "Este telefone está associado a mais de um cadastro. " +
-                "É necessária uma identificação adicional.");
+                "Este telefone está associado a mais de um cadastro. É necessária uma identificação adicional.");
         }
 
         var agendamentos =
             await _repositorio.ObterAgendamentosElegiveisAsync(
-                empresaId.Value,
+                empresaId,
                 clientesIds,
                 cancellationToken);
 
         // SIM: somente agendamentos pendentes.
-        // NÃO: pendentes ou confirmados.
+        // NAO: agendamentos pendentes ou confirmados.
         var elegiveis = comando == "SIM"
             ? agendamentos
                 .Where(a => a.Status == StatusAgendamento.Pendente)
@@ -117,35 +338,84 @@ public sealed class ProcessarRespostaWhatsAppHandler
 
         if (elegiveis.Count > 1)
         {
-            /*  return Resultado(
-                  false,
-                  "MultiplosAgendamentos",
-                  "Existe mais de um agendamento elegível. " +
-                  "É necessário identificar qual deles deseja alterar.");*/
             var opcoes = elegiveis
-        .Select(a => new AgendamentoElegivelRespostaWhatsAppDto(
-            a.Id,
-            a.DataHoraInicio,
-            string.Join(", ",
-                a.Servicos
-                    .OrderBy(s => s.Ordem)
-                    .Select(s => s.NomeServico)),
-            $"{a.Profissional.Nome} {a.Profissional.Sobrenome}".Trim()))
-        .ToList();
+                .Select(a => new AgendamentoElegivelRespostaWhatsAppDto(
+                    a.Id,
+                    a.DataHoraInicio,
+                    string.Join(", ",
+                        a.Servicos
+                            .OrderBy(s => s.Ordem)
+                            .Select(s => s.NomeServico)),
+                    $"{a.Profissional.Nome} {a.Profissional.Sobrenome}".Trim()))
+                .ToList();
+
+            var tipoInteracao = comando == "SIM"
+                ? TipoInteracaoWhatsApp.ConfirmarAgendamento
+                : TipoInteracaoWhatsApp.CancelarAgendamento;
+
+            var interacaoId =
+     await _interacaoWhatsAppService.CriarInteracaoAsync(
+         empresaId,
+         clientesIds[0],
+         instance,
+         telefone,
+         tipoInteracao,
+         messageId,
+         opcoes,
+         cancellationToken);
+
+            // Monta a mensagem com as opções disponíveis.
+            var conteudo = MontarMensagemListaOpcoes(opcoes);
+
+            // Cada mensagem possui seu próprio identificador.
+            var evento = new MensagemInteracaoWhatsAppEvent(
+                EventId: Guid.NewGuid(),
+                EmpresaId: empresaId,
+                InteracaoId: interacaoId,
+                AgendamentoId: null,
+                Telefone: telefone,
+                Conteudo: conteudo,
+                TipoMensagem: "ListaOpcoes",
+                ProviderMessageIdOrigem: messageId);
+
+            // Registra a mensagem na Outbox.
+            await _outboxWriter.AdicionarAsync(
+                empresaId,
+                evento.EventId,
+                "MensagemInteracaoWhatsApp",
+                "NotificacaoWhatsApp",
+                evento,
+                cancellationToken);
+
+            // Registra a mensagem que originou a interação.
+            // Isso impede que uma repetição do webhook crie outra interação.
+            await _repositorio.AdicionarRespostaProcessadaAsync(
+                new RespostaWhatsAppProcessada
+                {
+                    EmpresaId = empresaId,
+                    InstanceName = instance,
+                    ProviderMessageId = messageId,
+                    Telefone = telefone,
+                    Comando = comando,
+                    AgendamentoId = null,
+                    Resultado = "InteracaoCriada",
+                    DataProcessamentoUtc = DateTime.UtcNow
+                },
+                cancellationToken);
 
             return Resultado(
                 false,
                 "MultiplosAgendamentos",
-                "Existe mais de um agendamento elegível. Escolha um deles.",
+                "Existe mais de um agendamento elegível. Escolha uma das opções enviadas.",
                 agendamentos: opcoes);
         }
 
+        // Mantém o fluxo anterior quando existe apenas um agendamento.
         var agendamentoId = elegiveis[0].Id;
 
-        // Busca a entidade rastreada para atualização.
         var agendamento =
             await _repositorio.ObterAgendamentoParaAtualizacaoAsync(
-                empresaId.Value,
+                empresaId,
                 agendamentoId,
                 cancellationToken);
 
@@ -186,50 +456,94 @@ public sealed class ProcessarRespostaWhatsAppHandler
 
             agendamento.Status = StatusAgendamento.Cancelado;
             agendamento.DataCancelamento = DateTimeOffset.UtcNow;
-
             agendamento.MotivoCancelamento =
                 "Cancelado pelo cliente via WhatsApp.";
-
             agendamento.CanceladoPorUsuarioId = null;
             agendamento.DataAtualizacao = agora;
 
             await _repositorio.InvalidarLembretesPendentesAsync(
-                empresaId.Value,
+                empresaId,
                 agendamento.Id,
                 "Agendamento cancelado pelo cliente via WhatsApp.",
                 cancellationToken);
         }
 
-        var respostaProcessada = new RespostaWhatsAppProcessada
-        {
-            EmpresaId = empresaId.Value,
-            InstanceName = command.Instance.Trim(),
-            ProviderMessageId = command.MessageId.Trim(),
-            Telefone = telefone,
-            Comando = comando,
-            AgendamentoId = agendamento.Id,
-            Resultado = comando == "SIM"
-                ? "Confirmado"
-                : "Cancelado",
-            DataProcessamentoUtc = agora
-        };
-
         await _repositorio.AdicionarRespostaProcessadaAsync(
-            respostaProcessada,
+            new RespostaWhatsAppProcessada
+            {
+                EmpresaId = empresaId,
+                InstanceName = instance,
+                ProviderMessageId = messageId,
+                Telefone = telefone,
+                Comando = comando,
+                AgendamentoId = agendamento.Id,
+                Resultado = comando == "SIM"
+                    ? "Confirmado"
+                    : "Cancelado",
+                DataProcessamentoUtc = agora
+            },
             cancellationToken);
 
-        // Não chamar SaveChangesAsync nem CommitTransactionAsync.
-        // O TransactionMiddleware controla a unidade de trabalho.
+        await RegistrarMensagemSaidaAsync(
+                empresaId,
+                interacaoId: null,
+                agendamentoId: agendamento.Id,
+                telefone: telefone,
+                conteudo: comando == "SIM"
+                    ? "Agendamento confirmado com sucesso."
+                    : "Agendamento cancelado com sucesso.",
+                tipoMensagem: comando == "SIM"
+                    ? "AgendamentoConfirmado"
+                    : "AgendamentoCancelado",
+                providerMessageIdOrigem: messageId,
+                cancellationToken: cancellationToken);
 
+
+        // O TransactionMiddleware controla SaveChanges e Commit.
         return Resultado(
             true,
-            respostaProcessada.Resultado,
+            comando == "SIM" ? "Confirmado" : "Cancelado",
             comando == "SIM"
                 ? "Agendamento confirmado com sucesso."
                 : "Agendamento cancelado com sucesso.",
             agendamento.Id);
     }
+    private static string MontarMensagemListaOpcoes(
+     IReadOnlyCollection<AgendamentoElegivelRespostaWhatsAppDto> opcoes)
+    {
+        var mensagem = new StringBuilder();
 
+        mensagem.AppendLine(
+            "Identificamos mais de um agendamento associado ao seu telefone.");
+
+        mensagem.AppendLine();
+        mensagem.AppendLine("Escolha uma das opções abaixo:");
+
+        var ordem = 1;
+
+        foreach (var opcao in opcoes.OrderBy(x => x.DataHoraInicio))
+        {
+            mensagem.AppendLine();
+
+            mensagem.AppendLine(
+                $"{ordem++}. {opcao.DataHoraInicio.ToString(
+                    "dd/MM/yyyy 'às' HH:mm",
+                    CultureInfo.GetCultureInfo("pt-BR"))}");
+
+            mensagem.AppendLine($"Serviços: {opcao.Servicos}");
+            mensagem.AppendLine($"Profissional: {opcao.Profissional}");
+        }
+
+        mensagem.AppendLine();
+        mensagem.AppendLine(
+            "Responda com o número correspondente ao agendamento desejado.");
+
+        mensagem.AppendLine();
+        mensagem.AppendLine(
+            "Após selecionar, você deverá confirmar a operação.");
+
+        return mensagem.ToString();
+    }
     private static void ValidarRequest(
         ProcessarRespostaWhatsAppCommand command)
     {
@@ -277,6 +591,34 @@ public sealed class ProcessarRespostaWhatsAppHandler
         return normalizado;
     }
 
+    private async Task RegistrarMensagemSaidaAsync(
+    Guid empresaId,
+    Guid? interacaoId,
+    Guid? agendamentoId,
+    string telefone,
+    string conteudo,
+    string tipoMensagem,
+    string providerMessageIdOrigem,
+    CancellationToken cancellationToken)
+    {
+        var evento = new MensagemInteracaoWhatsAppEvent(
+            EventId: Guid.NewGuid(),
+            EmpresaId: empresaId,
+            InteracaoId: interacaoId,
+            AgendamentoId: agendamentoId,
+            Telefone: telefone,
+            Conteudo: conteudo,
+            TipoMensagem: tipoMensagem,
+            ProviderMessageIdOrigem: providerMessageIdOrigem);
+
+        await _outboxWriter.AdicionarAsync(
+            empresaId,
+            evento.EventId,
+            "MensagemInteracaoWhatsApp",
+            "NotificacaoWhatsApp",
+            evento,
+            cancellationToken);
+    }
     private static string NormalizarComando(string mensagem)
     {
         var texto = mensagem.Trim()
@@ -296,7 +638,8 @@ public sealed class ProcessarRespostaWhatsAppHandler
         string status,
         string mensagem,
         Guid? agendamentoId = null,
-        IReadOnlyCollection<AgendamentoElegivelRespostaWhatsAppDto>? agendamentos = null)
+        IReadOnlyCollection<AgendamentoElegivelRespostaWhatsAppDto>?
+            agendamentos = null)
     {
         return new ProcessarRespostaWhatsAppResultadoDto(
             processado,

@@ -1,6 +1,4 @@
 ﻿
-using Application.Common;
-using Application.Common.Transactions;
 using Application.Interfaces.Agendamentos;
 using Application.Interfaces.Notificacoes;
 using Application.Operacional.Notificacoes.DTOs;
@@ -10,22 +8,19 @@ using Domain.Entities.Notificacoes;
 
 namespace Application.Operacional.Notificacoes.Services;
 
-public sealed class InteracaoWhatsAppService
-    : IInteracaoWhatsAppService
+public sealed class InteracaoWhatsAppService : IInteracaoWhatsAppService
 {
     private readonly IRepositorioInteracaoWhatsApp _repositorio;
-    private readonly IUnitOfWorkFactory _unitOfWorkFactory;
-    private readonly IRepositorioGerenciarAgendamento  _repositorioAgendamento;
+    private readonly IRepositorioGerenciarAgendamento _repositorioAgendamento;
+
     private static readonly TimeSpan DuracaoInteracao =
         TimeSpan.FromMinutes(10);
 
     public InteracaoWhatsAppService(
-    IRepositorioInteracaoWhatsApp repositorio,
-    IUnitOfWorkFactory unitOfWorkFactory,
-    IRepositorioGerenciarAgendamento repositorioAgendamento)
+        IRepositorioInteracaoWhatsApp repositorio,
+        IRepositorioGerenciarAgendamento repositorioAgendamento)
     {
         _repositorio = repositorio;
-        _unitOfWorkFactory = unitOfWorkFactory;
         _repositorioAgendamento = repositorioAgendamento;
     }
 
@@ -49,87 +44,61 @@ public sealed class InteracaoWhatsAppService
 
         var agora = DateTimeOffset.UtcNow;
 
-        await using var unitOfWork =
-            _unitOfWorkFactory.Create(TransactionContext.Operacional);
+        var interacaoAtiva =
+            await _repositorio.ObterInteracaoAtivaAsync(
+                empresaId,
+                instanceName,
+                telefone,
+                cancellationToken);
 
-        await unitOfWork.BeginTransactionAsync(cancellationToken);
-
-        try
+        if (interacaoAtiva is not null)
         {
-            var interacaoAtiva =
-                await _repositorio.ObterInteracaoAtivaAsync(
-                    empresaId,
-                    instanceName,
-                    telefone,
-                    cancellationToken);
-
-            if (interacaoAtiva is not null)
+            if (interacaoAtiva.ExpiraEmUtc > agora)
             {
-                if (interacaoAtiva.ExpiraEmUtc > agora)
+                throw new InvalidOperationException(
+                    "Já existe uma interação ativa para este telefone.");
+            }
+
+            interacaoAtiva.Status =
+                StatusInteracaoWhatsApp.Expirada;
+
+            interacaoAtiva.DataAtualizacao = agora.UtcDateTime;
+        }
+
+        var interacao = new InteracaoWhatsAppPendente
+        {
+            EmpresaId = empresaId,
+            ClienteId = clienteId,
+            InstanceName = instanceName.Trim(),
+            Telefone = telefone.Trim(),
+            TipoInteracao = tipoInteracao,
+            Status = StatusInteracaoWhatsApp.AguardandoSelecao,
+            MessageIdOrigem = messageIdOrigem.Trim(),
+            CriadaEmUtc = agora,
+            ExpiraEmUtc = agora.Add(DuracaoInteracao)
+        };
+
+        var ordem = 1;
+
+        foreach (var agendamento in agendamentos
+            .OrderBy(x => x.DataHoraInicio))
+        {
+            interacao.Opcoes.Add(
+                new OpcaoInteracaoWhatsApp
                 {
-                    throw new InvalidOperationException(
-                        "Já existe uma interação ativa para este telefone.");
-                }
-
-                interacaoAtiva.Status =
-                    StatusInteracaoWhatsApp.Expirada;
-
-                interacaoAtiva.DataAtualizacao = agora.UtcDateTime;
-            }
-
-            var interacao = new InteracaoWhatsAppPendente
-            {
-                EmpresaId = empresaId,
-                ClienteId = clienteId,
-                InstanceName = instanceName.Trim(),
-                Telefone = telefone.Trim(),
-                TipoInteracao = tipoInteracao,
-                Status = StatusInteracaoWhatsApp.AguardandoSelecao,
-                MessageIdOrigem = messageIdOrigem.Trim(),
-                CriadaEmUtc = agora,
-                ExpiraEmUtc = agora.Add(DuracaoInteracao)
-            };
-
-            var ordem = 1;
-
-            foreach (var agendamento in agendamentos
-                .OrderBy(x => x.DataHoraInicio))
-            {
-                interacao.Opcoes.Add(
-                    new OpcaoInteracaoWhatsApp
-                    {
-                        AgendamentoId = agendamento.AgendamentoId,
-                        Ordem = ordem++,
-                        DataHoraInicioSnapshot =
-                            agendamento.DataHoraInicio,
-                        ServicosSnapshot = agendamento.Servicos,
-                        ProfissionalSnapshot = agendamento.Profissional
-                    });
-            }
-
-            await _repositorio.AdicionarAsync(
-                interacao,
-                cancellationToken);
-
-            await unitOfWork.CommitTransactionAsync(
-                cancellationToken);
-
-            return interacao.Id;
+                    AgendamentoId = agendamento.AgendamentoId,
+                    Ordem = ordem++,
+                    DataHoraInicioSnapshot = agendamento.DataHoraInicio,
+                    ServicosSnapshot = agendamento.Servicos,
+                    ProfissionalSnapshot = agendamento.Profissional
+                });
         }
-        catch
-        {
-            try
-            {
-                await unitOfWork.RollbackTransactionAsync(
-                    CancellationToken.None);
-            }
-            catch
-            {
-                // Preserva a exceção original.
-            }
 
-            throw;
-        }
+        await _repositorio.AdicionarAsync(
+            interacao,
+            cancellationToken);
+
+        return interacao.Id;
     }
 
     public async Task<ResultadoInteracaoWhatsAppDto> SelecionarOpcaoAsync(
@@ -152,139 +121,99 @@ public sealed class InteracaoWhatsAppService
                 "Número da opção inválido.");
         }
 
-        await using var unitOfWork =
-            _unitOfWorkFactory.Create(TransactionContext.Operacional);
-
-        await unitOfWork.BeginTransactionAsync(cancellationToken);
-
-        try
+        if (await _repositorio.MensagemJaProcessadaAsync(
+            empresaId,
+            providerMessageId,
+            cancellationToken))
         {
-            if (await _repositorio.MensagemJaProcessadaAsync(
+            return new ResultadoInteracaoWhatsAppDto(
+                false,
+                "MensagemDuplicada",
+                "Esta mensagem já foi processada.");
+        }
+
+        var interacao =
+            await _repositorio.ObterInteracaoAtivaAsync(
                 empresaId,
-                providerMessageId,
-                cancellationToken))
-            {
-                await unitOfWork.RollbackTransactionAsync(
-                    CancellationToken.None);
+                instanceName,
+                telefone,
+                cancellationToken);
 
-                return new ResultadoInteracaoWhatsAppDto(
-                    false,
-                    "MensagemDuplicada",
-                    "Esta mensagem já foi processada.");
-            }
+        if (interacao is null)
+        {
+            return new ResultadoInteracaoWhatsAppDto(
+                false,
+                "InteracaoNaoEncontrada",
+                "Não encontramos uma seleção pendente.");
+        }
 
-            var interacao =
-                await _repositorio.ObterInteracaoAtivaAsync(
-                    empresaId,
-                    instanceName,
-                    telefone,
-                    cancellationToken);
+        var agora = DateTimeOffset.UtcNow;
 
-            if (interacao is null)
-            {
-                await unitOfWork.RollbackTransactionAsync(
-                    CancellationToken.None);
-
-                return new ResultadoInteracaoWhatsAppDto(
-                    false,
-                    "InteracaoNaoEncontrada",
-                    "Não encontramos uma seleção pendente.");
-            }
-
-            var agora = DateTimeOffset.UtcNow;
-
-            if (interacao.ExpiraEmUtc <= agora)
-            {
-                interacao.Status =
-                    StatusInteracaoWhatsApp.Expirada;
-
-                interacao.DataAtualizacao = agora.UtcDateTime;
-
-                await unitOfWork.CommitTransactionAsync(
-                    cancellationToken);
-
-                return new ResultadoInteracaoWhatsAppDto(
-                    false,
-                    "InteracaoExpirada",
-                    "O prazo para selecionar o agendamento expirou.");
-            }
-
-            if (interacao.Status !=
-                StatusInteracaoWhatsApp.AguardandoSelecao)
-            {
-                await unitOfWork.RollbackTransactionAsync(
-                    CancellationToken.None);
-
-                return new ResultadoInteracaoWhatsAppDto(
-                    false,
-                    "SelecaoNaoPermitida",
-                    "A interação não está aguardando uma seleção.");
-            }
-
-            var opcao = interacao.Opcoes
-                .SingleOrDefault(x => x.Ordem == ordem);
-
-            if (opcao is null)
-            {
-                await unitOfWork.RollbackTransactionAsync(
-                    CancellationToken.None);
-
-                return new ResultadoInteracaoWhatsAppDto(
-                    false,
-                    "OpcaoInvalida",
-                    "Número inválido. Escolha uma das opções apresentadas.");
-            }
-
-            interacao.AgendamentoSelecionadoId =
-                opcao.AgendamentoId;
-
+        if (interacao.ExpiraEmUtc <= agora)
+        {
             interacao.Status =
-                StatusInteracaoWhatsApp.AguardandoConfirmacao;
+                StatusInteracaoWhatsApp.Expirada;
 
             interacao.DataAtualizacao = agora.UtcDateTime;
 
-            await _repositorio.AdicionarRespostaProcessadaAsync(
-                new RespostaWhatsAppProcessada
-                {
-                    EmpresaId = empresaId,
-                    InstanceName = instanceName.Trim(),
-                    ProviderMessageId = providerMessageId.Trim(),
-                    Telefone = telefone.Trim(),
-                    Comando = ordem.ToString(),
-                    AgendamentoId = opcao.AgendamentoId,
-                    Resultado = "OpcaoSelecionada",
-                    DataProcessamentoUtc = agora.UtcDateTime
-                },
-                cancellationToken);
-
-            await unitOfWork.CommitTransactionAsync(
-                cancellationToken);
-
             return new ResultadoInteracaoWhatsAppDto(
-                true,
-                "AguardandoConfirmacao",
-                "Confirme se deseja prosseguir com este agendamento.",
-                interacao.Id,
-                opcao.AgendamentoId,
-                opcao.Ordem,
-                opcao.DataHoraInicioSnapshot,
-                opcao.ServicosSnapshot,
-                opcao.ProfissionalSnapshot);
+                false,
+                "InteracaoExpirada",
+                "O prazo para selecionar o agendamento expirou.");
         }
-        catch
-        {
-            try
-            {
-                await unitOfWork.RollbackTransactionAsync(
-                    CancellationToken.None);
-            }
-            catch
-            {
-                // Preserva a exceção original.
-            }
 
-            throw;
+        if (interacao.Status !=
+            StatusInteracaoWhatsApp.AguardandoSelecao)
+        {
+            return new ResultadoInteracaoWhatsAppDto(
+                false,
+                "SelecaoNaoPermitida",
+                "A interação não está aguardando uma seleção.");
         }
+
+        var opcao = interacao.Opcoes
+            .SingleOrDefault(x => x.Ordem == ordem);
+
+        if (opcao is null)
+        {
+            return new ResultadoInteracaoWhatsAppDto(
+                false,
+                "OpcaoInvalida",
+                "Número inválido. Escolha uma das opções apresentadas.");
+        }
+
+        interacao.AgendamentoSelecionadoId =
+            opcao.AgendamentoId;
+
+        interacao.Status =
+            StatusInteracaoWhatsApp.AguardandoConfirmacao;
+
+        interacao.DataAtualizacao = agora.UtcDateTime;
+
+        await _repositorio.AdicionarRespostaProcessadaAsync(
+            new RespostaWhatsAppProcessada
+            {
+                EmpresaId = empresaId,
+                InstanceName = instanceName.Trim(),
+                ProviderMessageId = providerMessageId.Trim(),
+                Telefone = telefone.Trim(),
+                Comando = ordem.ToString(),
+                AgendamentoId = opcao.AgendamentoId,
+                Resultado = "OpcaoSelecionada",
+                DataProcessamentoUtc = agora.UtcDateTime
+            },
+            cancellationToken);
+
+        return new ResultadoInteracaoWhatsAppDto(
+            true,
+            "AguardandoConfirmacao",
+            "Confirme se deseja prosseguir com este agendamento.",
+            interacao.Id,
+            opcao.AgendamentoId,
+            opcao.Ordem,
+            opcao.DataHoraInicioSnapshot,
+            opcao.ServicosSnapshot,
+            opcao.ProfissionalSnapshot);
     }
 
     public async Task<ResultadoInteracaoWhatsAppDto> CancelarInteracaoAsync(
@@ -300,107 +229,255 @@ public sealed class InteracaoWhatsAppService
             telefone,
             providerMessageId);
 
-        await using var unitOfWork =
-            _unitOfWorkFactory.Create(TransactionContext.Operacional);
-
-        await unitOfWork.BeginTransactionAsync(cancellationToken);
-
-        try
+        if (await _repositorio.MensagemJaProcessadaAsync(
+            empresaId,
+            providerMessageId,
+            cancellationToken))
         {
-            if (await _repositorio.MensagemJaProcessadaAsync(
+            return new ResultadoInteracaoWhatsAppDto(
+                false,
+                "MensagemDuplicada",
+                "Esta mensagem já foi processada.");
+        }
+
+        var interacao =
+            await _repositorio.ObterInteracaoAtivaAsync(
                 empresaId,
-                providerMessageId,
-                cancellationToken))
-            {
-                await unitOfWork.RollbackTransactionAsync(
-                    CancellationToken.None);
+                instanceName,
+                telefone,
+                cancellationToken);
 
-                return new ResultadoInteracaoWhatsAppDto(
-                    false,
-                    "MensagemDuplicada",
-                    "Esta mensagem já foi processada.");
-            }
+        if (interacao is null)
+        {
+            return new ResultadoInteracaoWhatsAppDto(
+                false,
+                "InteracaoNaoEncontrada",
+                "Não encontramos uma interação ativa para encerrar.");
+        }
 
-            var interacao =
-                await _repositorio.ObterInteracaoAtivaAsync(
-                    empresaId,
-                    instanceName,
-                    telefone,
-                    cancellationToken);
+        var agora = DateTimeOffset.UtcNow;
 
-            if (interacao is null)
-            {
-                await unitOfWork.RollbackTransactionAsync(
-                    CancellationToken.None);
-
-                return new ResultadoInteracaoWhatsAppDto(
-                    false,
-                    "InteracaoNaoEncontrada",
-                    "Não encontramos uma interação ativa para encerrar.");
-            }
-
-            var agora = DateTimeOffset.UtcNow;
-
-            if (interacao.ExpiraEmUtc <= agora)
-            {
-                interacao.Status =
-                    StatusInteracaoWhatsApp.Expirada;
-
-                interacao.DataAtualizacao = agora.UtcDateTime;
-
-                await unitOfWork.CommitTransactionAsync(
-                    cancellationToken);
-
-                return new ResultadoInteracaoWhatsAppDto(
-                    false,
-                    "InteracaoExpirada",
-                    "O prazo desta interação expirou.");
-            }
-
+        if (interacao.ExpiraEmUtc <= agora)
+        {
             interacao.Status =
-                StatusInteracaoWhatsApp.Cancelada;
+                StatusInteracaoWhatsApp.Expirada;
 
-            interacao.ConcluidaEmUtc = agora;
             interacao.DataAtualizacao = agora.UtcDateTime;
 
-            await _repositorio.AdicionarRespostaProcessadaAsync(
-                new RespostaWhatsAppProcessada
-                {
-                    EmpresaId = empresaId,
-                    InstanceName = instanceName.Trim(),
-                    ProviderMessageId = providerMessageId.Trim(),
-                    Telefone = telefone.Trim(),
-                    Comando = "NAO",
-                    AgendamentoId = interacao.AgendamentoSelecionadoId,
-                    Resultado = "InteracaoCancelada",
-                    DataProcessamentoUtc = agora.UtcDateTime
-                },
+            return new ResultadoInteracaoWhatsAppDto(
+                false,
+                "InteracaoExpirada",
+                "O prazo desta interação expirou.");
+        }
+
+        interacao.Status =
+            StatusInteracaoWhatsApp.Cancelada;
+
+        interacao.ConcluidaEmUtc = agora;
+        interacao.DataAtualizacao = agora.UtcDateTime;
+
+        await _repositorio.AdicionarRespostaProcessadaAsync(
+            new RespostaWhatsAppProcessada
+            {
+                EmpresaId = empresaId,
+                InstanceName = instanceName.Trim(),
+                ProviderMessageId = providerMessageId.Trim(),
+                Telefone = telefone.Trim(),
+                Comando = "NAO",
+                AgendamentoId = interacao.AgendamentoSelecionadoId,
+                Resultado = "InteracaoCancelada",
+                DataProcessamentoUtc = agora.UtcDateTime
+            },
+            cancellationToken);
+
+        return new ResultadoInteracaoWhatsAppDto(
+            true,
+            "InteracaoCancelada",
+            "Operação cancelada. Nenhum agendamento foi alterado.",
+            interacao.Id,
+            interacao.AgendamentoSelecionadoId);
+    }
+
+    public async Task<ResultadoInteracaoWhatsAppDto> ConcluirInteracaoAsync(
+        Guid empresaId,
+        string instanceName,
+        string telefone,
+        string providerMessageId,
+        CancellationToken cancellationToken)
+    {
+        ValidarDadosInteracao(
+            empresaId,
+            instanceName,
+            telefone,
+            providerMessageId);
+
+        if (await _repositorio.MensagemJaProcessadaAsync(
+            empresaId,
+            providerMessageId,
+            cancellationToken))
+        {
+            return new ResultadoInteracaoWhatsAppDto(
+                false,
+                "MensagemDuplicada",
+                "Esta mensagem já foi processada.");
+        }
+
+        var interacao =
+            await _repositorio.ObterInteracaoAtivaAsync(
+                empresaId,
+                instanceName,
+                telefone,
                 cancellationToken);
 
-            await unitOfWork.CommitTransactionAsync(
-                cancellationToken);
+        if (interacao is null)
+        {
+            return new ResultadoInteracaoWhatsAppDto(
+                false,
+                "InteracaoNaoEncontrada",
+                "Não encontramos uma interação ativa.");
+        }
+
+        var agora = DateTimeOffset.UtcNow;
+
+        if (interacao.ExpiraEmUtc <= agora)
+        {
+            interacao.Status =
+                StatusInteracaoWhatsApp.Expirada;
+
+            interacao.DataAtualizacao = agora.UtcDateTime;
 
             return new ResultadoInteracaoWhatsAppDto(
-                true,
-                "InteracaoCancelada",
-                "Operação cancelada. Nenhum agendamento foi alterado.",
-                interacao.Id,
-                interacao.AgendamentoSelecionadoId);
+                false,
+                "InteracaoExpirada",
+                "O prazo para confirmar a operação expirou.");
         }
-        catch
-        {
-            try
-            {
-                await unitOfWork.RollbackTransactionAsync(
-                    CancellationToken.None);
-            }
-            catch
-            {
-                // Preserva a exceção original.
-            }
 
-            throw;
+        if (interacao.Status !=
+            StatusInteracaoWhatsApp.AguardandoConfirmacao)
+        {
+            return new ResultadoInteracaoWhatsAppDto(
+                false,
+                "ConfirmacaoNaoPermitida",
+                "A interação não está aguardando confirmação.");
         }
+
+        if (!interacao.AgendamentoSelecionadoId.HasValue)
+        {
+            return new ResultadoInteracaoWhatsAppDto(
+                false,
+                "AgendamentoNaoSelecionado",
+                "Nenhum agendamento foi selecionado.");
+        }
+
+        var agendamento =
+            await _repositorioAgendamento.ObterParaAtualizacaoAsync(
+                empresaId,
+                interacao.AgendamentoSelecionadoId.Value,
+                cancellationToken);
+
+        if (agendamento is null)
+        {
+            return new ResultadoInteracaoWhatsAppDto(
+                false,
+                "AgendamentoNaoEncontrado",
+                "O agendamento selecionado não foi encontrado.");
+        }
+
+        string resultado;
+        string mensagem;
+
+        switch (interacao.TipoInteracao)
+        {
+            case TipoInteracaoWhatsApp.ConfirmarAgendamento:
+
+                if (agendamento.Status != StatusAgendamento.Pendente)
+                {
+                    return new ResultadoInteracaoWhatsAppDto(
+                        false,
+                        "TransicaoInvalida",
+                        "Somente agendamentos pendentes podem ser confirmados.");
+                }
+
+                agendamento.Status = StatusAgendamento.Confirmado;
+                agendamento.DataAtualizacao = agora.UtcDateTime;
+
+                resultado = "AgendamentoConfirmado";
+                mensagem = "Agendamento confirmado com sucesso.";
+
+                break;
+
+            case TipoInteracaoWhatsApp.CancelarAgendamento:
+
+                if (agendamento.Status is not (
+                    StatusAgendamento.Pendente or
+                    StatusAgendamento.Confirmado))
+                {
+                    return new ResultadoInteracaoWhatsAppDto(
+                        false,
+                        "TransicaoInvalida",
+                        "Este agendamento não pode mais ser cancelado.");
+                }
+
+                agendamento.Status = StatusAgendamento.Cancelado;
+                agendamento.DataCancelamento = agora;
+
+                agendamento.MotivoCancelamento =
+                    "Cancelado pelo cliente via WhatsApp.";
+
+                agendamento.CanceladoPorUsuarioId = null;
+                agendamento.DataAtualizacao = agora.UtcDateTime;
+
+                await _repositorioAgendamento.InvalidarLembretesPendentesAsync(
+                    empresaId,
+                    agendamento.Id,
+                    "Agendamento cancelado pelo cliente via WhatsApp.",
+                    cancellationToken);
+
+                resultado = "AgendamentoCancelado";
+                mensagem = "Agendamento cancelado com sucesso.";
+
+                break;
+
+            default:
+
+                throw new InvalidOperationException(
+                    "Tipo de interação WhatsApp não reconhecido.");
+        }
+
+        interacao.Status =
+            StatusInteracaoWhatsApp.Concluida;
+
+        interacao.ConcluidaEmUtc = agora;
+        interacao.DataAtualizacao = agora.UtcDateTime;
+
+        await _repositorio.AdicionarRespostaProcessadaAsync(
+            new RespostaWhatsAppProcessada
+            {
+                EmpresaId = empresaId,
+                InstanceName = instanceName.Trim(),
+                ProviderMessageId = providerMessageId.Trim(),
+                Telefone = telefone.Trim(),
+                Comando = "SIM",
+                AgendamentoId = agendamento.Id,
+                Resultado = resultado,
+                DataProcessamentoUtc = agora.UtcDateTime
+            },
+            cancellationToken);
+
+        var opcao = interacao.Opcoes
+            .SingleOrDefault(x =>
+                x.AgendamentoId == agendamento.Id);
+
+        return new ResultadoInteracaoWhatsAppDto(
+            true,
+            resultado,
+            mensagem,
+            interacao.Id,
+            agendamento.Id,
+            opcao?.Ordem,
+            opcao?.DataHoraInicioSnapshot,
+            opcao?.ServicosSnapshot,
+            opcao?.ProfissionalSnapshot);
     }
 
     private static void ValidarDadosCriacao(
@@ -454,8 +531,10 @@ public sealed class InteracaoWhatsAppService
                 "Existem opções de agendamento inválidas.");
         }
 
-        if (agendamentos.Select(x => x.AgendamentoId).Distinct().Count()
-            != agendamentos.Count)
+        if (agendamentos
+            .Select(x => x.AgendamentoId)
+            .Distinct()
+            .Count() != agendamentos.Count)
         {
             throw new ArgumentException(
                 "Existem agendamentos duplicados nas opções.");
@@ -493,252 +572,6 @@ public sealed class InteracaoWhatsAppService
         {
             throw new ArgumentException(
                 "Identificador da mensagem inválido.");
-        }
-    }
-    public async Task<ResultadoInteracaoWhatsAppDto> ConcluirInteracaoAsync(
-    Guid empresaId,
-    string instanceName,
-    string telefone,
-    string providerMessageId,
-    CancellationToken cancellationToken)
-    {
-        ValidarDadosInteracao(
-            empresaId,
-            instanceName,
-            telefone,
-            providerMessageId);
-
-        await using var unitOfWork =
-            _unitOfWorkFactory.Create(TransactionContext.Operacional);
-
-        await unitOfWork.BeginTransactionAsync(cancellationToken);
-
-        try
-        {
-            // 1. Idempotência
-            if (await _repositorio.MensagemJaProcessadaAsync(
-                empresaId,
-                providerMessageId,
-                cancellationToken))
-            {
-                await unitOfWork.RollbackTransactionAsync(
-                    CancellationToken.None);
-
-                return new ResultadoInteracaoWhatsAppDto(
-                    false,
-                    "MensagemDuplicada",
-                    "Esta mensagem já foi processada.");
-            }
-
-            // 2. Localizar interação ativa
-            var interacao =
-                await _repositorio.ObterInteracaoAtivaAsync(
-                    empresaId,
-                    instanceName,
-                    telefone,
-                    cancellationToken);
-
-            if (interacao is null)
-            {
-                await unitOfWork.RollbackTransactionAsync(
-                    CancellationToken.None);
-
-                return new ResultadoInteracaoWhatsAppDto(
-                    false,
-                    "InteracaoNaoEncontrada",
-                    "Não encontramos uma interação ativa.");
-            }
-
-            var agora = DateTimeOffset.UtcNow;
-
-            // 3. Validar expiração
-            if (interacao.ExpiraEmUtc <= agora)
-            {
-                interacao.Status =
-                    StatusInteracaoWhatsApp.Expirada;
-
-                interacao.DataAtualizacao = agora.UtcDateTime;
-
-                await unitOfWork.CommitTransactionAsync(
-                    cancellationToken);
-
-                return new ResultadoInteracaoWhatsAppDto(
-                    false,
-                    "InteracaoExpirada",
-                    "O prazo para confirmar a operação expirou.");
-            }
-
-            // 4. Exigir confirmação da opção selecionada
-            if (interacao.Status !=
-                StatusInteracaoWhatsApp.AguardandoConfirmacao)
-            {
-                await unitOfWork.RollbackTransactionAsync(
-                    CancellationToken.None);
-
-                return new ResultadoInteracaoWhatsAppDto(
-                    false,
-                    "ConfirmacaoNaoPermitida",
-                    "A interação não está aguardando confirmação.");
-            }
-
-            if (!interacao.AgendamentoSelecionadoId.HasValue)
-            {
-                await unitOfWork.RollbackTransactionAsync(
-                    CancellationToken.None);
-
-                return new ResultadoInteracaoWhatsAppDto(
-                    false,
-                    "AgendamentoNaoSelecionado",
-                    "Nenhum agendamento foi selecionado.");
-            }
-
-            // 5. Recuperar agendamento para atualização
-            var agendamento =
-                await _repositorioAgendamento.ObterParaAtualizacaoAsync(
-                    empresaId,
-                    interacao.AgendamentoSelecionadoId.Value,
-                    cancellationToken);
-
-            if (agendamento is null)
-            {
-                await unitOfWork.RollbackTransactionAsync(
-                    CancellationToken.None);
-
-                return new ResultadoInteracaoWhatsAppDto(
-                    false,
-                    "AgendamentoNaoEncontrado",
-                    "O agendamento selecionado não foi encontrado.");
-            }
-
-            string resultado;
-            string mensagem;
-
-            // 6. Aplicar regra conforme tipo da interação
-            switch (interacao.TipoInteracao)
-            {
-                case TipoInteracaoWhatsApp.ConfirmarAgendamento:
-
-                    if (agendamento.Status != StatusAgendamento.Pendente)
-                    {
-                        await unitOfWork.RollbackTransactionAsync(
-                            CancellationToken.None);
-
-                        return new ResultadoInteracaoWhatsAppDto(
-                            false,
-                            "TransicaoInvalida",
-                            "Somente agendamentos pendentes podem ser confirmados.");
-                    }
-
-                    agendamento.Status = StatusAgendamento.Confirmado;
-                    agendamento.DataAtualizacao = agora.UtcDateTime;
-
-                    resultado = "AgendamentoConfirmado";
-
-                    mensagem = "Agendamento confirmado com sucesso.";
-
-                    break;
-
-                case TipoInteracaoWhatsApp.CancelarAgendamento:
-
-                    if (agendamento.Status is not (
-                        StatusAgendamento.Pendente or
-                        StatusAgendamento.Confirmado))
-                    {
-                        await unitOfWork.RollbackTransactionAsync(
-                            CancellationToken.None);
-
-                        return new ResultadoInteracaoWhatsAppDto(
-                            false,
-                            "TransicaoInvalida",
-                            "Este agendamento não pode mais ser cancelado.");
-                    }
-
-                    agendamento.Status = StatusAgendamento.Cancelado;
-
-                    agendamento.DataCancelamento = agora;
-
-                    agendamento.MotivoCancelamento =
-                        "Cancelado pelo cliente via WhatsApp.";
-
-                    agendamento.CanceladoPorUsuarioId = null;
-
-                    agendamento.DataAtualizacao = agora.UtcDateTime;
-
-                    // Invalidar lembretes ainda pendentes na Outbox.
-                    await _repositorioAgendamento
-                        .InvalidarLembretesPendentesAsync(
-                            empresaId,
-                            agendamento.Id,
-                            "Agendamento cancelado pelo cliente via WhatsApp.",
-                            cancellationToken);
-
-                    resultado = "AgendamentoCancelado";
-
-                    mensagem = "Agendamento cancelado com sucesso.";
-
-                    break;
-
-                default:
-
-                    throw new InvalidOperationException(
-                        "Tipo de interação WhatsApp não reconhecido.");
-            }
-
-            // 7. Concluir interação
-            interacao.Status =
-                StatusInteracaoWhatsApp.Concluida;
-
-            interacao.ConcluidaEmUtc = agora;
-
-            interacao.DataAtualizacao = agora.UtcDateTime;
-
-            // 8. Registrar mensagem processada
-            await _repositorio.AdicionarRespostaProcessadaAsync(
-                new RespostaWhatsAppProcessada
-                {
-                    EmpresaId = empresaId,
-                    InstanceName = instanceName.Trim(),
-                    ProviderMessageId = providerMessageId.Trim(),
-                    Telefone = telefone.Trim(),
-                    Comando = "SIM",
-                    AgendamentoId = agendamento.Id,
-                    Resultado = resultado,
-                    DataProcessamentoUtc = agora.UtcDateTime
-                },
-                cancellationToken);
-
-            // 9. Persistir toda a operação
-            await unitOfWork.CommitTransactionAsync(
-                cancellationToken);
-
-            var opcao = interacao.Opcoes
-                .SingleOrDefault(x =>
-                    x.AgendamentoId == agendamento.Id);
-
-            return new ResultadoInteracaoWhatsAppDto(
-                true,
-                resultado,
-                mensagem,
-                interacao.Id,
-                agendamento.Id,
-                opcao?.Ordem,
-                opcao?.DataHoraInicioSnapshot,
-                opcao?.ServicosSnapshot,
-                opcao?.ProfissionalSnapshot);
-        }
-        catch
-        {
-            try
-            {
-                await unitOfWork.RollbackTransactionAsync(
-                    CancellationToken.None);
-            }
-            catch
-            {
-                // Preserva a exceção original.
-            }
-
-            throw;
         }
     }
 }
