@@ -1,4 +1,5 @@
 ﻿using Application.Interfaces.Servicos;
+using Domain.Entities.Common.Enuns;
 using Domain.Entities.Servicos;
 using Infrastructure.Context;
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +33,35 @@ namespace Infrastructure.Repositories.Servicos
                             servico.Id == servicoId &&
                             servico.EmpresaId == empresaId,
                         cancellationToken);
+        }
+
+        public async Task<IReadOnlyCollection<Servico>>
+    ListarDisponiveisWhatsAppAsync(
+        Guid empresaId,
+        string? searchTerm,
+        CancellationToken cancellationToken)
+        {
+            var query = _context.Servicos
+                .AsNoTracking()
+                .Include(x => x.CategoriaServico)
+                .Where(x =>
+                    x.EmpresaId == empresaId &&
+                    x.Ativo == StatusGeral.Ativo &&
+                    x.PermiteAgendamentoOnline);
+
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                var termo = searchTerm.Trim();
+
+                query = query.Where(x =>
+                    x.Nome.Contains(termo) ||
+                    (x.Descricao != null &&
+                     x.Descricao.Contains(termo)));
+            }
+
+            return await query
+                .OrderBy(x => x.Nome)
+                .ToListAsync(cancellationToken);
         }
     }
 }

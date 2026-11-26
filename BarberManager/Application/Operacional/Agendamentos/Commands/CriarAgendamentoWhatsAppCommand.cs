@@ -1,0 +1,18 @@
+﻿using Application.Common.Transactions;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace Application.Operacional.Agendamentos.Commands;
+
+public sealed record CriarAgendamentoWhatsAppCommand(
+    string InstanceName,
+    string Telefone,
+    Guid ProfissionalId,
+    Guid ServicoId,
+    DateTimeOffset DataHoraInicio,
+    string? Observacoes
+) : ITransactionalCommand
+{
+    [NotMapped]
+    public TransactionContext TransactionContext =>
+        TransactionContext.Operacional;
+}

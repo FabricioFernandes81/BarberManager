@@ -8,11 +8,13 @@ using Application.Interfaces.Empresas;
 using Application.Interfaces.Empresas.Pagamentos;
 using Application.Interfaces.Estoque;
 using Application.Interfaces.Financeiro;
+using Application.Interfaces.Integracoes.WhatsApp;
 using Application.Interfaces.Notificacoes;
 using Application.Interfaces.Produtos;
 using Application.Interfaces.Profissionais;
 using Application.Interfaces.Servicos;
 using Application.Interfaces.Vendas;
+using Application.Operacional.Agendamentos.Services;
 using Application.Operacional.Financeiro.Interfaces;
 using Application.Operacional.Financeiro.Services;
 using Application.Saas.Empresas;
@@ -187,6 +189,8 @@ namespace Infrastructure
             services.AddHttpClient<
     IEvolutionApiClient,
     EvolutionApiClient>();
+            services.AddScoped<IClienteWhatsAppResolver, ClienteWhatsAppResolver>();
+        
 
             services.AddScoped<
     IRepositorioRespostaWhatsApp,
@@ -195,7 +199,9 @@ namespace Infrastructure
             services.AddScoped<
     IRepositorioInteracaoWhatsApp,
     RepositorioInteracaoWhatsApp>();
-
+            services.AddScoped<
+    IDisponibilidadeAgendaService,
+    DisponibilidadeAgendaService>();
 
             services.Configure<EvolutionOptions>(
     configuration.GetSection(EvolutionOptions.SectionName));

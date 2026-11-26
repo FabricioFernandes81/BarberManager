@@ -237,5 +237,32 @@ namespace Infrastructure.Repositories
        .ThenBy(h => h.HoraInicio)
        .ToListAsync(cancellationToken);
         }
+
+        public async Task<IReadOnlyList<Profissional>>
+    ListarParaAgendamentoWhatsAppAsync(
+        Guid empresaId,
+        Guid servicoId,
+        CancellationToken cancellationToken)
+        {
+            return await _context.Profissionais
+                .AsNoTracking()
+                .Where(p =>
+                    p.EmpresaId == empresaId &&
+                    p.Status == StatusProfissional.Ativo &&
+                    p.AgendaOnline &&
+                    p.ExibirAgendamentoOnline &&
+                    p.Servicos.Any(ps =>
+                        ps.EmpresaId == empresaId &&
+                        ps.ServicoId == servicoId &&
+                        ps.Ativo == StatusGeral.Ativo))
+                .Include(p => p.Servicos
+                    .Where(ps =>
+                        ps.EmpresaId == empresaId &&
+                        ps.ServicoId == servicoId &&
+                        ps.Ativo == StatusGeral.Ativo))
+                .OrderBy(p => p.OrdemAgenda)
+                .ThenBy(p => p.Nome)
+                .ToListAsync(cancellationToken);
+        }
     }
 }

@@ -3,9 +3,11 @@ using Application.Common.Middlewares.Handler;
 using Application.Common.Pagination;
 using Application.Common.Security;
 using Application.Interfaces;
+using Application.Interfaces.Agendamentos;
 using Application.Interfaces.Empresas.Pagamentos;
 using Application.Interfaces.Financeiro;
 using Application.Interfaces.Notificacoes;
+using Application.Operacional.Agendamentos.Services;
 using Application.Operacional.Financeiro.Services;
 using Application.Operacional.Notificacoes.Services;
 using Application.Saas.Pagamentos.Services;
@@ -62,6 +64,10 @@ public static class Dependency
         services.AddScoped<
     IInteracaoWhatsAppService,
     InteracaoWhatsAppService>();
+
+        services.AddScoped<
+    ICriarAgendamentoService,
+    CriarAgendamentoService>();
 
         services.AddScoped<  IEnvioWhatsAppService,  EnvioWhatsAppService>();
         return services;

@@ -94,13 +94,21 @@ namespace Infrastructure.Repositories.Interfaces
                     x.EmpresaId == empresaId, cancellationToken);
         }
 
-        public async Task<ProfissionalServicos?> ObterVinculoProfissionalServicoAsync(Guid empresaId, Guid profissionalId, Guid servicoId, CancellationToken cancellationToken)
+        public async Task<ProfissionalServicos?>
+    ObterVinculoProfissionalServicoAsync(
+        Guid empresaId,
+        Guid profissionalId,
+        Guid servicoId,
+        CancellationToken cancellationToken)
         {
             return await _dbContext.ProfissionalServicos
-                 .AsNoTracking()
-                 .FirstOrDefaultAsync(x =>
-                 x.EmpresaId == empresaId && x.ProfissionalId == profissionalId &&
-                 x.ServicoId == servicoId /*&& x.Ativo == StatusGeral.Ativo*/, cancellationToken);
+                .AsNoTracking()
+                .FirstOrDefaultAsync(x =>
+                    x.EmpresaId == empresaId &&
+                    x.ProfissionalId == profissionalId &&
+                    x.ServicoId == servicoId &&
+                    x.Ativo == StatusGeral.Ativo,
+                    cancellationToken);
         }
 
         public async Task<bool> ProfissionalExecutaServicoAsync(Guid empresaId, Guid profissionalId, Guid servicoId, CancellationToken cancellationToken)

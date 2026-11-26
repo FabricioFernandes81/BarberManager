@@ -59,5 +59,12 @@ namespace Application.Interfaces.Profissionais
             ObterHorariosPorProfissionalAsync(
                 Guid empresaId, Guid profissionalId,
                 CancellationToken cancellationToken);
+
+
+        Task<IReadOnlyList<Profissional>>
+    ListarParaAgendamentoWhatsAppAsync(
+        Guid empresaId,
+        Guid servicoId,
+        CancellationToken cancellationToken);
     }
 }

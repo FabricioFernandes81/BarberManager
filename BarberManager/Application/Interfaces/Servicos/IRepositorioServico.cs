@@ -13,5 +13,11 @@ namespace Application.Interfaces.Servicos
            Guid empresaId,
            Guid servicoId,
            CancellationToken cancellationToken);
+
+
+        Task<IReadOnlyCollection<Servico>> ListarDisponiveisWhatsAppAsync(
+    Guid empresaId,
+    string? searchTerm,
+    CancellationToken cancellationToken);
     }
 }

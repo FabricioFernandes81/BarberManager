@@ -80,5 +80,22 @@ namespace Infrastructure.Repositories.Clientes
                 .SingleOrDefaultAsync(
                 x => x.UsuarioId == usuarioId, cancellationToken);
         }
+
+        public async Task<Cliente?> ObterPorUsuarioIdEEmpresaAsync(
+ Guid usuarioId,
+ Guid empresaId,
+ CancellationToken cancellationToken = default)
+        {
+            return await _dbContext.Clientes
+                .AsNoTracking()
+                .SingleOrDefaultAsync(
+                    c =>
+                        c.UsuarioId == usuarioId &&
+                        c.Ativo &&
+                        c.Empresas.Any(e =>
+                            e.EmpresaId == empresaId &&
+                            e.Ativo),
+                    cancellationToken);
+        }
     }
 }
